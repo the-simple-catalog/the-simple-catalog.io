@@ -1,78 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Simple Catalog</title>
-    <style>
-        /* Reset some default styles */
-        body, h1, h2, ul, li, a {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f9f9f9;
-            color: #333;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #222;
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        li {
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f1f1f1;
-            border-radius: 5px;
-        }
-
-        a {
-            text-decoration: none;
-            color: #007BFF;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopNow - Online Shopping</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>The Simple Catalog</h1>
-        <p>Welcome to The Simple Catalog. Below is a list of items available in our collection:</p>
-
-        
-
-        <p class="footer">&copy; 2025 The Simple Catalog. All rights reserved.</p>
+  <!-- Configuration Modal -->
+  <div id="config-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-config-modal">&times;</span>
+      <h2>Site Configuration</h2>
+      <p>Configure your site settings below:</p>
+      <form id="config-form">
+        <div class="form-group">
+          <label for="site-name">Site Name:</label>
+          <input type="text" id="site-name" placeholder="Enter Site Name">
+        </div>
+        <div class="form-group">
+          <label for="mirakl-ads-url">Mirakl Ads API URL:</label>
+          <input type="text" id="mirakl-ads-url" placeholder="Enter Mirakl Ads API URL">
+        </div>
+        <div class="form-group">
+          <label for="mirakl-ads-token">Mirakl Ads Bearer Token:</label>
+          <input type="text" id="mirakl-ads-token" placeholder="Enter Mirakl Ads Bearer Token">
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="use-default" class="btn secondary-btn">Use Default</button>
+          <button type="submit" class="btn primary-btn">Save Configuration</button>
+        </div>
+      </form>
     </div>
-</body>
-</html>
+  </div>
 
+  <!-- Header -->
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <a href="index.html">
+          <h1 id="site-title">ShopNow</h1>
+        </a>
+      </div>
+      <div class="search-bar">
+        <form action="search.html" method="get">
+          <input type="text" name="query" placeholder="Search products...">
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <div class="header-actions">
+        <a href="#" class="settings-icon" id="settings-icon">
+          <i class="fas fa-cog"></i>
+        </a>
+        <a href="cart.html" class="cart-icon">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <div class="container">
+        <ul id="categories-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <section class="hero-banner">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Welcome to <span id="hero-site-name">ShopNow</span></h1>
+          <p>Discover amazing products at great prices</p>
+          <a href="#featured-products" class="btn primary-btn">Shop Now</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="popular-categories">
+      <div class="container">
+        <h2>Popular Categories</h2>
+        <div class="categories-grid" id="popular-categories-grid">
+          <!-- Categories will be loaded here -->
+          <div class="loading" id="categories-loading">Loading categories...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="featured-products">
+      <div class="container">
+        <h2>Featured Products</h2>
+        <div class="products-grid" id="featured-products-grid">
+          <!-- Products will be loaded here -->
+          <div class="loading" id="products-loading">Loading products...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sponsored-zone" class="sponsored-zone">
+      <div class="container">
+        <h2>Sponsored Products</h2>
+        <div class="products-grid" id="sponsored-products-grid">
+          <!-- Sponsored products will be loaded here -->
+        </div>
+      </div>
+    </section>
+
+    <section id="retail-media-zone" class="retail-media-zone">
+      <div class="container" id="retail-media-container">
+        <!-- Retail media display ads will be loaded here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Customer Service</h3>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Returns & Refunds</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <ul>
+            <li><a href="#">Our Story</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <ul class="social-links">
+            <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+            <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+            <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+            <li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2023 <span id="footer-site-name">ShopNow</span>. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/tracking.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/mirakl-ads.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html> 

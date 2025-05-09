@@ -1,0 +1,319 @@
+{
+   "pageId": 1200,
+    "productAds": [
+        {
+            "adUnitId": "1200-sponso-1",
+            "index": null,
+            "adUnitSize": 4,
+            "products": [
+                {
+                    "id": "2743",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags67-85f3f80cd6836b0559a60ddc029387174e9402c9",
+                    "productId": "4123018552011-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "3761",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags66-1f399b347e66b57d50e04be16a5a707b139237fb",
+                    "productId": "4123018529899-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "5078",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags65-53c8f186558993578e3c0e3262ebe079e756d490",
+                    "productId": "4123018532144-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "5345",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags64-c1b0c05f1bad3e6d6483935e0518328df28815ff",
+                    "productId": "4123018513199-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "3064",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags63-583ef2fbb144df0e1fad388863f72905df8cd0e8",
+                    "productId": "4123018554166-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "3303",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags62-aabd1f10952d9fb32ac8b8568be162d1e2214769",
+                    "productId": "4123018513266-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "3130",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags61-1fde1be0c89ae5ffc5ad24e556f64a73b57bda23",
+                    "productId": "4123018514566-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "2449",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags60-a76d5b9ae93710e04a6bab741cd3ecc710436de0",
+                    "productId": "4123018515488-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                }
+            ]
+        },
+        {
+            "adUnitId": "1200-sponso-2",
+            "index": null,
+            "adUnitSize": 4,
+            "products": [
+                {
+                    "id": "2743",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags67-85f3f80cd6836b0559a60ddc029387174e9402c9",
+                    "productId": "4123018552011-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "3761",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags66-1f399b347e66b57d50e04be16a5a707b139237fb",
+                    "productId": "4123018529899-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                },
+                {
+                    "id": "2449",
+                    "type": "OFFER",
+                    "adId": "ad-sp:01jts2df419drt0v96hhbags60-a76d5b9ae93710e04a6bab741cd3ecc710436de0",
+                    "productId": "4123018515488-1000",
+                    "digitalServiceAct": {
+                        "behalf": "Karimo Shop 001 Test",
+                        "paid": "Karimo Shop 001 Test",
+                        "transparency": [
+                            {
+                                "domain": "http://karimo-store-3p1_test.com",
+                                "dsaparams": [
+                                    2
+                                ]
+                            }
+                        ],
+                        "adrender": 0
+                    }
+                }
+            ]
+        }
+    ],
+    "display": [
+        {
+            "adUnitId": "1000-reserved-display-25",
+            "adId": "ad-nat:01jttn3kccwb0qfrwyync75fwm-25843789ad8ebf0a53956a37935618f031b4660e",
+            "creativeSet": {
+                "attributes": {
+                    "image512": {
+                        "format": "512:512",
+                        "url": "https://d-test.m4lcdn.net/artemis-test-5/01941f2f-e91c-0aeb-d0a1-8d82b0b2de98/5a3dfd8c-61d7-40e4-b4ff-58a64efca2457857948786967056855.jpg"
+                    },
+                    "text": "cta"
+                }
+            },
+            "redirectionUrl": "http://karimo-store-3p1_test.com/",
+            "creativeFormat": "NATIVE_BANNER",
+            "formatCode": "NATIVE-5",
+            "digitalServiceAct": {
+                "behalf": "Karimo Shop 001 Test",
+                "paid": "Karimo Shop 001 Test",
+                "transparency": [
+                    {
+                        "domain": "http://karimo-store-3p1_test.com",
+                        "dsaparams": [
+                            2
+                        ]
+                    }
+                ],
+                "adrender": 0
+            }
+        },
+        {
+            "adUnitId": "1000-reserved-display-26",
+            "adId": "ad-sh:01jttn3kccwb0qfrwyync75fwn-d954911a78b4751fc90208bc6fb156848362d410",
+            "creativeSet": {
+                "asset": {
+                    "format": "512:512",
+                    "url": "https://d-test.m4lcdn.net/artemis-test-5/01941f2f-e91c-0aeb-d0a1-8d82b0b2de98/8fa17b4c-3ab9-45cf-aea8-2dc62d08c795562648472642261893.jpg"
+                }
+            },
+            "redirectionUrl": "http://karimo-store-3p1_test.com/",
+            "products": [
+                {
+                    "id": "2579",
+                    "adId": "ad-shp:01jttn3kcd98gsefpxx98jvd85-237ff67de48785f99ee07d9dc6355f28487f7641",
+                    "type": "OFFER",
+                    "productId": "4123018575577-1000",
+                    "position": 1
+                }
+            ],
+            "creativeFormat": "SPONSORED_BRAND_IMAGE",
+            "formatCode": "SPONSORED-BRAND-2",
+            "digitalServiceAct": {
+                "behalf": "Karimo Shop 001 Test",
+                "paid": "Karimo Shop 001 Test",
+                "transparency": [
+                    {
+                        "domain": "http://karimo-store-3p1_test.com",
+                        "dsaparams": [
+                            2
+                        ]
+                    }
+                ],
+                "adrender": 0
+            }
+        },
+        {
+            "adUnitId": "1400-display-8",
+            "adId": "ad-dis:01jttpm26gtdkv92cynvn9zazc-e10b5538e9009f134f3403475c792c2fa86f154f",
+            "creativeSet": {
+                "asset": {
+                    "format": "512:512",
+                    "url": "https://d-test.m4lcdn.net/artemis-test-5/01941f2f-e91c-0aeb-d0a1-8d82b0b2de98/7790b4af-ccd1-4224-af14-e1841087e71d12753633756368947992.jpg"
+                }
+            },
+            "redirectionUrl": "http://karimo-store-3p1_test.com/the-simple-catalog.io/",
+            "creativeFormat": "BANNER_IMAGE",
+            "digitalServiceAct": {
+                "behalf": "Karimo Shop 001 Test",
+                "paid": "Karimo Shop 001 Test",
+                "transparency": [
+                    {
+                        "domain": "http://karimo-store-3p1_test.com",
+                        "dsaparams": [
+                            2
+                        ]
+                    }
+                ],
+                "adrender": 0
+            }
+        }
+    ]
+}

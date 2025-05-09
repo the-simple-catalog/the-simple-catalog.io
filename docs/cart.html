@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart - ShopNow</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <a href="index.html">
+          <h1 id="site-title">ShopNow</h1>
+        </a>
+      </div>
+      <div class="search-bar">
+        <form action="search.html" method="get">
+          <input type="text" name="query" placeholder="Search products...">
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <div class="header-actions">
+        <a href="#" class="settings-icon" id="settings-icon">
+          <i class="fas fa-cog"></i>
+        </a>
+        <a href="cart.html" class="cart-icon">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <div class="container">
+        <ul id="categories-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span>Shopping Cart</span>
+      </nav>
+
+      <!-- Cart Content -->
+      <section class="cart-section">
+        <h1>Your Shopping Cart</h1>
+        
+        <div id="cart-empty" class="hidden">
+          <p>Your cart is empty.</p>
+          <a href="index.html" class="btn primary-btn">Continue Shopping</a>
+        </div>
+        
+        <div id="cart-contents">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="cart-items">
+              <!-- Cart items will be loaded here -->
+            </tbody>
+          </table>
+          
+          <div class="cart-summary">
+            <div class="cart-totals">
+              <div class="totals-row">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal">$0.00</span>
+              </div>
+              <div class="totals-row">
+                <span>Shipping:</span>
+                <span id="cart-shipping">$0.00</span>
+              </div>
+              <div class="totals-row totals-total">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+              </div>
+            </div>
+            
+            <div class="cart-actions">
+              <a href="index.html" class="btn secondary-btn">Continue Shopping</a>
+              <a href="checkout.html" class="btn primary-btn" id="checkout-button">Proceed to Checkout</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Recommended Products (Sponsored Zone) -->
+      <section id="sponsored-zone" class="sponsored-zone">
+        <h2>You May Also Like</h2>
+        <div class="products-grid" id="sponsored-products-grid">
+          <!-- Sponsored products will be loaded here -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Customer Service</h3>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Returns & Refunds</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <ul>
+            <li><a href="#">Our Story</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <ul class="social-links">
+            <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+            <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+            <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+            <li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2023 <span id="footer-site-name">ShopNow</span>. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Clear Cart Confirmation Modal -->
+  <div id="clear-cart-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-clear-cart-modal">&times;</span>
+      <h2>Clear Cart</h2>
+      <p>Are you sure you want to remove all items from your cart?</p>
+      <div class="modal-actions">
+        <button id="cancel-clear-cart" class="btn secondary-btn">Cancel</button>
+        <button id="confirm-clear-cart" class="btn primary-btn">Clear Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Config Modal -->
+  <div id="config-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-config-modal">&times;</span>
+      <h2>Site Configuration</h2>
+      <p>Configure your site settings below:</p>
+      <form id="config-form">
+        <div class="form-group">
+          <label for="site-name">Site Name:</label>
+          <input type="text" id="site-name" placeholder="Enter Site Name">
+        </div>
+        <div class="form-group">
+          <label for="api-url">API URL:</label>
+          <input type="text" id="api-url" placeholder="Enter API URL">
+        </div>
+        <div class="form-group">
+          <label for="api-token">API Token:</label>
+          <input type="text" id="api-token" placeholder="Enter API Token">
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="use-default" class="btn secondary-btn">Use Default</button>
+          <button type="submit" class="btn primary-btn">Save Configuration</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/tracking.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/cart-page.js"></script>
+</body>
+</html> 
