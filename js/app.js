@@ -18,8 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update cart count in header
     updateCartCount();
 
-    // Load main navigation
-    loadMainNavigation();
+    // Initialize header search and categories dropdown
+    initHeaderSearch();
+    initCategoriesDropdown();
 
     console.log('App initialized successfully');
 });
@@ -67,28 +68,156 @@ function registerRoutes() {
 }
 
 /**
- * Load main navigation menu with root categories
+ * Initialize header search functionality
+ * This function sets up the inline search bar in the header.
+ * When the user submits the form, it navigates to the search page with the query parameter.
+ *
+ * Flow:
+ * 1. Get references to the search form and input elements
+ * 2. Add submit event listener to the form
+ * 3. On submit: prevent default form submission, extract query text, navigate to search page
  */
-function loadMainNavigation() {
-    const navEl = getEl('main-nav');
-    if (!navEl) return;
+function initHeaderSearch() {
+    const searchForm = getEl('header-search-form');
+    const searchInput = getEl('header-search-input');
 
+    // Exit early if elements don't exist
+    if (!searchForm || !searchInput) return;
+
+    // Handle form submission
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission behavior
+        const query = searchInput.value.trim();
+
+        // Navigate to search page with query parameter if query is not empty
+        if (query) {
+            window.location.hash = `/search?q=${encodeURIComponent(query)}`;
+        }
+    });
+}
+
+/**
+ * Initialize categories dropdown
+ * This function sets up the "Explore All Categories" dropdown menu in the header.
+ *
+ * Features:
+ * - Click the button to toggle dropdown open/close
+ * - Click outside the dropdown to close it
+ * - Automatically populates with categories from CatalogManager
+ *
+ * Interaction Pattern:
+ * - CLICK button: open/close main dropdown (mobile-friendly)
+ * - HOVER over category: show subcategories in adjacent panel (desktop experience)
+ * - CLICK category name: navigate to category page
+ */
+function initCategoriesDropdown() {
+    const dropdownBtn = getEl('categories-dropdown-btn');
+    const dropdownMenu = getEl('categories-dropdown-menu');
+
+    // Exit early if elements don't exist
+    if (!dropdownBtn || !dropdownMenu) return;
+
+    // Toggle dropdown visibility when button is clicked
+    dropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent event from bubbling to document click handler
+        dropdownMenu.classList.toggle('active'); // Toggle the 'active' class to show/hide dropdown
+    });
+
+    // Close dropdown when clicking outside of it
+    document.addEventListener('click', function(e) {
+        // Check if click is outside both the dropdown menu and button
+        if (!dropdownMenu.contains(e.target) && e.target !== dropdownBtn) {
+            dropdownMenu.classList.remove('active'); // Hide dropdown
+
+            // Also close all nested subcategory panels that might be open
+            const subPanels = dropdownMenu.querySelectorAll('.subcategory-panel');
+            subPanels.forEach(panel => panel.classList.remove('active'));
+        }
+    });
+
+    // Populate the dropdown with categories from the catalog
+    populateCategoriesDropdown();
+}
+
+/**
+ * Populate categories dropdown with root categories only (SIMPLIFIED)
+ * This function builds a simple flat dropdown menu with:
+ * - Root categories with emoji icons
+ * - Click handlers for navigation
+ * - No nested subcategories (simplified for easier use)
+ *
+ * Category Structure:
+ * [Icon] Category Name
+ *
+ * Interaction Logic:
+ * - CLICK: Navigate to category page
+ * - Simple flat list, no nesting
+ */
+function populateCategoriesDropdown() {
+    const dropdownMenu = getEl('categories-dropdown-menu');
+    if (!dropdownMenu) return;
+
+    // Get all root categories (top-level categories with no parent)
     const categories = CatalogManager.getRootCategories();
 
+    // Show message if no categories are loaded
     if (categories.length === 0) {
-        navEl.innerHTML = '<span style="color: rgba(255,255,255,0.6);">No categories loaded</span>';
+        dropdownMenu.innerHTML = '<div style="padding: 16px; color: var(--text-secondary); text-align: center;">No categories loaded</div>';
         return;
     }
 
-    navEl.innerHTML = '';
+    // Icon mapping: Maps category names to emoji icons
+    // Fallback icon (📦) is used for unmapped categories
+    const categoryIcons = {
+        'Book': '📚',
+        'Electronics': '💻',
+        'Fashion': '👕',
+        'Home': '🏠',
+        'Sports': '⚽',
+        'Toys': '🎮',
+        'Beauty': '💄',
+        'Food': '🍕'
+    };
+
+    // Clear existing content
+    dropdownMenu.innerHTML = '';
+
+    // Create dropdown items for each root category (simple flat list)
     categories.forEach(category => {
-        const link = createElement('a', {
-            href: `#/category/${category.id}`
+        // Get icon for this category (use fallback if not mapped)
+        const icon = categoryIcons[category.content.name] || '📦';
+
+        // Create the dropdown item element
+        const item = createElement('div', {
+            className: 'category-dropdown-item'
+        });
+
+        // Create and append icon element
+        const iconEl = createElement('span', {
+            className: 'category-dropdown-icon'
+        }, icon);
+
+        // Create and append category name element (escaped for security)
+        const nameEl = createElement('span', {
+            className: 'category-dropdown-name'
         }, escapeHtml(category.content.name));
 
-        navEl.appendChild(link);
+        item.appendChild(iconEl);
+        item.appendChild(nameEl);
+
+        // CLICK BEHAVIOR: Navigate to category page
+        item.addEventListener('click', function() {
+            window.location.hash = `/category/${category.id}`;
+            dropdownMenu.classList.remove('active'); // Close dropdown after navigation
+        });
+
+        // Add the completed item to the dropdown menu
+        dropdownMenu.appendChild(item);
     });
 }
+
+// NOTE: createSubcategoryPanel() function removed - no longer needed
+// The dropdown now only shows root categories (simplified)
 
 /**
  * Update cart count badge in header
@@ -105,5 +234,5 @@ function updateCartCount() {
 // Make updateCartCount available globally for cart operations
 window.updateCartCount = updateCartCount;
 
-// Make loadMainNavigation available globally for catalog updates
-window.loadMainNavigation = loadMainNavigation;
+// Make populateCategoriesDropdown available globally for catalog updates
+window.populateCategoriesDropdown = populateCategoriesDropdown;
