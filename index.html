@@ -11,23 +11,41 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <a href="#/" id="site-name">E-Commerce Demo</a>
+                <div class="header-left">
+                    <div class="logo">
+                        <a href="#/" id="site-name">E-Commerce Demo</a>
+                    </div>
+
+                    <!-- Categories Dropdown -->
+                    <div class="categories-dropdown">
+                        <button class="categories-dropdown-btn" id="categories-dropdown-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                            Explore All Categories
+                        </button>
+                        <div class="categories-dropdown-menu" id="categories-dropdown-menu">
+                            <!-- Categories will be dynamically loaded here -->
+                        </div>
+                    </div>
                 </div>
 
-                <nav class="main-nav" id="main-nav">
-                    <!-- Categories will be dynamically loaded here -->
-                </nav>
+                <!-- Search Bar -->
+                <div class="header-search">
+                    <form class="search-form" id="header-search-form">
+                        <input type="text" class="search-input" id="header-search-input" placeholder="Search for products..." />
+                        <button type="submit" class="search-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
 
                 <div class="header-actions">
-                    <a href="#/search" class="search-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        Search
-                    </a>
-
                     <a href="#/cart" class="cart-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="21" r="1"></circle>

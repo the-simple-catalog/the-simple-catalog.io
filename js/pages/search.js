@@ -5,6 +5,8 @@
 const SearchPage = {
     /**
      * Render search page
+     * This page displays search results only. The search input is in the header.
+     * Tracks all search queries for analytics purposes.
      */
     render(params) {
         const query = params.q || '';
@@ -13,6 +15,11 @@ const SearchPage = {
         Tracking.trackPageView(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
             searchQuery: query
         });
+
+        // Log search query for analytics if query exists
+        if (query) {
+            this.logSearchQuery(query);
+        }
 
         // Request sponsored products if there's a search query
         if (query.length >= 3) {
@@ -23,30 +30,17 @@ const SearchPage = {
 
         const app = getEl('app');
 
+        // Render results only - no search input on this page
+        // Users search from the header search bar
         app.innerHTML = `
             <div class="container fade-in">
                 <div class="page-header">
                     <div class="breadcrumb">
                         <a href="#/">Home</a>
                         <span class="breadcrumb-separator">/</span>
-                        <span>Search</span>
+                        <span>Search Results</span>
                     </div>
-                    <h1 class="page-title">Search Products</h1>
-                </div>
-
-                <div style="margin-bottom: 32px;">
-                    <div style="max-width: 600px;">
-                        <div class="form-group">
-                            <input
-                                type="text"
-                                id="search-input"
-                                class="form-input"
-                                placeholder="Search for products (minimum 3 characters)..."
-                                value="${escapeHtml(query)}"
-                                style="font-size: 16px; padding: 12px 16px;"
-                            />
-                        </div>
-                    </div>
+                    ${query ? `<h1 class="page-title">Search Results for "${escapeHtml(query)}"</h1>` : '<h1 class="page-title">Search</h1>'}
                 </div>
 
                 <div id="search-results">
@@ -56,14 +50,40 @@ const SearchPage = {
                 ${query.length >= 3 ? this.renderSponsoredSection() : ''}
             </div>
         `;
+    },
 
-        // Add event listener for search input
-        const searchInput = getEl('search-input');
-        if (searchInput) {
-            searchInput.focus();
-            searchInput.addEventListener('input', debounce((e) => {
-                this.handleSearch(e.target.value);
-            }, 300));
+    /**
+     * Log search query for analytics
+     * Stores search history in localStorage with timestamp and result count
+     */
+    logSearchQuery(query) {
+        // Get search results count
+        const products = CatalogManager.searchProducts(query);
+        const resultCount = products.length;
+
+        // Create search log entry
+        const searchEntry = {
+            timestamp: new Date().toISOString(),
+            query: query,
+            resultCount: resultCount
+        };
+
+        // Log to console
+        console.log('[Search Tracking]', searchEntry);
+
+        // Store in localStorage
+        try {
+            const searchHistory = JSON.parse(localStorage.getItem('search_history') || '[]');
+            searchHistory.push(searchEntry);
+
+            // Keep only last 100 searches
+            if (searchHistory.length > 100) {
+                searchHistory.shift();
+            }
+
+            localStorage.setItem('search_history', JSON.stringify(searchHistory));
+        } catch (e) {
+            console.error('Failed to store search history:', e);
         }
     },
 
@@ -74,7 +94,7 @@ const SearchPage = {
         if (!query) {
             return `
                 <div class="message message-info">
-                    Enter a search term to find products
+                    Use the search bar in the header to find products
                 </div>
             `;
         }
@@ -163,44 +183,6 @@ const SearchPage = {
         `;
     },
 
-    /**
-     * Handle search input
-     */
-    handleSearch(query) {
-        // Update URL with search query
-        const newUrl = query ? `#/search?q=${encodeURIComponent(query)}` : '#/search';
-        window.history.replaceState(null, '', newUrl);
-
-        // Update search results
-        const resultsDiv = getEl('search-results');
-        if (resultsDiv) {
-            resultsDiv.innerHTML = this.renderSearchResults(query);
-        }
-
-        // Track and request sponsored products if query is valid
-        if (query.length >= 3) {
-            Tracking.trackPageView(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
-                searchQuery: query
-            });
-
-            Tracking.requestSponsoredProducts(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
-                searchQuery: query
-            });
-
-            // Show/add sponsored section if not present
-            const container = resultsDiv?.parentElement;
-            if (container && !container.querySelector('.sponsored-section')) {
-                const sponsoredHtml = this.renderSponsoredSection();
-                container.insertAdjacentHTML('beforeend', sponsoredHtml);
-            }
-        } else {
-            // Remove sponsored section if query is too short
-            const sponsoredSection = document.querySelector('.sponsored-section');
-            if (sponsoredSection) {
-                sponsoredSection.remove();
-            }
-        }
-    },
 
     /**
      * Add product to cart
