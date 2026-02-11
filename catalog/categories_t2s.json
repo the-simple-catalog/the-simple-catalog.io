@@ -1,0 +1,6760 @@
+[{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1",
+  "content" : {
+    "name" : "Book",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1",
+  "content" : {
+    "name" : "Manga and comics",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1-1",
+  "content" : {
+    "name" : "Manga",
+    "parentId" : "1-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1-2",
+  "content" : {
+    "name" : "Humor",
+    "parentId" : "1-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1-3",
+  "content" : {
+    "name" : "comics",
+    "parentId" : "1-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1-4",
+  "content" : {
+    "name" : "Comics",
+    "parentId" : "1-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1-5",
+  "content" : {
+    "name" : "Adventure",
+    "parentId" : "1-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-1-6",
+  "content" : {
+    "name" : "Used manga and comics",
+    "parentId" : "1-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2",
+  "content" : {
+    "name" : "Literature and Fiction",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-1",
+  "content" : {
+    "name" : "E-Book",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-2",
+  "content" : {
+    "name" : "Science fiction",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-3",
+  "content" : {
+    "name" : "French literature",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-4",
+  "content" : {
+    "name" : "Foreign literature",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-5",
+  "content" : {
+    "name" : "Novel",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-6",
+  "content" : {
+    "name" : "Police and thriller",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-7",
+  "content" : {
+    "name" : "Teenager and young adult",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-2-8",
+  "content" : {
+    "name" : "Used literature and fiction",
+    "parentId" : "1-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-3",
+  "content" : {
+    "name" : "Children's and Youth Books",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-3-1",
+  "content" : {
+    "name" : "Book 0-3 years",
+    "parentId" : "1-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-3-2",
+  "content" : {
+    "name" : "Book 3-6 years old",
+    "parentId" : "1-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-3-3",
+  "content" : {
+    "name" : "Book 6-9 years old",
+    "parentId" : "1-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-3-4",
+  "content" : {
+    "name" : "Used children's book",
+    "parentId" : "1-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-4",
+  "content" : {
+    "name" : "E-Book and E-Reader",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-4-1",
+  "content" : {
+    "name" : "E-Book",
+    "parentId" : "1-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-4-2",
+  "content" : {
+    "name" : "Kindle e-reader",
+    "parentId" : "1-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-4-3",
+  "content" : {
+    "name" : "Kobo eReader",
+    "parentId" : "1-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-5",
+  "content" : {
+    "name" : "Leisure and Well-being",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-5-1",
+  "content" : {
+    "name" : "Kitchen",
+    "parentId" : "1-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-5-2",
+  "content" : {
+    "name" : "Health and medicine",
+    "parentId" : "1-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-5-3",
+  "content" : {
+    "name" : "Psychology and psychoanalysis",
+    "parentId" : "1-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-5-4",
+  "content" : {
+    "name" : "Leisure and well-being second-hand",
+    "parentId" : "1-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-6",
+  "content" : {
+    "name" : "Society and Culture",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-6-1",
+  "content" : {
+    "name" : "News and media",
+    "parentId" : "1-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-6-2",
+  "content" : {
+    "name" : "Political science",
+    "parentId" : "1-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-6-3",
+  "content" : {
+    "name" : "All society and culture",
+    "parentId" : "1-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-6-4",
+  "content" : {
+    "name" : "Second-hand society and culture",
+    "parentId" : "1-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-7",
+  "content" : {
+    "name" : "School Supplies and Manuals",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-7-1",
+  "content" : {
+    "name" : "Stationery and supplies",
+    "parentId" : "1-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-7-2",
+  "content" : {
+    "name" : "Holiday workbook",
+    "parentId" : "1-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-7-3",
+  "content" : {
+    "name" : "Textbook",
+    "parentId" : "1-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-7-4",
+  "content" : {
+    "name" : "Used school supplies and textbooks",
+    "parentId" : "1-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-8",
+  "content" : {
+    "name" : "Occasion",
+    "parentId" : "1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-8-1",
+  "content" : {
+    "name" : "Manga and comics",
+    "parentId" : "1-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-8-2",
+  "content" : {
+    "name" : "Children's and youth books",
+    "parentId" : "1-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-8-3",
+  "content" : {
+    "name" : "Literature and fiction",
+    "parentId" : "1-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-8-4",
+  "content" : {
+    "name" : "Society and culture",
+    "parentId" : "1-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "1-8-5",
+  "content" : {
+    "name" : "School supplies and textbooks",
+    "parentId" : "1-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2",
+  "content" : {
+    "name" : "Music, CD",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1",
+  "content" : {
+    "name" : "CD by Genre",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-1",
+  "content" : {
+    "name" : "French variety",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-2",
+  "content" : {
+    "name" : "Metal",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-3",
+  "content" : {
+    "name" : "Classic",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-4",
+  "content" : {
+    "name" : "International variety",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-5",
+  "content" : {
+    "name" : "Rock",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-6",
+  "content" : {
+    "name" : "Pop",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-7",
+  "content" : {
+    "name" : "Jazz",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-1-8",
+  "content" : {
+    "name" : "Film music",
+    "parentId" : "2-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2",
+  "content" : {
+    "name" : "Vinyl",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2-1",
+  "content" : {
+    "name" : "45 rpm",
+    "parentId" : "2-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2-2",
+  "content" : {
+    "name" : "Vinyl 25cm",
+    "parentId" : "2-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2-3",
+  "content" : {
+    "name" : "Vinyl Juke Box",
+    "parentId" : "2-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2-4",
+  "content" : {
+    "name" : "33 rpm",
+    "parentId" : "2-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2-5",
+  "content" : {
+    "name" : "Maxi 45 rpm",
+    "parentId" : "2-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-2-6",
+  "content" : {
+    "name" : "78 rpm",
+    "parentId" : "2-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3",
+  "content" : {
+    "name" : "Musical instrument",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-1",
+  "content" : {
+    "name" : "Guitar and bass",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-2",
+  "content" : {
+    "name" : "Drums and percussion",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-3",
+  "content" : {
+    "name" : "Stringed instrument",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-4",
+  "content" : {
+    "name" : "Lectern",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-5",
+  "content" : {
+    "name" : "Accessory",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-6",
+  "content" : {
+    "name" : "Piano and keyboard",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-7",
+  "content" : {
+    "name" : "Wind instrument",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-3-8",
+  "content" : {
+    "name" : "Studio instrument",
+    "parentId" : "2-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-4",
+  "content" : {
+    "name" : "Partition",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-4-1",
+  "content" : {
+    "name" : "Partition",
+    "parentId" : "2-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-4-2",
+  "content" : {
+    "name" : "Songbook",
+    "parentId" : "2-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-4-3",
+  "content" : {
+    "name" : "Used sheet music",
+    "parentId" : "2-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-4-4",
+  "content" : {
+    "name" : "Method",
+    "parentId" : "2-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-5",
+  "content" : {
+    "name" : "Player, Sound and Home Studio",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-5-1",
+  "content" : {
+    "name" : "Vinyl Turntable",
+    "parentId" : "2-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-5-2",
+  "content" : {
+    "name" : "Mixing table",
+    "parentId" : "2-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-5-3",
+  "content" : {
+    "name" : "Accessory",
+    "parentId" : "2-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-5-4",
+  "content" : {
+    "name" : "Pregnant",
+    "parentId" : "2-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-5-5",
+  "content" : {
+    "name" : "Microphone",
+    "parentId" : "2-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-6",
+  "content" : {
+    "name" : "Headphones and Earphones",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-6-1",
+  "content" : {
+    "name" : "Studio headphones",
+    "parentId" : "2-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-6-2",
+  "content" : {
+    "name" : "Wireless headset",
+    "parentId" : "2-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-6-3",
+  "content" : {
+    "name" : "Wired headset",
+    "parentId" : "2-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-6-4",
+  "content" : {
+    "name" : "Wireless earphone",
+    "parentId" : "2-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-6-5",
+  "content" : {
+    "name" : "Wired earphone",
+    "parentId" : "2-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-7",
+  "content" : {
+    "name" : "Occasion",
+    "parentId" : "2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-7-1",
+  "content" : {
+    "name" : "Used CD",
+    "parentId" : "2-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-7-2",
+  "content" : {
+    "name" : "Used instrument",
+    "parentId" : "2-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-7-3",
+  "content" : {
+    "name" : "Used vinyl",
+    "parentId" : "2-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "2-7-4",
+  "content" : {
+    "name" : "Used sheet music",
+    "parentId" : "2-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3",
+  "content" : {
+    "name" : "DVD, Blu-Ray",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1",
+  "content" : {
+    "name" : "DVD",
+    "parentId" : "3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-1",
+  "content" : {
+    "name" : "Science fiction",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-2",
+  "content" : {
+    "name" : "Comedy",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-3",
+  "content" : {
+    "name" : "Horror",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-4",
+  "content" : {
+    "name" : "Steelbook",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-5",
+  "content" : {
+    "name" : "Used DVD",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-6",
+  "content" : {
+    "name" : "Action",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-7",
+  "content" : {
+    "name" : "Youth",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-8",
+  "content" : {
+    "name" : "Drama",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-9",
+  "content" : {
+    "name" : "Box",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-1-10",
+  "content" : {
+    "name" : "TV series",
+    "parentId" : "3-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2",
+  "content" : {
+    "name" : "Blu-ray",
+    "parentId" : "3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-1",
+  "content" : {
+    "name" : "Science Fiction",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-2",
+  "content" : {
+    "name" : "Comedy",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-3",
+  "content" : {
+    "name" : "Horror",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-4",
+  "content" : {
+    "name" : "Steelbook",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-5",
+  "content" : {
+    "name" : "Used Blu-ray",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-6",
+  "content" : {
+    "name" : "Action",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-7",
+  "content" : {
+    "name" : "Youth",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-8",
+  "content" : {
+    "name" : "Drama",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-9",
+  "content" : {
+    "name" : "Box",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-2-10",
+  "content" : {
+    "name" : "TV series",
+    "parentId" : "3-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3",
+  "content" : {
+    "name" : "4K Blu-ray",
+    "parentId" : "3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-1",
+  "content" : {
+    "name" : "Science Fiction",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-2",
+  "content" : {
+    "name" : "Comedy",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-3",
+  "content" : {
+    "name" : "Horror",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-4",
+  "content" : {
+    "name" : "Steelbook",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-5",
+  "content" : {
+    "name" : "Used 4k Blu-ray",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-6",
+  "content" : {
+    "name" : "Action",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-7",
+  "content" : {
+    "name" : "Youth",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-8",
+  "content" : {
+    "name" : "Drama",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-9",
+  "content" : {
+    "name" : "Box",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-3-10",
+  "content" : {
+    "name" : "TV series",
+    "parentId" : "3-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-4",
+  "content" : {
+    "name" : "Drive",
+    "parentId" : "3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-4-1",
+  "content" : {
+    "name" : "Blu-ray player",
+    "parentId" : "3-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-4-2",
+  "content" : {
+    "name" : "Portable DVD Player",
+    "parentId" : "3-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-4-3",
+  "content" : {
+    "name" : "DVD player",
+    "parentId" : "3-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-4-4",
+  "content" : {
+    "name" : "DVD player VCR",
+    "parentId" : "3-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-5",
+  "content" : {
+    "name" : "Occasion",
+    "parentId" : "3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-5-1",
+  "content" : {
+    "name" : "Used DVD",
+    "parentId" : "3-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-5-2",
+  "content" : {
+    "name" : "Used DVD box set",
+    "parentId" : "3-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-5-3",
+  "content" : {
+    "name" : "Used Blu-Ray",
+    "parentId" : "3-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "3-5-4",
+  "content" : {
+    "name" : "Used Blu-Ray Box Set",
+    "parentId" : "3-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4",
+  "content" : {
+    "name" : "Video games, Console",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-1",
+  "content" : {
+    "name" : "PlayStation 5",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-1-1",
+  "content" : {
+    "name" : "PS5 console",
+    "parentId" : "4-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-1-2",
+  "content" : {
+    "name" : "PS5 games",
+    "parentId" : "4-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-1-3",
+  "content" : {
+    "name" : "PS5 Accessory",
+    "parentId" : "4-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-1-4",
+  "content" : {
+    "name" : "PS5 games for pre-order",
+    "parentId" : "4-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-2",
+  "content" : {
+    "name" : "PlayStation 4",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-2-1",
+  "content" : {
+    "name" : "PS4 console",
+    "parentId" : "4-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-2-2",
+  "content" : {
+    "name" : "PS4 games",
+    "parentId" : "4-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-2-3",
+  "content" : {
+    "name" : "PS4 accessory",
+    "parentId" : "4-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-2-4",
+  "content" : {
+    "name" : "PS4 games for pre-order",
+    "parentId" : "4-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-3",
+  "content" : {
+    "name" : "Nintendo Switch",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-3-1",
+  "content" : {
+    "name" : "Nintendo Switch Console",
+    "parentId" : "4-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-3-2",
+  "content" : {
+    "name" : "Nintendo Switch Games",
+    "parentId" : "4-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-3-3",
+  "content" : {
+    "name" : "Nintendo Switch Accessory",
+    "parentId" : "4-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-3-4",
+  "content" : {
+    "name" : "Nintendo Switch games for pre-order",
+    "parentId" : "4-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-4",
+  "content" : {
+    "name" : "Xbox One",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-4-1",
+  "content" : {
+    "name" : "Xbox One Console",
+    "parentId" : "4-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-4-2",
+  "content" : {
+    "name" : "Xbox One Games",
+    "parentId" : "4-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-4-3",
+  "content" : {
+    "name" : "Xbox One Accessory",
+    "parentId" : "4-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-4-4",
+  "content" : {
+    "name" : "Xbox One games for pre-order",
+    "parentId" : "4-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-5",
+  "content" : {
+    "name" : "Xbox Series",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-5-1",
+  "content" : {
+    "name" : "Xbox Series Console",
+    "parentId" : "4-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-5-2",
+  "content" : {
+    "name" : "Xbox Series Games",
+    "parentId" : "4-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-5-3",
+  "content" : {
+    "name" : "Xbox Series Accessory",
+    "parentId" : "4-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-5-4",
+  "content" : {
+    "name" : "Xbox Series games for pre-order",
+    "parentId" : "4-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6",
+  "content" : {
+    "name" : "PC Gaming Universe",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-1",
+  "content" : {
+    "name" : "Gaming laptop",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-2",
+  "content" : {
+    "name" : "PC games",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-3",
+  "content" : {
+    "name" : "Gaming headset",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-4",
+  "content" : {
+    "name" : "Gaming desk",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-5",
+  "content" : {
+    "name" : "Gaming desktop computer",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-6",
+  "content" : {
+    "name" : "Gaming screen",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-7",
+  "content" : {
+    "name" : "Gaming steering wheel",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-6-8",
+  "content" : {
+    "name" : "Gaming chair",
+    "parentId" : "4-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-7",
+  "content" : {
+    "name" : "Virtual Reality",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-7-1",
+  "content" : {
+    "name" : "Oculus Headset",
+    "parentId" : "4-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-7-2",
+  "content" : {
+    "name" : "HTC Vive",
+    "parentId" : "4-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-7-3",
+  "content" : {
+    "name" : "Playstation VR",
+    "parentId" : "4-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-8",
+  "content" : {
+    "name" : "Other",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-8-1",
+  "content" : {
+    "name" : "Figure",
+    "parentId" : "4-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-8-2",
+  "content" : {
+    "name" : "Arcade Terminal",
+    "parentId" : "4-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-8-3",
+  "content" : {
+    "name" : "Playing card",
+    "parentId" : "4-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-9",
+  "content" : {
+    "name" : "Second Hand",
+    "parentId" : "4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-9-1",
+  "content" : {
+    "name" : "Used PS5",
+    "parentId" : "4-9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-9-2",
+  "content" : {
+    "name" : "Used Nintendo Switch",
+    "parentId" : "4-9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-9-3",
+  "content" : {
+    "name" : "Used PS4",
+    "parentId" : "4-9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "4-9-4",
+  "content" : {
+    "name" : "Used Xbox",
+    "parentId" : "4-9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5",
+  "content" : {
+    "name" : "Telephony, Tablet",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1",
+  "content" : {
+    "name" : "Smartphone and Telephony",
+    "parentId" : "5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-1",
+  "content" : {
+    "name" : "iPhone",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-2",
+  "content" : {
+    "name" : "Xiaomi",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-3",
+  "content" : {
+    "name" : "Google",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-4",
+  "content" : {
+    "name" : "Sony",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-5",
+  "content" : {
+    "name" : "Samsung",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-6",
+  "content" : {
+    "name" : "Oneplus",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-7",
+  "content" : {
+    "name" : "Huawei",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-8",
+  "content" : {
+    "name" : "Realme",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-1-9",
+  "content" : {
+    "name" : "Landline phone",
+    "parentId" : "5-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-2",
+  "content" : {
+    "name" : "Tablet and e-reader",
+    "parentId" : "5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-2-1",
+  "content" : {
+    "name" : "iPad",
+    "parentId" : "5-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-2-2",
+  "content" : {
+    "name" : "Xiaomi tablet",
+    "parentId" : "5-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-2-3",
+  "content" : {
+    "name" : "Kobo eReader",
+    "parentId" : "5-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-2-4",
+  "content" : {
+    "name" : "Samsung tablet",
+    "parentId" : "5-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-3",
+  "content" : {
+    "name" : "Connected Object",
+    "parentId" : "5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-3-1",
+  "content" : {
+    "name" : "Apple watch",
+    "parentId" : "5-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-3-2",
+  "content" : {
+    "name" : "Xiaomi bracelet",
+    "parentId" : "5-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-3-3",
+  "content" : {
+    "name" : "Samsung watch",
+    "parentId" : "5-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-3-4",
+  "content" : {
+    "name" : "Garmin watch",
+    "parentId" : "5-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-4",
+  "content" : {
+    "name" : "Accessory",
+    "parentId" : "5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-4-1",
+  "content" : {
+    "name" : "iPhone case",
+    "parentId" : "5-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-4-2",
+  "content" : {
+    "name" : "Xiaomi case",
+    "parentId" : "5-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-4-3",
+  "content" : {
+    "name" : "Samsung case",
+    "parentId" : "5-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-4-4",
+  "content" : {
+    "name" : "Case, Cover",
+    "parentId" : "5-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-4-5",
+  "content" : {
+    "name" : "Charger, Connectors",
+    "parentId" : "5-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5",
+  "content" : {
+    "name" : "Second Hand",
+    "parentId" : "5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-1",
+  "content" : {
+    "name" : "Refurbished iPhone",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-2",
+  "content" : {
+    "name" : "Refurbished Xiaomi Smartphone",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-3",
+  "content" : {
+    "name" : "Refurbished Samsung Smartphone",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-4",
+  "content" : {
+    "name" : "Used iPad",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-5",
+  "content" : {
+    "name" : "Used Samsung Tablet",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-6",
+  "content" : {
+    "name" : "Used e-reader",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "5-5-7",
+  "content" : {
+    "name" : "Used smartwatch",
+    "parentId" : "5-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6",
+  "content" : {
+    "name" : "Computer science, Software",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1",
+  "content" : {
+    "name" : "Laptop",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-1",
+  "content" : {
+    "name" : "Ultra portable PC",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-2",
+  "content" : {
+    "name" : "MacBook",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-3",
+  "content" : {
+    "name" : "Lenovo",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-4",
+  "content" : {
+    "name" : "MSI",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-5",
+  "content" : {
+    "name" : "Copilot laptop +",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-6",
+  "content" : {
+    "name" : "3-in-1 hybrid PC",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-7",
+  "content" : {
+    "name" : "Asus",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-1-8",
+  "content" : {
+    "name" : "Acer",
+    "parentId" : "6-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-2",
+  "content" : {
+    "name" : "Tablet and e-reader",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-2-1",
+  "content" : {
+    "name" : "iPad",
+    "parentId" : "6-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-2-2",
+  "content" : {
+    "name" : "Xiaomi tablet",
+    "parentId" : "6-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-2-3",
+  "content" : {
+    "name" : "Kobo eReader",
+    "parentId" : "6-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-2-4",
+  "content" : {
+    "name" : "Samsung tablet",
+    "parentId" : "6-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3",
+  "content" : {
+    "name" : "Desktop Computer",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-1",
+  "content" : {
+    "name" : "All-in-one PC",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-2",
+  "content" : {
+    "name" : "Assembled PC",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-3",
+  "content" : {
+    "name" : "VIST",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-4",
+  "content" : {
+    "name" : "Lenovo",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-5",
+  "content" : {
+    "name" : "Mini PC",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-6",
+  "content" : {
+    "name" : "Central unit",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-7",
+  "content" : {
+    "name" : "iMac",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-3-8",
+  "content" : {
+    "name" : "Vibox",
+    "parentId" : "6-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4",
+  "content" : {
+    "name" : "PC Gaming Universe",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4-1",
+  "content" : {
+    "name" : "Gaming laptop",
+    "parentId" : "6-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4-2",
+  "content" : {
+    "name" : "PC game",
+    "parentId" : "6-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4-3",
+  "content" : {
+    "name" : "Gaming headset",
+    "parentId" : "6-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4-4",
+  "content" : {
+    "name" : "Gaming desktop computer",
+    "parentId" : "6-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4-5",
+  "content" : {
+    "name" : "Gamer screen",
+    "parentId" : "6-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-4-6",
+  "content" : {
+    "name" : "Gaming steering wheel",
+    "parentId" : "6-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-5",
+  "content" : {
+    "name" : "Component",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-5-1",
+  "content" : {
+    "name" : "Graphics card",
+    "parentId" : "6-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-5-2",
+  "content" : {
+    "name" : "Motherboard",
+    "parentId" : "6-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-5-3",
+  "content" : {
+    "name" : "PC power supply",
+    "parentId" : "6-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-5-4",
+  "content" : {
+    "name" : "Processor",
+    "parentId" : "6-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-5-5",
+  "content" : {
+    "name" : "PC case",
+    "parentId" : "6-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6",
+  "content" : {
+    "name" : "Peripheral and Network",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-1",
+  "content" : {
+    "name" : "Screen",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-2",
+  "content" : {
+    "name" : "Keyboard",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-3",
+  "content" : {
+    "name" : "Helmet",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-4",
+  "content" : {
+    "name" : "Webcam",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-5",
+  "content" : {
+    "name" : "Hard disk",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-6",
+  "content" : {
+    "name" : "Mouse",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-7",
+  "content" : {
+    "name" : "Graphics tablet",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-8",
+  "content" : {
+    "name" : "PC speaker",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-9",
+  "content" : {
+    "name" : "Router",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-6-10",
+  "content" : {
+    "name" : "SSD",
+    "parentId" : "6-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-7",
+  "content" : {
+    "name" : "Printer and Scanner",
+    "parentId" : "6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-7-1",
+  "content" : {
+    "name" : "Printer",
+    "parentId" : "6-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-7-2",
+  "content" : {
+    "name" : "Ink cartridge",
+    "parentId" : "6-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "6-7-3",
+  "content" : {
+    "name" : "Scanner",
+    "parentId" : "6-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7",
+  "content" : {
+    "name" : "TV, Image and Sound",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1",
+  "content" : {
+    "name" : "Television",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-1",
+  "content" : {
+    "name" : "OLED TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-2",
+  "content" : {
+    "name" : "QLED TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-3",
+  "content" : {
+    "name" : "Full HD TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-4",
+  "content" : {
+    "name" : "8K TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-5",
+  "content" : {
+    "name" : "LED TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-6",
+  "content" : {
+    "name" : "Neo QLED TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-7",
+  "content" : {
+    "name" : "4K UHD TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-1-8",
+  "content" : {
+    "name" : "Smart TV",
+    "parentId" : "7-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-2",
+  "content" : {
+    "name" : "Video projector",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-2-1",
+  "content" : {
+    "name" : "Home cinema projector",
+    "parentId" : "7-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-2-2",
+  "content" : {
+    "name" : "Video projector screen",
+    "parentId" : "7-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-2-3",
+  "content" : {
+    "name" : "Portable video projector",
+    "parentId" : "7-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3",
+  "content" : {
+    "name" : "Camera and Lens",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3-1",
+  "content" : {
+    "name" : "Reflex",
+    "parentId" : "7-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3-2",
+  "content" : {
+    "name" : "Compact",
+    "parentId" : "7-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3-3",
+  "content" : {
+    "name" : "Lens for SLR",
+    "parentId" : "7-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3-4",
+  "content" : {
+    "name" : "Hybrid",
+    "parentId" : "7-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3-5",
+  "content" : {
+    "name" : "Instant",
+    "parentId" : "7-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-3-6",
+  "content" : {
+    "name" : "Lens for Hybrid",
+    "parentId" : "7-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-4",
+  "content" : {
+    "name" : "Camera and Drone",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-4-1",
+  "content" : {
+    "name" : "GoPro camera",
+    "parentId" : "7-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-4-2",
+  "content" : {
+    "name" : "Insta360 Camera",
+    "parentId" : "7-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-4-3",
+  "content" : {
+    "name" : "DJI Drone",
+    "parentId" : "7-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-4-4",
+  "content" : {
+    "name" : "DJI Camera",
+    "parentId" : "7-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5",
+  "content" : {
+    "name" : "Headphones and Earphones",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5-1",
+  "content" : {
+    "name" : "Airpods",
+    "parentId" : "7-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5-2",
+  "content" : {
+    "name" : "Wireless headset",
+    "parentId" : "7-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5-3",
+  "content" : {
+    "name" : "Wireless earphone",
+    "parentId" : "7-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5-4",
+  "content" : {
+    "name" : "Sony Headphones",
+    "parentId" : "7-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5-5",
+  "content" : {
+    "name" : "Wired headset",
+    "parentId" : "7-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-5-6",
+  "content" : {
+    "name" : "Wired earphone",
+    "parentId" : "7-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-6",
+  "content" : {
+    "name" : "Sound and Speaker",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-6-1",
+  "content" : {
+    "name" : "Sound bar",
+    "parentId" : "7-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-6-2",
+  "content" : {
+    "name" : "Voice Assistant",
+    "parentId" : "7-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-6-3",
+  "content" : {
+    "name" : "Bluetooth speaker",
+    "parentId" : "7-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7",
+  "content" : {
+    "name" : "Second Hand",
+    "parentId" : "7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7-1",
+  "content" : {
+    "name" : "Used camera",
+    "parentId" : "7-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7-2",
+  "content" : {
+    "name" : "Refurbished camera",
+    "parentId" : "7-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7-3",
+  "content" : {
+    "name" : "Refurbished TV",
+    "parentId" : "7-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7-4",
+  "content" : {
+    "name" : "Used lens",
+    "parentId" : "7-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7-5",
+  "content" : {
+    "name" : "Refurbished lens",
+    "parentId" : "7-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "7-7-6",
+  "content" : {
+    "name" : "Used speaker",
+    "parentId" : "7-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8",
+  "content" : {
+    "name" : "Home",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1",
+  "content" : {
+    "name" : "Furniture",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-1",
+  "content" : {
+    "name" : "Chair",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-2",
+  "content" : {
+    "name" : "Armchair",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-3",
+  "content" : {
+    "name" : "Table",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-4",
+  "content" : {
+    "name" : "Storage unit",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-5",
+  "content" : {
+    "name" : "Desk",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-6",
+  "content" : {
+    "name" : "Couch",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-7",
+  "content" : {
+    "name" : "Bed",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-8",
+  "content" : {
+    "name" : "Mattress",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-1-9",
+  "content" : {
+    "name" : "TV cabinet",
+    "parentId" : "8-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2",
+  "content" : {
+    "name" : "Decoration",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2-1",
+  "content" : {
+    "name" : "Contemporary decor",
+    "parentId" : "8-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2-2",
+  "content" : {
+    "name" : "Scandinavian decor",
+    "parentId" : "8-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2-3",
+  "content" : {
+    "name" : "Mirror",
+    "parentId" : "8-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2-4",
+  "content" : {
+    "name" : "Industrial decor",
+    "parentId" : "8-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2-5",
+  "content" : {
+    "name" : "Green decoration",
+    "parentId" : "8-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-2-6",
+  "content" : {
+    "name" : "Carpet",
+    "parentId" : "8-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-3",
+  "content" : {
+    "name" : "Light fixture",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-3-1",
+  "content" : {
+    "name" : "Floor lamp",
+    "parentId" : "8-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-3-2",
+  "content" : {
+    "name" : "Table lamp",
+    "parentId" : "8-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-3-3",
+  "content" : {
+    "name" : "Connected lamp",
+    "parentId" : "8-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-3-4",
+  "content" : {
+    "name" : "Bulb",
+    "parentId" : "8-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4",
+  "content" : {
+    "name" : "Household Linen",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-1",
+  "content" : {
+    "name" : "Duvet cover",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-2",
+  "content" : {
+    "name" : "Bedding set",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-3",
+  "content" : {
+    "name" : "Fitted sheet",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-4",
+  "content" : {
+    "name" : "Mattress pad",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-5",
+  "content" : {
+    "name" : "Curtain",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-6",
+  "content" : {
+    "name" : "Comforter",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-7",
+  "content" : {
+    "name" : "Blanket",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-8",
+  "content" : {
+    "name" : "Pillow",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-9",
+  "content" : {
+    "name" : "Decorative cushion",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-4-10",
+  "content" : {
+    "name" : "Bath towel",
+    "parentId" : "8-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-5",
+  "content" : {
+    "name" : "Comfort of Home",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-5-1",
+  "content" : {
+    "name" : "Heating",
+    "parentId" : "8-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-5-2",
+  "content" : {
+    "name" : "Air conditioner",
+    "parentId" : "8-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-5-3",
+  "content" : {
+    "name" : "Fan",
+    "parentId" : "8-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-5-4",
+  "content" : {
+    "name" : "Stove and fireplace",
+    "parentId" : "8-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-5-5",
+  "content" : {
+    "name" : "Air purifier",
+    "parentId" : "8-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6",
+  "content" : {
+    "name" : "Cuisine and Tableware",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6-1",
+  "content" : {
+    "name" : "Cookware",
+    "parentId" : "8-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6-2",
+  "content" : {
+    "name" : "Pan",
+    "parentId" : "8-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6-3",
+  "content" : {
+    "name" : "Cutlery",
+    "parentId" : "8-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6-4",
+  "content" : {
+    "name" : "Stove",
+    "parentId" : "8-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6-5",
+  "content" : {
+    "name" : "Plate",
+    "parentId" : "8-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-6-6",
+  "content" : {
+    "name" : "Mug",
+    "parentId" : "8-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-7",
+  "content" : {
+    "name" : "Second Hand",
+    "parentId" : "8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-7-1",
+  "content" : {
+    "name" : "Couch",
+    "parentId" : "8-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-7-2",
+  "content" : {
+    "name" : "Table",
+    "parentId" : "8-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-7-3",
+  "content" : {
+    "name" : "Armchair",
+    "parentId" : "8-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "8-7-4",
+  "content" : {
+    "name" : "Bed",
+    "parentId" : "8-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9",
+  "content" : {
+    "name" : "Household appliances",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-1",
+  "content" : {
+    "name" : "Washing and Drying",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-1-1",
+  "content" : {
+    "name" : "Dishwasher",
+    "parentId" : "9-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-1-2",
+  "content" : {
+    "name" : "Washing machine",
+    "parentId" : "9-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-1-3",
+  "content" : {
+    "name" : "Tumble dryer",
+    "parentId" : "9-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-1-4",
+  "content" : {
+    "name" : "Mini dishwasher",
+    "parentId" : "9-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-1-5",
+  "content" : {
+    "name" : "Mini washing machine",
+    "parentId" : "9-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2",
+  "content" : {
+    "name" : "Cold",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-1",
+  "content" : {
+    "name" : "Refrigerator - freezer",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-2",
+  "content" : {
+    "name" : "Fridge",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-3",
+  "content" : {
+    "name" : "American fridge",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-4",
+  "content" : {
+    "name" : "Ice maker",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-5",
+  "content" : {
+    "name" : "Mini fridge",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-6",
+  "content" : {
+    "name" : "Freezer",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-2-7",
+  "content" : {
+    "name" : "Wine cellar",
+    "parentId" : "9-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3",
+  "content" : {
+    "name" : "Cooking",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3-1",
+  "content" : {
+    "name" : "Oven",
+    "parentId" : "9-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3-2",
+  "content" : {
+    "name" : "Hood",
+    "parentId" : "9-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3-3",
+  "content" : {
+    "name" : "Microwave",
+    "parentId" : "9-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3-4",
+  "content" : {
+    "name" : "Hotplate",
+    "parentId" : "9-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3-5",
+  "content" : {
+    "name" : "Stove",
+    "parentId" : "9-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-3-6",
+  "content" : {
+    "name" : "Mini oven",
+    "parentId" : "9-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4",
+  "content" : {
+    "name" : "Small Appliances and Kitchen",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-1",
+  "content" : {
+    "name" : "Robot, mixer, blender",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-2",
+  "content" : {
+    "name" : "Friendly cooking",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-3",
+  "content" : {
+    "name" : "Kitchen accessory",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-4",
+  "content" : {
+    "name" : "Breakfast",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-5",
+  "content" : {
+    "name" : "Deep fryer",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-6",
+  "content" : {
+    "name" : "Homemade",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-7",
+  "content" : {
+    "name" : "Coffee machine",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-4-8",
+  "content" : {
+    "name" : "Beverage machine",
+    "parentId" : "9-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-5",
+  "content" : {
+    "name" : "Maintenance and Housekeeping",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-5-1",
+  "content" : {
+    "name" : "Robot vacuum cleaner",
+    "parentId" : "9-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-5-2",
+  "content" : {
+    "name" : "Household accessories",
+    "parentId" : "9-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-5-3",
+  "content" : {
+    "name" : "Broom vacuum cleaner",
+    "parentId" : "9-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-5-4",
+  "content" : {
+    "name" : "Cleaner",
+    "parentId" : "9-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-6",
+  "content" : {
+    "name" : "Ironing and Sewing",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-6-1",
+  "content" : {
+    "name" : "Steam generator",
+    "parentId" : "9-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-6-2",
+  "content" : {
+    "name" : "Steamer",
+    "parentId" : "9-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-6-3",
+  "content" : {
+    "name" : "Sewing machine",
+    "parentId" : "9-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-6-4",
+  "content" : {
+    "name" : "Iron",
+    "parentId" : "9-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-7",
+  "content" : {
+    "name" : "Heating and Air Conditioning",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-7-1",
+  "content" : {
+    "name" : "Heating",
+    "parentId" : "9-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-7-2",
+  "content" : {
+    "name" : "Air conditioner",
+    "parentId" : "9-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-7-3",
+  "content" : {
+    "name" : "Fan",
+    "parentId" : "9-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-7-4",
+  "content" : {
+    "name" : "Stove and fireplace",
+    "parentId" : "9-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-7-5",
+  "content" : {
+    "name" : "Air purifier",
+    "parentId" : "9-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-8",
+  "content" : {
+    "name" : "Well-being",
+    "parentId" : "9",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-8-1",
+  "content" : {
+    "name" : "Electric epilator",
+    "parentId" : "9-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-8-2",
+  "content" : {
+    "name" : "Mower",
+    "parentId" : "9-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-8-3",
+  "content" : {
+    "name" : "Pulsed light epilator",
+    "parentId" : "9-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "9-8-4",
+  "content" : {
+    "name" : "Electric shaver",
+    "parentId" : "9-8",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10",
+  "content" : {
+    "name" : "Food, Drink",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-1",
+  "content" : {
+    "name" : "Wine",
+    "parentId" : "10",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-1-1",
+  "content" : {
+    "name" : "White wine",
+    "parentId" : "10-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-1-2",
+  "content" : {
+    "name" : "Red wine",
+    "parentId" : "10-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-1-3",
+  "content" : {
+    "name" : "Rosé wine",
+    "parentId" : "10-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-2",
+  "content" : {
+    "name" : "Champagne and Sparkling Wine",
+    "parentId" : "10",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-2-1",
+  "content" : {
+    "name" : "Brut champagne",
+    "parentId" : "10-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-2-2",
+  "content" : {
+    "name" : "Pink champagne",
+    "parentId" : "10-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-2-3",
+  "content" : {
+    "name" : "Cremant",
+    "parentId" : "10-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-2-4",
+  "content" : {
+    "name" : "White champagne",
+    "parentId" : "10-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-2-5",
+  "content" : {
+    "name" : "Prosecco",
+    "parentId" : "10-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3",
+  "content" : {
+    "name" : "Beer and Cider",
+    "parentId" : "10",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-1",
+  "content" : {
+    "name" : "Belgian beer",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-2",
+  "content" : {
+    "name" : "Blonde beer",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-3",
+  "content" : {
+    "name" : "Cider",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-4",
+  "content" : {
+    "name" : "Beer tap",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-5",
+  "content" : {
+    "name" : "French beer",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-6",
+  "content" : {
+    "name" : "Brown beer",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-3-7",
+  "content" : {
+    "name" : "Beer barrel",
+    "parentId" : "10-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-4",
+  "content" : {
+    "name" : "Spirits",
+    "parentId" : "10",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-4-1",
+  "content" : {
+    "name" : "Whiskey",
+    "parentId" : "10-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-4-2",
+  "content" : {
+    "name" : "Vodka",
+    "parentId" : "10-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-4-3",
+  "content" : {
+    "name" : "Rum",
+    "parentId" : "10-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5",
+  "content" : {
+    "name" : "Non-Alcoholic Drink",
+    "parentId" : "10",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-1",
+  "content" : {
+    "name" : "Tea",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-2",
+  "content" : {
+    "name" : "Infusion",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-3",
+  "content" : {
+    "name" : "Soda",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-4",
+  "content" : {
+    "name" : "Chocolate drink",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-5",
+  "content" : {
+    "name" : "Coffee",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-6",
+  "content" : {
+    "name" : "Water",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-5-7",
+  "content" : {
+    "name" : "Fruit juice",
+    "parentId" : "10-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6",
+  "content" : {
+    "name" : "Grocery and Gastronomy",
+    "parentId" : "10",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6-1",
+  "content" : {
+    "name" : "Cold cuts",
+    "parentId" : "10-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6-2",
+  "content" : {
+    "name" : "Sweet Grocery Store",
+    "parentId" : "10-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6-3",
+  "content" : {
+    "name" : "Breakfast",
+    "parentId" : "10-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6-4",
+  "content" : {
+    "name" : "Salty groceries",
+    "parentId" : "10-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6-5",
+  "content" : {
+    "name" : "Spice, sauce and condiment",
+    "parentId" : "10-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "10-6-6",
+  "content" : {
+    "name" : "Dairy product",
+    "parentId" : "10-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11",
+  "content" : {
+    "name" : "DIY, Garden, Pets",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1",
+  "content" : {
+    "name" : "DIY",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-1",
+  "content" : {
+    "name" : "Power tools",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-2",
+  "content" : {
+    "name" : "Hardware",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-3",
+  "content" : {
+    "name" : "Electricity and battery",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-4",
+  "content" : {
+    "name" : "Works and development",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-5",
+  "content" : {
+    "name" : "Hand tools",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-6",
+  "content" : {
+    "name" : "Home automation and connected home",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-1-7",
+  "content" : {
+    "name" : "Alarm",
+    "parentId" : "11-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-2",
+  "content" : {
+    "name" : "Heating and Air Conditioning",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-2-1",
+  "content" : {
+    "name" : "Heating",
+    "parentId" : "11-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-2-2",
+  "content" : {
+    "name" : "Air conditioner",
+    "parentId" : "11-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-2-3",
+  "content" : {
+    "name" : "Fan",
+    "parentId" : "11-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-2-4",
+  "content" : {
+    "name" : "Stove and fireplace",
+    "parentId" : "11-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-2-5",
+  "content" : {
+    "name" : "Air purifier",
+    "parentId" : "11-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3",
+  "content" : {
+    "name" : "Garden tools",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3-1",
+  "content" : {
+    "name" : "Mower",
+    "parentId" : "11-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3-2",
+  "content" : {
+    "name" : "Brush cutter",
+    "parentId" : "11-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3-3",
+  "content" : {
+    "name" : "Multi-function tool",
+    "parentId" : "11-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3-4",
+  "content" : {
+    "name" : "High pressure cleaner",
+    "parentId" : "11-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3-5",
+  "content" : {
+    "name" : "Chainsaw",
+    "parentId" : "11-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-3-6",
+  "content" : {
+    "name" : "All garden tools",
+    "parentId" : "11-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4",
+  "content" : {
+    "name" : "Garden furniture",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-1",
+  "content" : {
+    "name" : "Garden shed",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-2",
+  "content" : {
+    "name" : "Garden sofa",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-3",
+  "content" : {
+    "name" : "Garden chair",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-4",
+  "content" : {
+    "name" : "Tight",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-5",
+  "content" : {
+    "name" : "Barbecue",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-6",
+  "content" : {
+    "name" : "Garden furniture",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-7",
+  "content" : {
+    "name" : "Garden table",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-8",
+  "content" : {
+    "name" : "Sunbathing",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-9",
+  "content" : {
+    "name" : "Arbour and shade sail",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-4-10",
+  "content" : {
+    "name" : "Outdoor heating",
+    "parentId" : "11-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5",
+  "content" : {
+    "name" : "Swimming pool and spa",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5-1",
+  "content" : {
+    "name" : "Tubular swimming pool",
+    "parentId" : "11-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5-2",
+  "content" : {
+    "name" : "Above ground pool",
+    "parentId" : "11-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5-3",
+  "content" : {
+    "name" : "Inflatable swimming pool",
+    "parentId" : "11-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5-4",
+  "content" : {
+    "name" : "Pool robot",
+    "parentId" : "11-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5-5",
+  "content" : {
+    "name" : "Tarpaulin",
+    "parentId" : "11-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-5-6",
+  "content" : {
+    "name" : "Water treatment",
+    "parentId" : "11-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6",
+  "content" : {
+    "name" : "Pet shop",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6-1",
+  "content" : {
+    "name" : "Dog food",
+    "parentId" : "11-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6-2",
+  "content" : {
+    "name" : "Everything for the dog",
+    "parentId" : "11-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6-3",
+  "content" : {
+    "name" : "Everything for the farmyard",
+    "parentId" : "11-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6-4",
+  "content" : {
+    "name" : "Cat food",
+    "parentId" : "11-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6-5",
+  "content" : {
+    "name" : "Everything for the cat",
+    "parentId" : "11-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-6-6",
+  "content" : {
+    "name" : "All the pet store",
+    "parentId" : "11-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7",
+  "content" : {
+    "name" : "Second Hand",
+    "parentId" : "11",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-1",
+  "content" : {
+    "name" : "Plant and seed",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-2",
+  "content" : {
+    "name" : "Garden furniture",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-3",
+  "content" : {
+    "name" : "Barbecue",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-4",
+  "content" : {
+    "name" : "Heating",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-5",
+  "content" : {
+    "name" : "Everything for the dog",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-6",
+  "content" : {
+    "name" : "Everything for rodents",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-7",
+  "content" : {
+    "name" : "Garden tools",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-8",
+  "content" : {
+    "name" : "Power tools",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-9",
+  "content" : {
+    "name" : "Fan",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "11-7-10",
+  "content" : {
+    "name" : "Everything for the cat",
+    "parentId" : "11-7",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12",
+  "content" : {
+    "name" : "Sport, Leisure",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1",
+  "content" : {
+    "name" : "Urban Slide",
+    "parentId" : "12",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-1",
+  "content" : {
+    "name" : "Bike",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-2",
+  "content" : {
+    "name" : "Electric scooter",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-3",
+  "content" : {
+    "name" : "Skateboard",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-4",
+  "content" : {
+    "name" : "Equipment and accessories",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-5",
+  "content" : {
+    "name" : "Electric bike",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-6",
+  "content" : {
+    "name" : "Electric balance bike",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-1-7",
+  "content" : {
+    "name" : "Hoverboard",
+    "parentId" : "12-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2",
+  "content" : {
+    "name" : "Sports equipment",
+    "parentId" : "12",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-1",
+  "content" : {
+    "name" : "Treadmill",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-2",
+  "content" : {
+    "name" : "Vibrating platform",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-3",
+  "content" : {
+    "name" : "Running",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-4",
+  "content" : {
+    "name" : "Racket sport",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-5",
+  "content" : {
+    "name" : "Water sports",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-6",
+  "content" : {
+    "name" : "Sports nutrition and food supplements",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-7",
+  "content" : {
+    "name" : "Exercise bike",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-8",
+  "content" : {
+    "name" : "Bodybuilding and fitness",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-9",
+  "content" : {
+    "name" : "Yoga",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-2-10",
+  "content" : {
+    "name" : "Outdoor sports",
+    "parentId" : "12-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-3",
+  "content" : {
+    "name" : "Sportswear and Shoes",
+    "parentId" : "12",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-3-1",
+  "content" : {
+    "name" : "Women's clothing",
+    "parentId" : "12-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-3-2",
+  "content" : {
+    "name" : "Women's shoes",
+    "parentId" : "12-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-3-3",
+  "content" : {
+    "name" : "Men's clothing",
+    "parentId" : "12-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-3-4",
+  "content" : {
+    "name" : "Men's shoes",
+    "parentId" : "12-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-4",
+  "content" : {
+    "name" : "Connected Sport",
+    "parentId" : "12",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-4-1",
+  "content" : {
+    "name" : "Smart watch",
+    "parentId" : "12-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-4-2",
+  "content" : {
+    "name" : "Connected bracelet",
+    "parentId" : "12-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-4-3",
+  "content" : {
+    "name" : "Drone",
+    "parentId" : "12-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-4-4",
+  "content" : {
+    "name" : "Mini drone",
+    "parentId" : "12-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-4-5",
+  "content" : {
+    "name" : "Action camera",
+    "parentId" : "12-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5",
+  "content" : {
+    "name" : "Leisure and Activities",
+    "parentId" : "12",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5-1",
+  "content" : {
+    "name" : "Gift box",
+    "parentId" : "12-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5-2",
+  "content" : {
+    "name" : "Table football",
+    "parentId" : "12-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5-3",
+  "content" : {
+    "name" : "Creative hobbies",
+    "parentId" : "12-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5-4",
+  "content" : {
+    "name" : "Sewing",
+    "parentId" : "12-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5-5",
+  "content" : {
+    "name" : "Billiards",
+    "parentId" : "12-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-5-6",
+  "content" : {
+    "name" : "Ticket office",
+    "parentId" : "12-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-6",
+  "content" : {
+    "name" : "Second Hand",
+    "parentId" : "12",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-6-1",
+  "content" : {
+    "name" : "Used smartwatch",
+    "parentId" : "12-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-6-2",
+  "content" : {
+    "name" : "Used scooter",
+    "parentId" : "12-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-6-3",
+  "content" : {
+    "name" : "Used women's shoes",
+    "parentId" : "12-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "12-6-4",
+  "content" : {
+    "name" : "Used men's shoes",
+    "parentId" : "12-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13",
+  "content" : {
+    "name" : "Fashion",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1",
+  "content" : {
+    "name" : "Women's clothing",
+    "parentId" : "13",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-1",
+  "content" : {
+    "name" : "Shoe",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-2",
+  "content" : {
+    "name" : "Dress",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-3",
+  "content" : {
+    "name" : "Jeans",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-4",
+  "content" : {
+    "name" : "Sweater and vest",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-5",
+  "content" : {
+    "name" : "Sport",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-6",
+  "content" : {
+    "name" : "Maternity clothing",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-7",
+  "content" : {
+    "name" : "T-shirt",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-8",
+  "content" : {
+    "name" : "Pants",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-9",
+  "content" : {
+    "name" : "Shirt",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-10",
+  "content" : {
+    "name" : "Jacket and coat",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-1-11",
+  "content" : {
+    "name" : "Lingerie",
+    "parentId" : "13-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2",
+  "content" : {
+    "name" : "Men's Clothing",
+    "parentId" : "13",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-1",
+  "content" : {
+    "name" : "Shoe",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-2",
+  "content" : {
+    "name" : "T-shirt",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-3",
+  "content" : {
+    "name" : "Pants",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-4",
+  "content" : {
+    "name" : "Shirt",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-5",
+  "content" : {
+    "name" : "Sport",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-6",
+  "content" : {
+    "name" : "Sock",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-7",
+  "content" : {
+    "name" : "Polo",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-8",
+  "content" : {
+    "name" : "Sweatshirt and pullover",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-9",
+  "content" : {
+    "name" : "Jeans",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-10",
+  "content" : {
+    "name" : "Jacket and coat",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-2-11",
+  "content" : {
+    "name" : "Boxer",
+    "parentId" : "13-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3",
+  "content" : {
+    "name" : "Children's clothing",
+    "parentId" : "13",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-1",
+  "content" : {
+    "name" : "Children's shoes",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-2",
+  "content" : {
+    "name" : "Baby Boy",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-3",
+  "content" : {
+    "name" : "Boy from 2 years old",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-4",
+  "content" : {
+    "name" : "Pants",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-5",
+  "content" : {
+    "name" : "Pyjamas",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-6",
+  "content" : {
+    "name" : "Baby Girl",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-7",
+  "content" : {
+    "name" : "Girl from 2 years old",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-8",
+  "content" : {
+    "name" : "T-shirt",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-3-9",
+  "content" : {
+    "name" : "Sweat",
+    "parentId" : "13-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-4",
+  "content" : {
+    "name" : "Watch",
+    "parentId" : "13",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-4-1",
+  "content" : {
+    "name" : "Men's watch",
+    "parentId" : "13-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-4-2",
+  "content" : {
+    "name" : "Women's watch",
+    "parentId" : "13-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-4-3",
+  "content" : {
+    "name" : "Smart watch",
+    "parentId" : "13-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-4-4",
+  "content" : {
+    "name" : "Children's watch",
+    "parentId" : "13-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-4-5",
+  "content" : {
+    "name" : "Used watch",
+    "parentId" : "13-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5",
+  "content" : {
+    "name" : "Accessory",
+    "parentId" : "13",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-1",
+  "content" : {
+    "name" : "Bag and luggage",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-2",
+  "content" : {
+    "name" : "Tie",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-3",
+  "content" : {
+    "name" : "Cap",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-4",
+  "content" : {
+    "name" : "Scarf",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-5",
+  "content" : {
+    "name" : "Sunglasses",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-6",
+  "content" : {
+    "name" : "Belt",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-7",
+  "content" : {
+    "name" : "Hat",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-8",
+  "content" : {
+    "name" : "Cap",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-5-9",
+  "content" : {
+    "name" : "Glove",
+    "parentId" : "13-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-6",
+  "content" : {
+    "name" : "Jewel",
+    "parentId" : "13",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-6-1",
+  "content" : {
+    "name" : "Bracelet",
+    "parentId" : "13-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-6-2",
+  "content" : {
+    "name" : "Ring",
+    "parentId" : "13-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-6-3",
+  "content" : {
+    "name" : "Necklace",
+    "parentId" : "13-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-6-4",
+  "content" : {
+    "name" : "Pendant",
+    "parentId" : "13-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "13-6-5",
+  "content" : {
+    "name" : "earring",
+    "parentId" : "13-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14",
+  "content" : {
+    "name" : "Beauty",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-1",
+  "content" : {
+    "name" : "Scent",
+    "parentId" : "14",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-1-1",
+  "content" : {
+    "name" : "Men's Perfume",
+    "parentId" : "14-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-1-2",
+  "content" : {
+    "name" : "Box",
+    "parentId" : "14-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-1-3",
+  "content" : {
+    "name" : "Women's Perfume",
+    "parentId" : "14-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2",
+  "content" : {
+    "name" : "Hair",
+    "parentId" : "14",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-1",
+  "content" : {
+    "name" : "Straightener and curler",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-2",
+  "content" : {
+    "name" : "Mower",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-3",
+  "content" : {
+    "name" : "Shampoo",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-4",
+  "content" : {
+    "name" : "Hair care",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-5",
+  "content" : {
+    "name" : "Hair accessory",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-6",
+  "content" : {
+    "name" : "hair dryer",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-7",
+  "content" : {
+    "name" : "Smoothing kit",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-8",
+  "content" : {
+    "name" : "Conditioner",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-2-9",
+  "content" : {
+    "name" : "Hair styling product",
+    "parentId" : "14-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3",
+  "content" : {
+    "name" : "Body and Face",
+    "parentId" : "14",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-1",
+  "content" : {
+    "name" : "Facial",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-2",
+  "content" : {
+    "name" : "Sun care",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-3",
+  "content" : {
+    "name" : "Razor",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-4",
+  "content" : {
+    "name" : "Electric epilator",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-5",
+  "content" : {
+    "name" : "Shaving product",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-6",
+  "content" : {
+    "name" : "Body care",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-7",
+  "content" : {
+    "name" : "Teeth whitening kit",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-8",
+  "content" : {
+    "name" : "Razor blade",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-9",
+  "content" : {
+    "name" : "Pulsed light epilator",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-3-10",
+  "content" : {
+    "name" : "Hair removal product",
+    "parentId" : "14-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4",
+  "content" : {
+    "name" : "Makeup",
+    "parentId" : "14",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-1",
+  "content" : {
+    "name" : "Lips",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-2",
+  "content" : {
+    "name" : "Eyes",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-3",
+  "content" : {
+    "name" : "Complexion",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-4",
+  "content" : {
+    "name" : "Makeup remover",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-5",
+  "content" : {
+    "name" : "Manicure",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-6",
+  "content" : {
+    "name" : "Makeup accessory",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-4-7",
+  "content" : {
+    "name" : "Box",
+    "parentId" : "14-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5",
+  "content" : {
+    "name" : "Hygiene and Health",
+    "parentId" : "14",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-1",
+  "content" : {
+    "name" : "Teeth whitening kit",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-2",
+  "content" : {
+    "name" : "Dental hygiene",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-3",
+  "content" : {
+    "name" : "Toothbrush",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-4",
+  "content" : {
+    "name" : "Electric toothbrush",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-5",
+  "content" : {
+    "name" : "Deodorant",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-6",
+  "content" : {
+    "name" : "Shower gel",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-7",
+  "content" : {
+    "name" : "Soap",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-5-8",
+  "content" : {
+    "name" : "Intimate hygiene",
+    "parentId" : "14-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6",
+  "content" : {
+    "name" : "Parapharmacy",
+    "parentId" : "14",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6-1",
+  "content" : {
+    "name" : "Food supplement",
+    "parentId" : "14-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6-2",
+  "content" : {
+    "name" : "Essential oil",
+    "parentId" : "14-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6-3",
+  "content" : {
+    "name" : "baby",
+    "parentId" : "14-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6-4",
+  "content" : {
+    "name" : "Hydroalcoholic gel",
+    "parentId" : "14-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6-5",
+  "content" : {
+    "name" : "Mask",
+    "parentId" : "14-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "14-6-6",
+  "content" : {
+    "name" : "Sexuality",
+    "parentId" : "14-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15",
+  "content" : {
+    "name" : "Toy, Child, Childcare",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1",
+  "content" : {
+    "name" : "Childcare",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-1",
+  "content" : {
+    "name" : "Stroller",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-2",
+  "content" : {
+    "name" : "Car seat",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-3",
+  "content" : {
+    "name" : "Baby bed",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-4",
+  "content" : {
+    "name" : "Play mat",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-5",
+  "content" : {
+    "name" : "Toilet and care",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-6",
+  "content" : {
+    "name" : "Combined stroller",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-7",
+  "content" : {
+    "name" : "Security and baby monitor",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-8",
+  "content" : {
+    "name" : "Baby mattress",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-9",
+  "content" : {
+    "name" : "Educational game",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-1-10",
+  "content" : {
+    "name" : "Meal",
+    "parentId" : "15-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2",
+  "content" : {
+    "name" : "Miniature and Doll Universe",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-1",
+  "content" : {
+    "name" : "LEGO",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-2",
+  "content" : {
+    "name" : "Figure",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-3",
+  "content" : {
+    "name" : "Baby doll",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-4",
+  "content" : {
+    "name" : "Dollhouse",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-5",
+  "content" : {
+    "name" : "Plush",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-6",
+  "content" : {
+    "name" : "Playmobil",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-7",
+  "content" : {
+    "name" : "Doll",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-8",
+  "content" : {
+    "name" : "Barbie",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-9",
+  "content" : {
+    "name" : "Construction game",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-2-10",
+  "content" : {
+    "name" : "Interactive plush toy",
+    "parentId" : "15-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3",
+  "content" : {
+    "name" : "Board Game and Puzzle",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-1",
+  "content" : {
+    "name" : "The great classics",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-2",
+  "content" : {
+    "name" : "Trading Cards",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-3",
+  "content" : {
+    "name" : "Chess game",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-4",
+  "content" : {
+    "name" : "Escape game",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-5",
+  "content" : {
+    "name" : "Strategy game",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-6",
+  "content" : {
+    "name" : "Card game",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-3-7",
+  "content" : {
+    "name" : "Puzzle",
+    "parentId" : "15-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4",
+  "content" : {
+    "name" : "Outdoor Games and Drone",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-1",
+  "content" : {
+    "name" : "Trampoline",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-2",
+  "content" : {
+    "name" : "Playground",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-3",
+  "content" : {
+    "name" : "Swing",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-4",
+  "content" : {
+    "name" : "Electric car",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-5",
+  "content" : {
+    "name" : "Drone",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-6",
+  "content" : {
+    "name" : "Little house",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-7",
+  "content" : {
+    "name" : "Slide",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-8",
+  "content" : {
+    "name" : "Tricycle",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-4-9",
+  "content" : {
+    "name" : "Radio controlled toy",
+    "parentId" : "15-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-5",
+  "content" : {
+    "name" : "Imitation Game",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-5-1",
+  "content" : {
+    "name" : "Diner",
+    "parentId" : "15-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-5-2",
+  "content" : {
+    "name" : "DIY game",
+    "parentId" : "15-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-5-3",
+  "content" : {
+    "name" : "School",
+    "parentId" : "15-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-5-4",
+  "content" : {
+    "name" : "Housekeeping and ironing",
+    "parentId" : "15-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-5-5",
+  "content" : {
+    "name" : "Makeup",
+    "parentId" : "15-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-6",
+  "content" : {
+    "name" : "Educational and Interactive Game",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-6-1",
+  "content" : {
+    "name" : "Montessori",
+    "parentId" : "15-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-6-2",
+  "content" : {
+    "name" : "Scientific experiment",
+    "parentId" : "15-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-6-3",
+  "content" : {
+    "name" : "Awakening",
+    "parentId" : "15-6",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "15-7",
+  "content" : {
+    "name" : "Disguise and Magic",
+    "parentId" : "15",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16",
+  "content" : {
+    "name" : "Auto-Moto",
+    "parentId" : "root",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1",
+  "content" : {
+    "name" : "Auto Equipment",
+    "parentId" : "16",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1-1",
+  "content" : {
+    "name" : "Diagnostic tool",
+    "parentId" : "16-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1-2",
+  "content" : {
+    "name" : "Roof box",
+    "parentId" : "16-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1-3",
+  "content" : {
+    "name" : "Floor mats",
+    "parentId" : "16-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1-4",
+  "content" : {
+    "name" : "Bulb",
+    "parentId" : "16-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1-5",
+  "content" : {
+    "name" : "Roof bar",
+    "parentId" : "16-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-1-6",
+  "content" : {
+    "name" : "Hands-free kit",
+    "parentId" : "16-1",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-2",
+  "content" : {
+    "name" : "Car and Motorcycle Maintenance",
+    "parentId" : "16",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-2-1",
+  "content" : {
+    "name" : "Oil and additive",
+    "parentId" : "16-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-2-2",
+  "content" : {
+    "name" : "Interview",
+    "parentId" : "16-2",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-3",
+  "content" : {
+    "name" : "Tire and Auto Parts",
+    "parentId" : "16",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-3-1",
+  "content" : {
+    "name" : "Winter tire",
+    "parentId" : "16-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-3-2",
+  "content" : {
+    "name" : "Summer tire",
+    "parentId" : "16-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-3-3",
+  "content" : {
+    "name" : "Battery",
+    "parentId" : "16-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-3-4",
+  "content" : {
+    "name" : "Snow chain",
+    "parentId" : "16-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-3-5",
+  "content" : {
+    "name" : "Bumper",
+    "parentId" : "16-3",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-4",
+  "content" : {
+    "name" : "Tuning and Customization",
+    "parentId" : "16",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-4-1",
+  "content" : {
+    "name" : "Car tuning",
+    "parentId" : "16-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-4-2",
+  "content" : {
+    "name" : "Emblem",
+    "parentId" : "16-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-4-3",
+  "content" : {
+    "name" : "LED",
+    "parentId" : "16-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-4-4",
+  "content" : {
+    "name" : "Sticker",
+    "parentId" : "16-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-4-5",
+  "content" : {
+    "name" : "Additional box",
+    "parentId" : "16-4",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5",
+  "content" : {
+    "name" : "2 Wheel Universe",
+    "parentId" : "16",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-1",
+  "content" : {
+    "name" : "Motorcycle helmet",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-2",
+  "content" : {
+    "name" : "Intercom",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-3",
+  "content" : {
+    "name" : "Motorcycle tire",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-4",
+  "content" : {
+    "name" : "Exhaust pipe",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-5",
+  "content" : {
+    "name" : "Driver Equipment",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-6",
+  "content" : {
+    "name" : "2 wheel accessories",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+},{
+  "type" : "category",
+  "action" : "upsert",
+  "id" : "16-5-7",
+  "content" : {
+    "name" : "Carburetor",
+    "parentId" : "16-5",
+    "status" : "enabled"
+  }
+}]
