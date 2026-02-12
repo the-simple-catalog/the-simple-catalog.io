@@ -70,11 +70,17 @@ const Tracking = {
                 return;
             }
 
-            // Add current page URL and referer to all events
+            // Add current page URL
             eventData.url = window.location.href;
-            if (document.referrer) {
-                eventData.referer = document.referrer;
+
+            // Add referer from sessionStorage (previous page in SPA)
+            const previousUrl = sessionStorage.getItem('previousUrl');
+            if (previousUrl) {
+                eventData.referer = previousUrl;
             }
+
+            // Store current URL for next navigation
+            sessionStorage.setItem('previousUrl', window.location.href);
 
             // Build API URL
             const apiUrl = `${trackingUrl}/1.1/json/T/t`;
@@ -300,20 +306,219 @@ const Tracking = {
     },
 
     /**
-     * Request sponsored products (placeholder for backwards compatibility)
+     * Request sponsored products from Ads API
      * @param {string} pageId - Page ID
      * @param {string} pageType - Page type
-     * @param {Object} context - Additional context
-     * @returns {Array} Empty array
+     * @param {Object} context - Additional context (categoryId, searchQuery, productId)
+     * @returns {Promise<Object|null>} Promise resolving to ads data or null on error
      */
-    requestSponsoredProducts(pageId, pageType, context = {}) {
-        console.log('🎯 [AD SERVING] Request Sponsored Products:', {
-            pageId,
-            pageType,
-            context,
-            timestamp: new Date().toISOString()
+    async requestSponsoredProducts(pageId, pageType, context = {}) {
+        try {
+            const settings = Settings.get();
+            const adsUrl = settings.adsServerUrl;
+            const customerId = settings.t2sCustomerId;
+            const userId = Settings.getTID();
+
+            if (!adsUrl || !customerId) {
+                console.warn('⚠️ [AD SERVING] Ads not configured');
+                return null;
+            }
+
+            // Build request body based on page type
+            const requestBody = {
+                pageId: parseInt(pageId),
+                userId: userId
+            };
+
+            // Add page-specific context
+            if (pageType === PAGE_TYPES.CATEGORY && context.categoryId) {
+                requestBody.categoryId = context.categoryId;
+            } else if (pageType === PAGE_TYPES.SEARCH && context.searchQuery) {
+                requestBody.keywords = context.searchQuery;
+            } else if (pageType === PAGE_TYPES.PRODUCT && context.productId) {
+                requestBody.productId = context.productId;
+            }
+
+            // Make API request
+            const response = await fetch(`${adsUrl}/ads/v1/public/rendered-content`, {
+                method: 'POST',
+                headers: {
+                    'x-customer-id': customerId,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                console.error('❌ [AD SERVING] API error:', response.status);
+                return null;
+            }
+
+            const data = await response.json();
+            console.log('✅ [AD SERVING] Received ads:', data);
+            return data;
+
+        } catch (error) {
+            console.error('❌ [AD SERVING] Exception:', error);
+            return null;
+        }
+    },
+
+    /**
+     * Track sponsored product impression
+     * @param {string} adId - Ad ID from the Ads API
+     */
+    trackSponsoredImpression(adId) {
+        const settings = Settings.get();
+        this.sendTrackingEvent({
+            cID: settings.t2sCustomerId,
+            eventName: 'impression',
+            adId: adId,
+            userId: Settings.getTID()
         });
-        return [];
+    },
+
+    /**
+     * Track sponsored product click
+     * @param {string} adId - Ad ID from the Ads API
+     */
+    trackSponsoredClick(adId) {
+        const settings = Settings.get();
+        this.sendTrackingEvent({
+            cID: settings.t2sCustomerId,
+            eventName: 'click',
+            adId: adId,
+            userId: Settings.getTID()
+        });
+    },
+
+    /**
+     * Render sponsored products section
+     * @param {Object} adsData - Response from Ads API
+     * @returns {string} HTML string
+     */
+    renderSponsoredProducts(adsData) {
+        if (!adsData || !adsData.productAds || adsData.productAds.length === 0) {
+            return this.renderEmptySponsoredSection();
+        }
+
+        const adUnitsHtml = adsData.productAds.map(adUnit => this.renderAdUnit(adUnit)).join('');
+
+        return `
+            <div class="sponsored-section">
+                <h2 class="sponsored-title">Sponsored Products</h2>
+                ${adUnitsHtml}
+            </div>
+        `;
+    },
+
+    /**
+     * Render a single ad unit
+     * @param {Object} adUnit - Ad unit object with adUnitId, adUnitSize, and products array
+     * @returns {string} HTML string
+     */
+    renderAdUnit(adUnit) {
+        const { adUnitId, adUnitSize, products } = adUnit;
+        const slots = [];
+
+        // Render actual sponsored products
+        for (let i = 0; i < Math.min(products.length, adUnitSize); i++) {
+            slots.push(this.renderSponsoredProduct(products[i]));
+        }
+
+        // Fill remaining slots with placeholders
+        for (let i = products.length; i < adUnitSize; i++) {
+            slots.push(this.renderEmptySlot());
+        }
+
+        return `
+            <div class="sponsored-ad-unit" style="margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">
+                    Ad Unit: ${escapeHtml(adUnitId)}
+                </div>
+                <div class="sponsored-grid">
+                    ${slots.join('')}
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Render a single sponsored product
+     * @param {Object} sponsoredProduct - Sponsored product object
+     * @returns {string} HTML string
+     */
+    renderSponsoredProduct(sponsoredProduct) {
+        const { productId, adId, digitalServiceAct } = sponsoredProduct;
+        const product = CatalogManager.getProductById(productId);
+
+        // Product image with fallback
+        let imageUrl = product?.content.imageUrl ||
+            `https://placehold.co/250x250?text=${encodeURIComponent(productId)}`;
+
+        // Product name with fallback
+        const productName = product?.content.name || productId;
+
+        // Get price if product exists
+        const price = product ? CatalogManager.getProductPrice(product) : null;
+        const brand = product ? CatalogManager.getProductBrand(product) : null;
+
+        return `
+            <div class="product-card">
+                <a href="#/product/${escapeHtml(productId)}"
+                   onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;">
+                    <img
+                        src="${escapeHtml(imageUrl)}"
+                        alt="${escapeHtml(productName)}"
+                        class="product-card-image"
+                        onload="Tracking.trackSponsoredImpression('${escapeHtml(adId)}')"
+                        onerror="this.src='https://placehold.co/250x250?text=${encodeURIComponent(productId)}'"
+                    />
+                </a>
+                <div class="product-card-content">
+                    ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
+                    <a href="#/product/${escapeHtml(productId)}"
+                       onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;">
+                        <div class="product-name">${escapeHtml(productName)}</div>
+                    </a>
+                    ${price ? `
+                        <div class="product-price ${price.hasPromo ? 'product-price-promo' : ''}">
+                            ${price.hasPromo ? `<span class="product-price-regular">${formatPrice(price.regular)}</span>` : ''}
+                            ${formatPrice(price.hasPromo ? price.promo : price.regular)}
+                        </div>
+                    ` : ''}
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">
+                        Sponsored ${digitalServiceAct?.sponsor ? `by ${escapeHtml(digitalServiceAct.sponsor)}` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Render an empty ad slot placeholder
+     * @returns {string} HTML string
+     */
+    renderEmptySlot() {
+        return '<div class="sponsored-placeholder">Ad Slot</div>';
+    },
+
+    /**
+     * Render empty sponsored section with placeholders
+     * @returns {string} HTML string
+     */
+    renderEmptySponsoredSection() {
+        return `
+            <div class="sponsored-section">
+                <h2 class="sponsored-title">Sponsored Products</h2>
+                <div class="sponsored-grid">
+                    ${this.renderEmptySlot()}
+                    ${this.renderEmptySlot()}
+                    ${this.renderEmptySlot()}
+                    ${this.renderEmptySlot()}
+                </div>
+            </div>
+        `;
     }
 };
 

@@ -25,9 +25,9 @@ const ProductPage = {
     Tracking.trackProductView(productId);
 
     // Request sponsored products
-    Tracking.requestSponsoredProducts(PAGE_IDS.PRODUCT, PAGE_TYPES.PRODUCT, {
-      productId,
-    });
+    const sponsoredAdsPromise = Tracking.requestSponsoredProducts(
+      PAGE_IDS.PRODUCT, PAGE_TYPES.PRODUCT, { productId }
+    );
 
     const app = getEl("app");
     const brand = CatalogManager.getProductBrand(product);
@@ -121,9 +121,21 @@ const ProductPage = {
                     </div>
                 </div>
 
-                ${ProductPage.renderSponsoredSection()}
+                <div id="sponsored-container">
+                    ${Tracking.renderEmptySponsoredSection()}
+                </div>
             </div>
         `;
+
+    // Update sponsored section when ads load
+    sponsoredAdsPromise.then(adsData => {
+      const container = document.getElementById('sponsored-container');
+      if (container && adsData) {
+        container.innerHTML = Tracking.renderSponsoredProducts(adsData);
+      }
+    }).catch(error => {
+      console.error('Failed to load sponsored products:', error);
+    });
   },
 
   /**
@@ -141,23 +153,6 @@ const ProductPage = {
     breadcrumbParts.push(`<span>${escapeHtml(product.content.name)}</span>`);
 
     return `<div class="breadcrumb">${breadcrumbParts.join('<span class="breadcrumb-separator">/</span>')}</div>`;
-  },
-
-  /**
-   * Render sponsored products section
-   */
-  renderSponsoredSection() {
-    return `
-            <div class="sponsored-section">
-                <h2 class="sponsored-title">Sponsored Products</h2>
-                <div class="sponsored-grid">
-                    <div class="sponsored-placeholder">Ad Slot 1</div>
-                    <div class="sponsored-placeholder">Ad Slot 2</div>
-                    <div class="sponsored-placeholder">Ad Slot 3</div>
-                    <div class="sponsored-placeholder">Ad Slot 4</div>
-                </div>
-            </div>
-        `;
   },
 
   /**

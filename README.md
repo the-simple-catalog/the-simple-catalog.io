@@ -20,7 +20,7 @@ A static e-commerce website demo built for API integration demonstration purpose
 - 📦 **Catalog Management** - Import products and categories via JSON files
 - 🛒 **Shopping Cart** - Add/remove items, persist across sessions
 - 🔍 **Search** - Find products by name (minimum 3 characters)
-- 📊 **Tracking** - Page view tracking (console.log placeholder)
+- 📊 **Tracking** - Page view tracking (console.log )
 - 🎯 **Ad Serving** - Sponsored products zones (console.log placeholder)
 - 💾 **LocalStorage** - All data stored locally (max 1000 products)
 

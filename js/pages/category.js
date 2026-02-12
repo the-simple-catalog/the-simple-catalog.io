@@ -25,9 +25,9 @@ const CategoryPage = {
         Tracking.trackCategoryView(categoryId);
 
         // Request sponsored products
-        Tracking.requestSponsoredProducts(PAGE_IDS.CATEGORY, PAGE_TYPES.CATEGORY, {
-            categoryId
-        });
+        const sponsoredAdsPromise = Tracking.requestSponsoredProducts(
+            PAGE_IDS.CATEGORY, PAGE_TYPES.CATEGORY, { categoryId }
+        );
 
         const app = getEl('app');
         const breadcrumb = CatalogManager.getCategoryPath(categoryId);
@@ -45,9 +45,21 @@ const CategoryPage = {
 
                 ${products.length > 0 ? CategoryPage.renderProducts(products) : CategoryPage.renderNoProducts()}
 
-                ${CategoryPage.renderSponsoredSection()}
+                <div id="sponsored-container">
+                    ${Tracking.renderEmptySponsoredSection()}
+                </div>
             </div>
         `;
+
+        // Update sponsored section when ads load
+        sponsoredAdsPromise.then(adsData => {
+            const container = document.getElementById('sponsored-container');
+            if (container && adsData) {
+                container.innerHTML = Tracking.renderSponsoredProducts(adsData);
+            }
+        }).catch(error => {
+            console.error('Failed to load sponsored products:', error);
+        });
     },
 
     /**
@@ -148,23 +160,6 @@ const CategoryPage = {
         return `
             <div class="message message-info">
                 No products found in this category.
-            </div>
-        `;
-    },
-
-    /**
-     * Render sponsored products section
-     */
-    renderSponsoredSection() {
-        return `
-            <div class="sponsored-section">
-                <h2 class="sponsored-title">Sponsored Products</h2>
-                <div class="sponsored-grid">
-                    <div class="sponsored-placeholder">Ad Slot 1</div>
-                    <div class="sponsored-placeholder">Ad Slot 2</div>
-                    <div class="sponsored-placeholder">Ad Slot 3</div>
-                    <div class="sponsored-placeholder">Ad Slot 4</div>
-                </div>
             </div>
         `;
     },

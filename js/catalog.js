@@ -408,7 +408,7 @@ const Settings = {
     DEFAULT_SETTINGS: {
         siteName: 'E-Commerce Demo',
         trackingUrl: 'https://xxxxx.retail.mirakl.net',
-        adsServerUrl: '',
+        adsServerUrl: 'https://xxxxx.retailmedia.mirakl.net',
         t2sCustomerId: 'CUSTOMER_PUBLIC_ID',
         t2sPageIds: {
             search: 2000,
