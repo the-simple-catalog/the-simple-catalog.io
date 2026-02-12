@@ -407,8 +407,17 @@ const Settings = {
 
     DEFAULT_SETTINGS: {
         siteName: 'E-Commerce Demo',
-        trackingUrl: '',
-        adsServerUrl: ''
+        trackingUrl: 'https://xxxxx.retail.mirakl.net',
+        adsServerUrl: '',
+        t2sCustomerId: 'CUSTOMER_PUBLIC_ID',
+        t2sPageIds: {
+            search: 2000,
+            category: 1400,
+            product: 1200,
+            cart: 1600,
+            postPayment: 2400
+        },
+        orderPrefix: 'ORDER_'
     },
 
     /**
@@ -451,5 +460,74 @@ const Settings = {
     getSetting(key) {
         const settings = this.get();
         return settings[key];
+    },
+
+    /**
+     * Get or create user tracking ID (tID)
+     * @returns {string} User tID from localStorage or newly generated
+     */
+    getTID() {
+        try {
+            let tid = localStorage.getItem('user_tid');
+            if (!tid) {
+                tid = generateUUID();
+                localStorage.setItem('user_tid', tid);
+            }
+            return tid;
+        } catch (e) {
+            console.error('Error getting tID:', e);
+            // Return a temporary UUID if localStorage fails
+            return generateUUID();
+        }
+    },
+
+    /**
+     * Generate and save a new tracking ID
+     * @returns {string} Newly generated tID
+     */
+    generateNewTID() {
+        try {
+            const newTID = generateUUID();
+            localStorage.setItem('user_tid', newTID);
+            return newTID;
+        } catch (e) {
+            console.error('Error generating new tID:', e);
+            return generateUUID();
+        }
+    },
+
+    /**
+     * Reset tID (alias for generateNewTID)
+     * @returns {string} Newly generated tID
+     */
+    resetTID() {
+        return this.generateNewTID();
+    },
+
+    /**
+     * Save a custom tID value
+     * @param {string} customTID - Custom tID to save
+     * @returns {boolean} Success status
+     */
+    saveTID(customTID) {
+        if (!customTID || typeof customTID !== 'string') {
+            console.error('Invalid tID provided');
+            return false;
+        }
+
+        // Basic UUID format validation (8-4-4-4-12 pattern)
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidPattern.test(customTID)) {
+            console.error('Invalid UUID format');
+            return false;
+        }
+
+        try {
+            localStorage.setItem('user_tid', customTID);
+            return true;
+        } catch (e) {
+            console.error('Error saving custom tID:', e);
+            return false;
+        }
     }
 };

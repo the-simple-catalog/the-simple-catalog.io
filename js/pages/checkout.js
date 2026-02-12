@@ -170,7 +170,7 @@ const CheckoutPage = {
         // Simulate API call
         setTimeout(() => {
             // Mock successful payment
-            const orderId = 'ORD-' + Date.now();
+            const orderId = Settings.get().orderPrefix + Date.now();
 
             messageDiv.innerHTML = `
                 <div class="message message-success">

@@ -61,6 +61,12 @@ const SearchPage = {
         const products = CatalogManager.searchProducts(query);
         const resultCount = products.length;
 
+        // Extract product IDs for tracking
+        const productIds = products.map(p => p.id);
+
+        // Track search view
+        Tracking.trackSearchView(query, productIds);
+
         // Create search log entry
         const searchEntry = {
             timestamp: new Date().toISOString(),

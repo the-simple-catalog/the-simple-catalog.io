@@ -90,20 +90,6 @@ const AdminPage = {
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">T2S Tracking URL</label>
-                                <input
-                                    type="text"
-                                    id="setting-tracking-url"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.trackingUrl)}"
-                                    placeholder="Not used for now"
-                                />
-                                <small style="color: var(--text-secondary); font-size: 12px;">
-                                    Currently using console.log for tracking
-                                </small>
-                            </div>
-
-                            <div class="form-group">
                                 <label class="form-label">Ads Server URL</label>
                                 <input
                                     type="text"
@@ -123,6 +109,113 @@ const AdminPage = {
                         </form>
 
                         <div id="settings-message"></div>
+                    </div>
+
+                    <!-- T2S Configuration -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">T2S Tracking Configuration</h2>
+
+                        <form id="t2s-settings-form" onsubmit="AdminPage.saveT2SSettings(event)">
+                            <div class="form-group">
+                                <label class="form-label">T2S Tracking URL</label>
+                                <input
+                                    type="text"
+                                    id="setting-tracking-url"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.trackingUrl)}"
+                                    placeholder="https://xxxxx.retail.mirakl.net"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">T2S Customer ID</label>
+                                <input
+                                    type="text"
+                                    id="setting-customer-id"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.t2sCustomerId || '')}"
+                                    placeholder="CUSTOMER_PUBLIC_ID"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Page IDs Configuration (JSON)</label>
+                                <textarea
+                                    id="setting-page-ids"
+                                    class="form-input"
+                                    rows="6"
+                                    placeholder='{"search": 2000, "category": 1400, "product": 1200, "cart": 1600, "postPayment": 2400}'
+                                    style="font-family: monospace; font-size: 13px;"
+                                >${JSON.stringify(settings.t2sPageIds || {}, null, 2)}</textarea>
+                                <small style="color: var(--text-secondary); font-size: 12px;">
+                                    JSON object with page type to page ID mappings
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Order Prefix</label>
+                                <input
+                                    type="text"
+                                    id="setting-order-prefix"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.orderPrefix || '')}"
+                                    placeholder="ORDER_"
+                                />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Save T2S Settings
+                            </button>
+                        </form>
+
+                        <div id="t2s-settings-message"></div>
+                    </div>
+
+                    <!-- tID Management -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">User Tracking ID (tID) Management</h2>
+
+                        <div class="form-group">
+                            <label class="form-label">Current tID</label>
+                            <input
+                                type="text"
+                                id="current-tid"
+                                class="form-input"
+                                value="${Settings.getTID()}"
+                                readonly
+                                style="font-family: monospace; background: var(--bg-secondary); cursor: not-allowed;"
+                            />
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <button onclick="AdminPage.generateNewTID()" class="btn btn-primary">
+                                Generate New tID
+                            </button>
+                            <button onclick="AdminPage.resetTID()" class="btn btn-secondary">
+                                Reset tID
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Custom tID (UUID format)</label>
+                            <div style="display: flex; gap: 12px;">
+                                <input
+                                    type="text"
+                                    id="custom-tid"
+                                    class="form-input"
+                                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                                    style="font-family: monospace; flex: 1;"
+                                />
+                                <button onclick="AdminPage.saveCustomTID()" class="btn btn-primary">
+                                    Save Custom
+                                </button>
+                            </div>
+                            <small style="color: var(--text-secondary); font-size: 12px;">
+                                Must be valid UUID format (e.g., 550e8400-e29b-41d4-a716-446655440000)
+                            </small>
+                        </div>
+
+                        <div id="tid-message"></div>
                     </div>
                 </div>
             </div>
@@ -290,6 +383,117 @@ const AdminPage = {
             reader.onerror = (e) => reject(e);
             reader.readAsText(file);
         });
+    },
+
+    /**
+     * Save T2S settings
+     */
+    saveT2SSettings(event) {
+        event.preventDefault();
+
+        const trackingUrl = getEl('setting-tracking-url').value.trim();
+        const customerId = getEl('setting-customer-id').value.trim();
+        const pageIdsText = getEl('setting-page-ids').value.trim();
+        const orderPrefix = getEl('setting-order-prefix').value.trim();
+
+        // Validate page IDs JSON
+        let pageIds;
+        try {
+            pageIds = JSON.parse(pageIdsText);
+            if (typeof pageIds !== 'object' || Array.isArray(pageIds)) {
+                this.showT2SMessage('Page IDs must be a JSON object', 'error');
+                return;
+            }
+        } catch (e) {
+            this.showT2SMessage('Invalid JSON format for Page IDs', 'error');
+            return;
+        }
+
+        const success = Settings.save({
+            trackingUrl,
+            t2sCustomerId: customerId,
+            t2sPageIds: pageIds,
+            orderPrefix
+        });
+
+        if (success) {
+            this.showT2SMessage('T2S settings saved successfully!', 'success');
+        } else {
+            this.showT2SMessage('Error saving T2S settings', 'error');
+        }
+    },
+
+    /**
+     * Generate new tID
+     */
+    generateNewTID() {
+        const newTID = Settings.generateNewTID();
+        const tidInput = getEl('current-tid');
+        if (tidInput) {
+            tidInput.value = newTID;
+        }
+        this.showTIDMessage('New tID generated successfully!', 'success');
+    },
+
+    /**
+     * Reset tID
+     */
+    resetTID() {
+        const newTID = Settings.resetTID();
+        const tidInput = getEl('current-tid');
+        if (tidInput) {
+            tidInput.value = newTID;
+        }
+        this.showTIDMessage('tID reset successfully!', 'success');
+    },
+
+    /**
+     * Save custom tID
+     */
+    saveCustomTID() {
+        const customTID = getEl('custom-tid').value.trim();
+
+        if (!customTID) {
+            this.showTIDMessage('Please enter a custom tID', 'error');
+            return;
+        }
+
+        const success = Settings.saveTID(customTID);
+
+        if (success) {
+            const tidInput = getEl('current-tid');
+            if (tidInput) {
+                tidInput.value = customTID;
+            }
+            getEl('custom-tid').value = '';
+            this.showTIDMessage('Custom tID saved successfully!', 'success');
+        } else {
+            this.showTIDMessage('Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'error');
+        }
+    },
+
+    /**
+     * Show T2S settings message
+     */
+    showT2SMessage(message, type) {
+        const messageDiv = getEl('t2s-settings-message');
+        messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
+
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 3000);
+    },
+
+    /**
+     * Show tID message
+     */
+    showTIDMessage(message, type) {
+        const messageDiv = getEl('tid-message');
+        messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
+
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 3000);
     }
 };
 

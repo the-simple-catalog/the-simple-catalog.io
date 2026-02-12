@@ -68,6 +68,13 @@ const Cart = {
                 window.updateCartCount();
             }
 
+            // Track add to cart
+            const priceInfo = CatalogManager.getProductPrice(product);
+            const finalPrice = priceInfo.promo || priceInfo.regular;
+            if (finalPrice) {
+                Tracking.trackAddToCart(productId, quantity, finalPrice);
+            }
+
             return true;
         } catch (e) {
             console.error('Error adding to cart:', e);
