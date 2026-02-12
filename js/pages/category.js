@@ -62,18 +62,26 @@ const CategoryPage = {
     },
 
     /**
-     * Render subcategories section
+     * Render subcategories section with product images
      */
     renderSubcategories(categories) {
         return `
             <div style="margin-bottom: 32px;">
                 <h2 style="font-size: 20px; margin-bottom: 16px;">Subcategories</h2>
                 <div class="category-list">
-                    ${categories.map(cat => `
-                        <a href="#/category/${cat.id}" class="category-card">
-                            <div class="category-name">${escapeHtml(cat.content.name)}</div>
-                        </a>
-                    `).join('')}
+                    ${categories.map(cat => {
+                        const imageUrl = CatalogManager.getCategoryIconImage(cat);
+                        return `
+                            <a href="#/category/${cat.id}" class="category-card">
+                                <img
+                                    src="${escapeHtml(imageUrl)}"
+                                    alt="${escapeHtml(cat.content.name)}"
+                                    class="category-card-icon"
+                                />
+                                <div class="category-name">${escapeHtml(cat.content.name)}</div>
+                            </a>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;

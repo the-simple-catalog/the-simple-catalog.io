@@ -33,24 +33,10 @@ const HomePage = {
             return;
         }
 
-        // Icon mapping: Maps category names to emoji icons for visual enhancement
-        // These icons appear above category names in the category cards
-        // Fallback icon (📦) is used in renderCategoryCard for unmapped categories
-        const categoryIcons = {
-            'Book': '📚',        // Books category
-            'Electronics': '💻',  // Electronics category
-            'Fashion': '👕',      // Fashion/Clothing category
-            'Home': '🏠',         // Home & Living category
-            'Sports': '⚽',       // Sports & Outdoors category
-            'Toys': '🎮',         // Toys & Games category
-            'Beauty': '💄',       // Beauty & Personal Care category
-            'Food': '🍕'          // Food & Beverages category
-        };
-
-        // Render homepage with hero banner and icon-enhanced category cards
+        // Render homepage with hero banner and category cards with product images
         // Structure:
         // 1. Hero Banner - Large gradient banner with CTA button
-        // 2. Category Grid - Grid of clickable category cards with icons
+        // 2. Category Grid - Grid of clickable category cards with product images as icons
         app.innerHTML = `
             <div class="container fade-in">
                 <!-- Hero Banner: Large visual banner with gradient background and decorative circles -->
@@ -79,10 +65,11 @@ const HomePage = {
                 <h2 class="category-section-title">Shop by Category</h2>
                 <div class="category-list">
                     ${rootCategories.map(category => {
-                        // Get icon for this category, use fallback (📦) if not mapped
-                        const icon = categoryIcons[category.content.name] || '📦';
-                        // Render category card with icon and name
-                        return HomePage.renderCategoryCard(category, icon);
+                        // Get product image for this category using search algorithm
+                        // Falls back to placeholder if no matching product found
+                        const imageUrl = CatalogManager.getCategoryIconImage(category);
+                        // Render category card with product image
+                        return HomePage.renderCategoryCard(category, imageUrl);
                     }).join('')}
                 </div>
             </div>
@@ -90,26 +77,31 @@ const HomePage = {
     },
 
     /**
-     * Render a single category card with icon
+     * Render a single category card with product image
      * Creates a clickable card that displays:
-     * - Large emoji icon at the top (48px)
-     * - Category name below the icon
+     * - Product image at the top (representative of the category)
+     * - Category name below the image
      *
      * @param {Object} category - Category object from CatalogManager
-     * @param {string} icon - Emoji icon to display (e.g., '📚', '💻', '📦')
+     * @param {string} imageUrl - Product image URL or placeholder URL
      * @returns {string} HTML string for the category card
      *
      * Card Structure:
      * ┌─────────────┐
-     * │     📚      │  <- Icon (48px emoji)
+     * │  [Product]  │  <- Product image
+     * │   Image     │
      * │    Books    │  <- Category name
      * └─────────────┘
      */
-    renderCategoryCard(category, icon) {
+    renderCategoryCard(category, imageUrl) {
         return `
             <a href="#/category/${category.id}" class="category-card">
-                <!-- Emoji icon displayed at 48px -->
-                <div class="category-card-icon">${icon}</div>
+                <!-- Product image as category icon -->
+                <img
+                    src="${escapeHtml(imageUrl)}"
+                    alt="${escapeHtml(category.content.name)}"
+                    class="category-card-icon"
+                />
                 <!-- Category name (escaped for security) -->
                 <div class="category-name">${escapeHtml(category.content.name)}</div>
             </a>

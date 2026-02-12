@@ -461,8 +461,12 @@ img {
 }
 
 .category-card-icon {
-    font-size: 48px;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
     margin-bottom: var(--spacing-xs);
+    background-color: var(--color-bg-secondary);
 }
 
 /* ===================================
@@ -854,7 +858,8 @@ img {
     }
 
     .category-card-icon {
-        font-size: 36px;
+        width: 80px;
+        height: 80px;
     }
 
     .page-title {
