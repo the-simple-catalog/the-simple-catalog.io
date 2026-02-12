@@ -22,11 +22,11 @@ const SearchPage = {
         }
 
         // Request sponsored products if there's a search query
-        if (query.length >= 3) {
-            Tracking.requestSponsoredProducts(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
+        const sponsoredAdsPromise = query.length >= 3
+            ? Tracking.requestSponsoredProducts(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
                 searchQuery: query
-            });
-        }
+            })
+            : null;
 
         const app = getEl('app');
 
@@ -43,13 +43,25 @@ const SearchPage = {
                     ${query ? `<h1 class="page-title">Search Results for "${escapeHtml(query)}"</h1>` : '<h1 class="page-title">Search</h1>'}
                 </div>
 
+                ${query.length >= 3 ? `<div id="sponsored-container">${Tracking.renderEmptySponsoredSection()}</div>` : ''}
+
                 <div id="search-results">
                     ${this.renderSearchResults(query)}
                 </div>
-
-                ${query.length >= 3 ? this.renderSponsoredSection() : ''}
             </div>
         `;
+
+        // Update sponsored section when ads load
+        if (sponsoredAdsPromise) {
+            sponsoredAdsPromise.then(adsData => {
+                const container = document.getElementById('sponsored-container');
+                if (container && adsData) {
+                    container.innerHTML = Tracking.renderSponsoredProducts(adsData);
+                }
+            }).catch(error => {
+                console.error('Failed to load sponsored products:', error);
+            });
+        }
     },
 
     /**
@@ -171,24 +183,6 @@ const SearchPage = {
             </div>
         `;
     },
-
-    /**
-     * Render sponsored products section
-     */
-    renderSponsoredSection() {
-        return `
-            <div class="sponsored-section">
-                <h2 class="sponsored-title">Sponsored Products</h2>
-                <div class="sponsored-grid">
-                    <div class="sponsored-placeholder">Ad Slot 1</div>
-                    <div class="sponsored-placeholder">Ad Slot 2</div>
-                    <div class="sponsored-placeholder">Ad Slot 3</div>
-                    <div class="sponsored-placeholder">Ad Slot 4</div>
-                </div>
-            </div>
-        `;
-    },
-
 
     /**
      * Add product to cart
