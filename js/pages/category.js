@@ -21,6 +21,9 @@ const CategoryPage = {
             categoryName: category.content.name
         });
 
+        // Track category view
+        Tracking.trackCategoryView(categoryId);
+
         // Request sponsored products
         Tracking.requestSponsoredProducts(PAGE_IDS.CATEGORY, PAGE_TYPES.CATEGORY, {
             categoryId

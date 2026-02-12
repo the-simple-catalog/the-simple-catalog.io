@@ -21,6 +21,9 @@ const ProductPage = {
       productName: product.content.name,
     });
 
+    // Track product view
+    Tracking.trackProductView(productId);
+
     // Request sponsored products
     Tracking.requestSponsoredProducts(PAGE_IDS.PRODUCT, PAGE_TYPES.PRODUCT, {
       productId,

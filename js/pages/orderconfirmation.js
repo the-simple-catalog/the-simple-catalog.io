@@ -37,6 +37,18 @@ const OrderConfirmationPage = {
         const order = JSON.parse(lastOrderStr);
         const orderDate = new Date(order.timestamp);
 
+        // Track post-payment
+        const orderData = {
+            orderId: order.orderId,
+            total: order.total,
+            items: order.items.map(item => ({
+                productId: item.product.id,
+                quantity: item.quantity,
+                price: item.subtotal / item.quantity
+            }))
+        };
+        Tracking.trackPostPayment(orderData);
+
         app.innerHTML = `
             <div class="container fade-in">
                 <div style="max-width: 800px; margin: 0 auto;">
