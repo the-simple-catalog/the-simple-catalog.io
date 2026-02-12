@@ -5,7 +5,16 @@
 const CatalogManager = {
     STORAGE_KEY_PRODUCTS: 'ecommerce_products',
     STORAGE_KEY_CATEGORIES: 'ecommerce_categories',
-    MAX_PRODUCTS: 1000,
+    MAX_PRODUCTS: 2000,
+    _categoryIconCache: {}, // In-memory cache for category icons
+
+    // Synonyms mapping for category icon search fallback
+    CATEGORY_SYNONYMS: {
+        'beauty': 'body care',
+        'fashion': 'dress',
+        'auto-moto': 'motorcycle',
+        'hair': 'hair care'
+    },
 
     /**
      * Load products from localStorage
@@ -91,6 +100,9 @@ const CatalogManager = {
 
             const success = this.saveProducts(validProducts);
 
+            // Clear icon cache after importing products
+            this._categoryIconCache = {};
+
             return {
                 success,
                 count: validProducts.length,
@@ -122,6 +134,9 @@ const CatalogManager = {
             }
 
             const success = this.saveCategories(validCategories);
+
+            // Clear icon cache after importing categories
+            this._categoryIconCache = {};
 
             return {
                 success,
@@ -248,11 +263,22 @@ const CatalogManager = {
         try {
             localStorage.removeItem(this.STORAGE_KEY_PRODUCTS);
             localStorage.removeItem(this.STORAGE_KEY_CATEGORIES);
+            this._categoryIconCache = {};
             return true;
         } catch (e) {
             console.error('Error clearing catalog:', e);
             return false;
         }
+    },
+
+    /**
+     * Clear the category icon cache
+     * Useful for debugging and testing
+     * @returns {boolean} Success status
+     */
+    clearCategoryIconCache() {
+        this._categoryIconCache = {};
+        return true;
     },
 
     /**
@@ -294,6 +320,84 @@ const CatalogManager = {
             promo: promo ? parseFloat(promo) : null,
             hasPromo: promo !== null && promo !== undefined
         };
+    },
+
+    /**
+     * Get category icon image from a representative product
+     * Searches for products matching the category name and returns the first product's image
+     *
+     * Algorithm:
+     * 1. Split category name by space, comma, or dash to get words
+     *    Example: "DVD, Blu-Ray" -> ["DVD", "Blu", "Ray"]
+     *    Example: "Auto-Moto" -> ["Auto", "Moto"]
+     * 2. For each word, check if there's a synonym first (priority)
+     * 3. If synonym exists, search with synonym
+     * 4. If no synonym or no results, search with original word
+     * 5. If still no results, return placeholder image with category name
+     *
+     * @param {Object} category - Category object
+     * @returns {string} Image URL of matching product or placeholder image
+     */
+    getCategoryIconImage(category) {
+        if (!category || !category.content || !category.content.name) {
+            return 'https://placehold.co/250x250?text=Category';
+        }
+
+        // Check cache first
+        const cacheKey = category.id;
+        if (this._categoryIconCache[cacheKey]) {
+            return this._categoryIconCache[cacheKey];
+        }
+
+        const categoryName = category.content.name;
+        let imageUrl;
+
+        // First, check if the full category name (lowercased) has a synonym
+        const lowerCategoryName = categoryName.toLowerCase();
+        const fullNameSynonym = this.CATEGORY_SYNONYMS[lowerCategoryName];
+        if (fullNameSynonym) {
+            const matchingProducts = this.searchProducts(fullNameSynonym, 1);
+            if (matchingProducts.length > 0 && matchingProducts[0].content.imageUrl) {
+                imageUrl = matchingProducts[0].content.imageUrl;
+                this._categoryIconCache[cacheKey] = imageUrl;
+                return imageUrl;
+            }
+        }
+
+        // Split by space, comma, or dash and trim whitespace
+        const words = categoryName.split(/[\s,\-]+/).map(w => w.trim()).filter(w => w);
+
+        // Try each word, checking synonyms first
+        for (const word of words) {
+            if (!word) continue;
+
+            const lowerWord = word.toLowerCase();
+
+            // Try synonym first if it exists
+            const synonym = this.CATEGORY_SYNONYMS[lowerWord];
+            if (synonym) {
+                const matchingProducts = this.searchProducts(synonym, 1);
+                if (matchingProducts.length > 0 && matchingProducts[0].content.imageUrl) {
+                    imageUrl = matchingProducts[0].content.imageUrl;
+                    this._categoryIconCache[cacheKey] = imageUrl;
+                    return imageUrl;
+                }
+            }
+
+            // If no synonym or synonym didn't work, try original word
+            const matchingProducts = this.searchProducts(word, 1);
+            if (matchingProducts.length > 0 && matchingProducts[0].content.imageUrl) {
+                imageUrl = matchingProducts[0].content.imageUrl;
+                this._categoryIconCache[cacheKey] = imageUrl;
+                return imageUrl;
+            }
+        }
+
+        // Fallback to placeholder with category name
+        const encodedName = encodeURIComponent(categoryName);
+        imageUrl = `https://placehold.co/250x250?text=${encodedName}`;
+        this._categoryIconCache[cacheKey] = imageUrl;
+        return imageUrl;
     }
 };
 
