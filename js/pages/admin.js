@@ -89,20 +89,6 @@ const AdminPage = {
                                 />
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Ads Server URL</label>
-                                <input
-                                    type="text"
-                                    id="setting-ads-url"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.adsServerUrl)}"
-                                    placeholder="Not used for now"
-                                />
-                                <small style="color: var(--text-secondary); font-size: 12px;">
-                                    Currently using console.log for ad serving
-                                </small>
-                            </div>
-
                             <button type="submit" class="btn btn-primary">
                                 Save Settings
                             </button>
@@ -124,6 +110,17 @@ const AdminPage = {
                                     class="form-input"
                                     value="${escapeHtml(settings.trackingUrl)}"
                                     placeholder="https://xxxxx.retail.mirakl.net"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ads Server URL</label>
+                                <input
+                                    type="text"
+                                    id="setting-ads-url"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.adsServerUrl)}"
+                                    placeholder="https://xxxxx.retailmedia.mirakl.net"
                                 />
                             </div>
 
@@ -316,13 +313,9 @@ const AdminPage = {
         event.preventDefault();
 
         const siteName = getEl('setting-site-name').value;
-        const trackingUrl = getEl('setting-tracking-url').value;
-        const adsServerUrl = getEl('setting-ads-url').value;
 
         const success = Settings.save({
-            siteName,
-            trackingUrl,
-            adsServerUrl
+            siteName
         });
 
         const messageDiv = getEl('settings-message');
@@ -392,6 +385,7 @@ const AdminPage = {
         event.preventDefault();
 
         const trackingUrl = getEl('setting-tracking-url').value.trim();
+        const adsServerUrl = getEl('setting-ads-url').value.trim();
         const customerId = getEl('setting-customer-id').value.trim();
         const pageIdsText = getEl('setting-page-ids').value.trim();
         const orderPrefix = getEl('setting-order-prefix').value.trim();
@@ -411,6 +405,7 @@ const AdminPage = {
 
         const success = Settings.save({
             trackingUrl,
+            adsServerUrl,
             t2sCustomerId: customerId,
             t2sPageIds: pageIds,
             orderPrefix
