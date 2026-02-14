@@ -2,11 +2,15 @@
 // Checkout Page - Payment and shipping info
 // ===================================
 
-const CheckoutPage = {
+import { getEl, formatPrice, navigateTo } from '../utils.js';
+import { Settings } from '../catalog.js';
+import { Cart } from '../cart.js';
+
+class CheckoutPage {
     /**
      * Render checkout page
      */
-    render() {
+    static render() {
         // No tracking on checkout page (as per spec)
 
         const app = getEl('app');
@@ -142,12 +146,12 @@ const CheckoutPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Place order (mocked - always succeeds)
      */
-    placeOrder() {
+    static placeOrder() {
         const messageDiv = getEl('checkout-message');
 
         // Validate forms
@@ -193,8 +197,9 @@ const CheckoutPage = {
                 Cart.clear();
 
                 // Navigate to order confirmation
-                Router.navigate('/order-confirmation');
+                navigateTo('/order-confirmation');
             }, 1500);
         }, 1500);
     }
-};
+}
+export { CheckoutPage };

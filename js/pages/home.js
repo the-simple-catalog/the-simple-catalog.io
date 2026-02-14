@@ -2,13 +2,17 @@
 // Homepage - Display root categories
 // ===================================
 
-const HomePage = {
+import { getEl, escapeHtml } from '../utils.js';
+import { CatalogManager, Settings } from '../catalog.js';
+import { Tracking } from '../tracking.js';
+
+class HomePage {
     /**
      * Render homepage
      */
-    render() {
+    static render() {
         // Track page view
-        Tracking.trackPageView(PAGE_IDS.HOMEPAGE, PAGE_TYPES.HOMEPAGE);
+        Tracking.trackPageView(Tracking.PAGE_IDS.HOMEPAGE, Tracking.PAGE_TYPES.HOMEPAGE);
 
         const app = getEl('app');
         const rootCategories = CatalogManager.getRootCategories();
@@ -36,23 +40,17 @@ const HomePage = {
         // Render homepage with hero banner and category cards with product images
         // Structure:
         // 1. Hero Banner - Large gradient banner with CTA button
-        // 2. Category Grid - Grid of clickable category cards with product images as icons
+        // 2. Features Section - 4 feature blocks highlighting key benefits
+        // 3. Category Grid - Grid of clickable category cards with product images as icons
         app.innerHTML = `
             <div class="container fade-in">
-                <!-- Hero Banner: Large visual banner with gradient background and decorative circles -->
-                <!-- Provides visual impact and main call-to-action for the homepage -->
+                <!-- Hero Banner: Large visual banner with background image and overlay -->
                 <div class="hero-banner">
                     <div class="hero-content">
-                        <!-- Site name as main heading -->
                         <h1 class="hero-title">Welcome to ${escapeHtml(Settings.getSetting('siteName'))}</h1>
-
-                        <!-- Subtitle describing the site's value proposition -->
                         <p class="hero-subtitle">Discover amazing products across all categories</p>
-
-                        <!-- Call-to-action button linking to search page -->
                         <a href="#/search" class="hero-cta">
                             Shop Now
-                            <!-- Right arrow icon for visual indication -->
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -124,46 +122,32 @@ const HomePage = {
                 <h2 class="category-section-title">Shop by Category</h2>
                 <div class="category-list">
                     ${rootCategories.map(category => {
-                        // Get product image for this category using search algorithm
-                        // Falls back to placeholder if no matching product found
+                        // Get product image for this category (falls back to placeholder)
                         const imageUrl = CatalogManager.getCategoryIconImage(category);
-                        // Render category card with product image
                         return HomePage.renderCategoryCard(category, imageUrl);
                     }).join('')}
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single category card with product image
-     * Creates a clickable card that displays:
-     * - Product image at the top (representative of the category)
-     * - Category name below the image
-     *
      * @param {Object} category - Category object from CatalogManager
      * @param {string} imageUrl - Product image URL or placeholder URL
      * @returns {string} HTML string for the category card
-     *
-     * Card Structure:
-     * ┌─────────────┐
-     * │  [Product]  │  <- Product image
-     * │   Image     │
-     * │    Books    │  <- Category name
-     * └─────────────┘
      */
-    renderCategoryCard(category, imageUrl) {
+    static renderCategoryCard(category, imageUrl) {
         return `
             <a href="#/category/${category.id}" class="category-card">
-                <!-- Product image as category icon -->
                 <img
                     src="${escapeHtml(imageUrl)}"
                     alt="${escapeHtml(category.content.name)}"
                     class="category-card-icon"
                 />
-                <!-- Category name (escaped for security) -->
                 <div class="category-name">${escapeHtml(category.content.name)}</div>
             </a>
         `;
     }
-};
+}
+export { HomePage };

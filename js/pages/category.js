@@ -2,21 +2,26 @@
 // Category Page - Display subcategories and products
 // ===================================
 
-const CategoryPage = {
+import { getEl, escapeHtml, formatPrice, showMessage, generateProductBadges } from '../utils.js';
+import { CatalogManager } from '../catalog.js';
+import { Cart } from '../cart.js';
+import { Tracking } from '../tracking.js';
+
+class CategoryPage {
     /**
      * Render category page
      */
-    render(params) {
+    static render(params) {
         const categoryId = params.categoryId;
         const category = CatalogManager.getCategoryById(categoryId);
 
         if (!category) {
-            this.renderNotFound(categoryId);
+            CategoryPage.renderNotFound(categoryId);
             return;
         }
 
         // Track page view
-        Tracking.trackPageView(PAGE_IDS.CATEGORY, PAGE_TYPES.CATEGORY, {
+        Tracking.trackPageView(Tracking.PAGE_IDS.CATEGORY, Tracking.PAGE_TYPES.CATEGORY, {
             categoryId,
             categoryName: category.content.name
         });
@@ -26,7 +31,7 @@ const CategoryPage = {
 
         // Request sponsored products
         const sponsoredAdsPromise = Tracking.requestSponsoredProducts(
-            PAGE_IDS.CATEGORY, PAGE_TYPES.CATEGORY, { categoryId }
+            Tracking.PAGE_IDS.CATEGORY, Tracking.PAGE_TYPES.CATEGORY, { categoryId }
         );
 
         const app = getEl('app');
@@ -56,16 +61,17 @@ const CategoryPage = {
             const container = document.getElementById('sponsored-container');
             if (container && adsData) {
                 container.innerHTML = Tracking.renderSponsoredProducts(adsData);
+                Tracking.attachSponsoredTracking(container);
             }
         }).catch(error => {
             console.error('Failed to load sponsored products:', error);
         });
-    },
+    }
 
     /**
      * Render breadcrumb navigation
      */
-    renderBreadcrumb(path) {
+    static renderBreadcrumb(path) {
         if (path.length === 0) return '';
 
         const breadcrumbHtml = [
@@ -74,12 +80,12 @@ const CategoryPage = {
         ].join('<span class="breadcrumb-separator">/</span>');
 
         return `<div class="breadcrumb">${breadcrumbHtml}</div>`;
-    },
+    }
 
     /**
      * Render subcategories section with product images
      */
-    renderSubcategories(categories) {
+    static renderSubcategories(categories) {
         return `
             <div style="margin-bottom: 32px;">
                 <h2 style="font-size: 20px; margin-bottom: 16px;">Subcategories</h2>
@@ -100,12 +106,12 @@ const CategoryPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render products grid
      */
-    renderProducts(products) {
+    static renderProducts(products) {
         return `
             <div>
                 <h2 style="font-size: 20px; margin-bottom: 16px;">Products</h2>
@@ -114,12 +120,12 @@ const CategoryPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single product card
      */
-    renderProductCard(product) {
+    static renderProductCard(product) {
         const brand = CatalogManager.getProductBrand(product);
         const price = CatalogManager.getProductPrice(product);
         const badges = generateProductBadges(product, false);
@@ -165,23 +171,23 @@ const CategoryPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render no products message
      */
-    renderNoProducts() {
+    static renderNoProducts() {
         return `
             <div class="message message-info">
                 No products found in this category.
             </div>
         `;
-    },
+    }
 
     /**
      * Render not found page
      */
-    renderNotFound(categoryId) {
+    static renderNotFound(categoryId) {
         const app = getEl('app');
         app.innerHTML = `
             <div class="container fade-in">
@@ -191,12 +197,12 @@ const CategoryPage = {
                 <a href="#/" class="btn btn-primary" style="margin-top: 16px;">Go to Homepage</a>
             </div>
         `;
-    },
+    }
 
     /**
      * Add product to cart
      */
-    addToCart(productId) {
+    static addToCart(productId) {
         const success = Cart.addItem(productId, 1);
         if (success) {
             showMessage('Product added to cart!', 'success');
@@ -204,4 +210,5 @@ const CategoryPage = {
             showMessage('Error adding product to cart', 'error');
         }
     }
-};
+}
+export { CategoryPage };

@@ -68,7 +68,7 @@ Routes are registered in `js/app.js` `registerRoutes()` function. Each page modu
 
 Each page follows this pattern:
 1. Located in `js/pages/*.js`
-2. Exports object with `render(params)` method
+2. Implemented as class with static `render(params)` method
 3. Render updates `#app` element innerHTML
 4. Handles tracking and ad serving calls
 
@@ -216,6 +216,26 @@ Always use provided utilities:
 - Use template literals for HTML generation
 - Consistent naming: camelCase for functions/variables
 
+### Modern JavaScript Patterns
+
+- **Use ES6 Classes**: All modules (CatalogManager, Cart, Router, Tracking, Settings, and page objects) are implemented as ES6 classes with static methods
+- **Private Fields**: Use private class fields (`#fieldName`) for internal state that shouldn't be accessed externally
+- **Static Methods**: All utility classes use static methods since they don't need instance state
+- Example class structure:
+```javascript
+class CatalogManager {
+    static #privateCache = {}; // Private static field
+    static PUBLIC_CONSTANT = 'value'; // Public constant
+
+    static getProducts() {
+        // Static method
+        return [];
+    }
+}
+```
+- **Class Benefits**: Better encapsulation, clearer intent, easier to refactor, and IDE-friendly
+- When adding new modules, always use class syntax with static methods
+
 ### Browser Support
 
 - **Target modern browsers only** - Primarily Google Chrome
@@ -243,15 +263,15 @@ Always use provided utilities:
 
 ### Adding Tracking for New Event
 
-1. Add method to `Tracking` object in `js/tracking.js`
-2. Call `this.sendTrackingEvent(eventData)` with required fields
+1. Add static method to `Tracking` class in `js/tracking.js`
+2. Call `Tracking.sendTrackingEvent(eventData)` with required fields
 3. Include: `cID`, `pageId`, `userId`, `userConsent`, `eventName`
 4. Test in console - should log event and make API call (if configured)
 
 ### Modifying Catalog Logic
 
 All catalog operations go through `CatalogManager` in `js/catalog.js`:
-- To add methods: extend the CatalogManager object
+- To add methods: add static methods to the CatalogManager class
 - Query methods should filter/map the products/categories arrays
 - Always validate data before saving to localStorage
 - Honor `MAX_PRODUCTS` limit (currently 2000)

@@ -2,13 +2,17 @@
 // Order Confirmation Page - Post-payment confirmation
 // ===================================
 
-const OrderConfirmationPage = {
+import { getEl, escapeHtml, formatPrice } from '../utils.js';
+import { CatalogManager } from '../catalog.js';
+import { Tracking } from '../tracking.js';
+
+class OrderConfirmationPage {
     /**
      * Render order confirmation page
      */
-    render() {
+    static render() {
         // Track page view
-        Tracking.trackPageView(PAGE_IDS.ORDER_CONFIRMATION, PAGE_TYPES.POSTPAYMENT);
+        Tracking.trackPageView(Tracking.PAGE_IDS.ORDER_CONFIRMATION, Tracking.PAGE_TYPES.POSTPAYMENT);
 
         const app = getEl('app');
 
@@ -131,12 +135,12 @@ const OrderConfirmationPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single order item
      */
-    renderOrderItem(item) {
+    static renderOrderItem(item) {
         const product = item.product;
         const brand = CatalogManager.getProductBrand(product);
 
@@ -161,4 +165,5 @@ const OrderConfirmationPage = {
             </div>
         `;
     }
-};
+}
+export { OrderConfirmationPage };

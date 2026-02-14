@@ -2,13 +2,18 @@
 // Cart Page - Shopping cart summary
 // ===================================
 
-const CartPage = {
+import { getEl, escapeHtml, formatPrice } from '../utils.js';
+import { CatalogManager } from '../catalog.js';
+import { Cart } from '../cart.js';
+import { Tracking } from '../tracking.js';
+
+class CartPage {
     /**
      * Render cart page
      */
-    render() {
+    static render() {
         // Track page view
-        Tracking.trackPageView(PAGE_IDS.CART, PAGE_TYPES.CART);
+        Tracking.trackPageView(Tracking.PAGE_IDS.CART, Tracking.PAGE_TYPES.CART);
 
         const app = getEl('app');
         const items = Cart.getItemsWithDetails();
@@ -103,12 +108,12 @@ const CartPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single cart item
      */
-    renderCartItem(item) {
+    static renderCartItem(item) {
         const product = item.product;
         const brand = CatalogManager.getProductBrand(product);
 
@@ -151,21 +156,22 @@ const CartPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Update item quantity
      */
-    updateQuantity(productId, newQuantity) {
+    static updateQuantity(productId, newQuantity) {
         Cart.updateQuantity(productId, newQuantity);
-        this.render(); // Re-render page
-    },
+        CartPage.render(); // Re-render page
+    }
 
     /**
      * Remove item from cart
      */
-    removeItem(productId) {
+    static removeItem(productId) {
         Cart.removeItem(productId);
-        this.render(); // Re-render page
+        CartPage.render(); // Re-render page
     }
-};
+}
+export { CartPage };

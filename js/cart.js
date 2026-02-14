@@ -2,37 +2,40 @@
 // Shopping Cart Manager
 // ===================================
 
-const Cart = {
-    STORAGE_KEY: 'ecommerce_cart',
+import { CatalogManager } from './catalog.js';
+import { Tracking } from './tracking.js';
+
+class Cart {
+    static #STORAGE_KEY = 'ecommerce_cart'; // Private
 
     /**
      * Get cart data from localStorage
      * @returns {Array} Array of cart items
      */
-    getItems() {
+    static getItems() {
         try {
-            const data = localStorage.getItem(this.STORAGE_KEY);
+            const data = localStorage.getItem(Cart.#STORAGE_KEY);
             return data ? JSON.parse(data) : [];
         } catch (e) {
             console.error('Error loading cart:', e);
             return [];
         }
-    },
+    }
 
     /**
      * Save cart data to localStorage
      * @param {Array} items - Array of cart items
      * @returns {boolean} Success status
      */
-    saveItems(items) {
+    static saveItems(items) {
         try {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
+            localStorage.setItem(Cart.#STORAGE_KEY, JSON.stringify(items));
             return true;
         } catch (e) {
             console.error('Error saving cart:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Add product to cart
@@ -40,7 +43,7 @@ const Cart = {
      * @param {number} quantity - Quantity to add
      * @returns {boolean} Success status
      */
-    addItem(productId, quantity = 1) {
+    static addItem(productId, quantity = 1) {
         try {
             const product = CatalogManager.getProductById(productId);
             if (!product) {
@@ -80,14 +83,14 @@ const Cart = {
             console.error('Error adding to cart:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Remove product from cart
      * @param {string} productId - Product ID
      * @returns {boolean} Success status
      */
-    removeItem(productId) {
+    static removeItem(productId) {
         try {
             const items = this.getItems();
             const filtered = items.filter(item => item.productId !== productId);
@@ -103,7 +106,7 @@ const Cart = {
             console.error('Error removing from cart:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Update item quantity
@@ -111,7 +114,7 @@ const Cart = {
      * @param {number} quantity - New quantity
      * @returns {boolean} Success status
      */
-    updateQuantity(productId, quantity) {
+    static updateQuantity(productId, quantity) {
         try {
             if (quantity <= 0) {
                 return this.removeItem(productId);
@@ -137,22 +140,22 @@ const Cart = {
             console.error('Error updating quantity:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Get total item count in cart
      * @returns {number} Total count
      */
-    getItemCount() {
+    static getItemCount() {
         const items = this.getItems();
         return items.reduce((total, item) => total + item.quantity, 0);
-    },
+    }
 
     /**
      * Get cart with full product details
      * @returns {Array} Array of cart items with product details
      */
-    getItemsWithDetails() {
+    static getItemsWithDetails() {
         const items = this.getItems();
         return items.map(item => {
             const product = CatalogManager.getProductById(item.productId);
@@ -165,13 +168,13 @@ const Cart = {
                 subtotal: (price.hasPromo ? price.promo : price.regular) * item.quantity
             };
         }).filter(item => item.product); // Filter out items with deleted products
-    },
+    }
 
     /**
      * Calculate cart total
      * @returns {Object} Total information
      */
-    getTotal() {
+    static getTotal() {
         const items = this.getItemsWithDetails();
         const subtotal = items.reduce((total, item) => total + item.subtotal, 0);
 
@@ -181,15 +184,15 @@ const Cart = {
             shipping: 0, // Not implemented in this demo
             total: subtotal
         };
-    },
+    }
 
     /**
      * Clear cart
      * @returns {boolean} Success status
      */
-    clear() {
+    static clear() {
         try {
-            localStorage.removeItem(this.STORAGE_KEY);
+            localStorage.removeItem(Cart.#STORAGE_KEY);
 
             // Update cart count in header
             if (window.updateCartCount) {
@@ -202,4 +205,5 @@ const Cart = {
             return false;
         }
     }
-};
+}
+export { Cart };

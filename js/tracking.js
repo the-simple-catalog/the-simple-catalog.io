@@ -45,7 +45,32 @@
 //
 // ===================================
 
-const Tracking = {
+import { Settings, CatalogManager } from './catalog.js';
+import { escapeHtml, formatPrice, generateProductBadges } from './utils.js';
+
+class Tracking {
+    // Page IDs as constants for consistency
+    static PAGE_IDS = {
+        HOMEPAGE: '1000',
+        SEARCH: '2000',
+        CATEGORY: '1400',
+        PRODUCT: '1200',
+        CART: '1600',
+        PAYMENT: '3200',
+        ORDER_CONFIRMATION: '2400'
+    };
+
+    // Page types for tracking
+    static PAGE_TYPES = {
+        HOMEPAGE: 'homepage',
+        CATEGORY: 'category',
+        SEARCH: 'search',
+        PRODUCT: 'product',
+        CART: 'cart',
+        PAYMENT: 'payment',
+        POSTPAYMENT: 'postpayment'
+    };
+
     /**
      * Send tracking event to T2S API
      * @param {Object} eventData - Event data object with tracking parameters
@@ -58,7 +83,7 @@ const Tracking = {
      * - url: Current page URL (window.location.href)
      * - referer: Previous page URL (document.referrer) - only if available
      */
-    sendTrackingEvent(eventData) {
+    static sendTrackingEvent(eventData) {
         try {
             const settings = Settings.get();
             const trackingUrl = settings.trackingUrl;
@@ -108,7 +133,7 @@ const Tracking = {
         } catch (error) {
             console.error('❌ [TRACKING] Exception:', error);
         }
-    },
+    }
 
     /**
      * Track category view
@@ -125,7 +150,7 @@ const Tracking = {
      * - url: Current page URL (auto-added)
      * - referer: Previous page URL (auto-added if available)
      */
-    trackCategoryView(categoryId) {
+    static trackCategoryView(categoryId) {
         const settings = Settings.get();
         const pageIdValue = settings.t2sPageIds?.category || 1400;
 
@@ -138,7 +163,7 @@ const Tracking = {
             userId: Settings.getTID(),
             eventName: 'view'
         });
-    },
+    }
 
     /**
      * Track search view
@@ -156,7 +181,7 @@ const Tracking = {
      * - url: Current page URL (auto-added)
      * - referer: Previous page URL (auto-added if available)
      */
-    trackSearchView(searchQuery, productIds = []) {
+    static trackSearchView(searchQuery, productIds = []) {
         const settings = Settings.get();
         const pageIdValue = settings.t2sPageIds?.search || 2000;
 
@@ -175,7 +200,7 @@ const Tracking = {
         }
 
         this.sendTrackingEvent(eventData);
-    },
+    }
 
     /**
      * Track product view
@@ -191,7 +216,7 @@ const Tracking = {
      * - url: Current page URL (auto-added)
      * - referer: Previous page URL (auto-added if available)
      */
-    trackProductView(productId) {
+    static trackProductView(productId) {
         const settings = Settings.get();
         const pageIdValue = settings.t2sPageIds?.product || 1200;
 
@@ -203,7 +228,7 @@ const Tracking = {
             userId: Settings.getTID(),
             eventName: 'view'
         });
-    },
+    }
 
     /**
      * Track add to cart
@@ -223,7 +248,7 @@ const Tracking = {
      * - url: Current page URL (auto-added)
      * - referer: Previous page URL (auto-added if available)
      */
-    trackAddToCart(productId, quantity, price) {
+    static trackAddToCart(productId, quantity, price) {
         const settings = Settings.get();
         const pageIdValue = settings.t2sPageIds?.cart || 1600;
 
@@ -237,7 +262,7 @@ const Tracking = {
             basketAmount: price * quantity,
             productsQuantity: quantity
         });
-    },
+    }
 
     /**
      * Track post-payment (order confirmation)
@@ -267,7 +292,7 @@ const Tracking = {
      * - Product C: quantity=3, unitPrice=40 → priceList item = 120
      * Result: priceList="90|45.50|120", productsQuantity="2|1|3", basketAmount=255.50
      */
-    trackPostPayment(orderData) {
+    static trackPostPayment(orderData) {
         const settings = Settings.get();
         const pageIdValue = settings.t2sPageIds?.postPayment || 2400;
 
@@ -288,7 +313,7 @@ const Tracking = {
             basketAmount: orderData.total,
             orderId: orderData.orderId
         });
-    },
+    }
 
     /**
      * Track page view (backwards compatibility)
@@ -296,14 +321,14 @@ const Tracking = {
      * @param {string} pageType - Page type
      * @param {Object} additionalData - Additional tracking data
      */
-    trackPageView(pageId, pageType, additionalData = {}) {
+    static trackPageView(pageId, pageType, additionalData = {}) {
         console.log('📊 [TRACKING] Page View:', {
             pageId,
             pageType,
             timestamp: new Date().toISOString(),
             ...additionalData
         });
-    },
+    }
 
     /**
      * Request sponsored products from Ads API
@@ -312,7 +337,7 @@ const Tracking = {
      * @param {Object} context - Additional context (categoryId, searchQuery, productId)
      * @returns {Promise<Object|null>} Promise resolving to ads data or null on error
      */
-    async requestSponsoredProducts(pageId, pageType, context = {}) {
+    static async requestSponsoredProducts(pageId, pageType, context = {}) {
         try {
             const settings = Settings.get();
             const adsUrl = settings.adsServerUrl;
@@ -331,11 +356,11 @@ const Tracking = {
             };
 
             // Add page-specific context
-            if (pageType === PAGE_TYPES.CATEGORY && context.categoryId) {
+            if (pageType === Tracking.PAGE_TYPES.CATEGORY && context.categoryId) {
                 requestBody.categoryId = context.categoryId;
-            } else if (pageType === PAGE_TYPES.SEARCH && context.searchQuery) {
+            } else if (pageType === Tracking.PAGE_TYPES.SEARCH && context.searchQuery) {
                 requestBody.keywords = context.searchQuery;
-            } else if (pageType === PAGE_TYPES.PRODUCT && context.productId) {
+            } else if (pageType === Tracking.PAGE_TYPES.PRODUCT && context.productId) {
                 requestBody.productId = context.productId;
             }
 
@@ -362,13 +387,13 @@ const Tracking = {
             console.error('❌ [AD SERVING] Exception:', error);
             return null;
         }
-    },
+    }
 
     /**
      * Track sponsored product impression
      * @param {string} adId - Ad ID from the Ads API
      */
-    trackSponsoredImpression(adId) {
+    static trackSponsoredImpression(adId) {
         const settings = Settings.get();
         this.sendTrackingEvent({
             cID: settings.t2sCustomerId,
@@ -376,13 +401,13 @@ const Tracking = {
             adId: adId,
             userId: Settings.getTID()
         });
-    },
+    }
 
     /**
      * Track sponsored product click
      * @param {string} adId - Ad ID from the Ads API
      */
-    trackSponsoredClick(adId) {
+    static trackSponsoredClick(adId) {
         const settings = Settings.get();
         this.sendTrackingEvent({
             cID: settings.t2sCustomerId,
@@ -390,14 +415,14 @@ const Tracking = {
             adId: adId,
             userId: Settings.getTID()
         });
-    },
+    }
 
     /**
      * Render sponsored products section
      * @param {Object} adsData - Response from Ads API
      * @returns {string} HTML string
      */
-    renderSponsoredProducts(adsData) {
+    static renderSponsoredProducts(adsData) {
         if (!adsData || !adsData.productAds || adsData.productAds.length === 0) {
             return this.renderEmptySponsoredSection();
         }
@@ -410,14 +435,14 @@ const Tracking = {
                 ${adUnitsHtml}
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single ad unit
      * @param {Object} adUnit - Ad unit object with adUnitId, adUnitSize, and products array
      * @returns {string} HTML string
      */
-    renderAdUnit(adUnit) {
+    static renderAdUnit(adUnit) {
         const { adUnitId, adUnitSize, products } = adUnit;
         const slots = [];
 
@@ -441,14 +466,14 @@ const Tracking = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single sponsored product
      * @param {Object} sponsoredProduct - Sponsored product object
      * @returns {string} HTML string
      */
-    renderSponsoredProduct(sponsoredProduct) {
+    static renderSponsoredProduct(sponsoredProduct) {
         const { productId, adId, digitalServiceAct } = sponsoredProduct;
         const product = CatalogManager.getProductById(productId);
 
@@ -471,20 +496,18 @@ const Tracking = {
             <div class="product-card">
                 <div class="product-card-image-wrapper">
                     ${badges}
-                    <a href="#/product/${escapeHtml(productId)}"
-                       onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;">
+                    <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}">
                         <img
                             src="${escapeHtml(imageUrl)}"
                             alt="${escapeHtml(productName)}"
                             class="product-card-image"
-                            onload="Tracking.trackSponsoredImpression('${escapeHtml(adId)}')"
+                            data-ad-impression="${escapeHtml(adId)}"
                             onerror="this.src='https://placehold.co/250x250?text=${encodeURIComponent(productId)}'"
                         />
                     </a>
                     <div class="product-card-info-overlay">
                         <div class="product-card-overlay-description">${escapeHtml(description)}</div>
-                        <a href="#/product/${escapeHtml(productId)}"
-                           onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;"
+                        <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}"
                            class="product-card-overlay-cta">
                             View Details
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -495,8 +518,7 @@ const Tracking = {
                 </div>
                 <div class="product-card-content">
                     ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
-                    <a href="#/product/${escapeHtml(productId)}"
-                       onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;">
+                    <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}">
                         <div class="product-name">${escapeHtml(productName)}</div>
                     </a>
                     ${price ? `
@@ -511,21 +533,42 @@ const Tracking = {
                 </div>
             </div>
         `;
-    },
+    }
+
+    /**
+     * Attach event listeners for sponsored product impression and click tracking
+     * Call this after inserting sponsored product HTML into the DOM.
+     * @param {HTMLElement} container - The container element holding sponsored product HTML
+     */
+    static attachSponsoredTracking(container) {
+        if (!container) return;
+
+        // Attach impression tracking on image load
+        container.querySelectorAll('[data-ad-impression]').forEach(img => {
+            const adId = img.dataset.adImpression;
+            img.addEventListener('load', () => Tracking.trackSponsoredImpression(adId));
+        });
+
+        // Attach click tracking on ad links
+        container.querySelectorAll('[data-ad-click]').forEach(link => {
+            const adId = link.dataset.adClick;
+            link.addEventListener('click', () => Tracking.trackSponsoredClick(adId));
+        });
+    }
 
     /**
      * Render an empty ad slot placeholder
      * @returns {string} HTML string
      */
-    renderEmptySlot() {
+    static renderEmptySlot() {
         return '<div class="sponsored-placeholder">Ad Slot</div>';
-    },
+    }
 
     /**
      * Render empty sponsored section with placeholders
      * @returns {string} HTML string
      */
-    renderEmptySponsoredSection() {
+    static renderEmptySponsoredSection() {
         return `
             <div class="sponsored-section">
                 <h2 class="sponsored-title">Sponsored Products</h2>
@@ -538,26 +581,6 @@ const Tracking = {
             </div>
         `;
     }
-};
+}
 
-// Page IDs as constants for consistency
-const PAGE_IDS = {
-    HOMEPAGE: '1000',
-    SEARCH: '2000',
-    CATEGORY: '1400',
-    PRODUCT: '1200',
-    CART: '1600',
-    PAYMENT: '3200',
-    ORDER_CONFIRMATION: '2400'
-};
-
-// Page types for tracking
-const PAGE_TYPES = {
-    HOMEPAGE: 'homepage',
-    CATEGORY: 'category',
-    SEARCH: 'search',
-    PRODUCT: 'product',
-    CART: 'cart',
-    PAYMENT: 'payment',
-    POSTPAYMENT: 'postpayment'
-};
+export { Tracking };

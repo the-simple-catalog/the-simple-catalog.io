@@ -2,51 +2,53 @@
 // Router - SPA routing system
 // ===================================
 
-const Router = {
-    routes: {},
+import { parseRoute, getEl } from './utils.js';
+
+class Router {
+    static #routes = {}; // Private
 
     /**
      * Register a route handler
      * @param {string} path - Route path pattern
      * @param {Function} handler - Handler function
      */
-    register(path, handler) {
-        this.routes[path] = handler;
-    },
+    static register(path, handler) {
+        Router.#routes[path] = handler;
+    }
 
     /**
      * Navigate to a specific route
      * @param {string} path - Route path
      */
-    navigate(path) {
+    static navigate(path) {
         window.location.hash = path;
-    },
+    }
 
     /**
      * Match current route and execute handler
      */
-    resolve() {
+    static resolve() {
         const route = parseRoute();
         const path = route.path;
 
         // Try exact match first
-        if (this.routes[path]) {
-            this.routes[path](route.params);
+        if (Router.#routes[path]) {
+            Router.#routes[path](route.params);
             return;
         }
 
         // Try pattern matching
-        for (let pattern in this.routes) {
-            const match = this.matchPattern(pattern, path);
+        for (let pattern in Router.#routes) {
+            const match = Router.matchPattern(pattern, path);
             if (match) {
-                this.routes[pattern]({ ...route.params, ...match });
+                Router.#routes[pattern]({ ...route.params, ...match });
                 return;
             }
         }
 
         // No match found - show 404
-        this.show404();
-    },
+        Router.show404();
+    }
 
     /**
      * Match route pattern with path
@@ -54,7 +56,7 @@ const Router = {
      * @param {string} path - Current path
      * @returns {Object|null} Matched parameters or null
      */
-    matchPattern(pattern, path) {
+    static matchPattern(pattern, path) {
         const patternParts = pattern.split('/');
         const pathParts = path.split('/');
 
@@ -76,12 +78,12 @@ const Router = {
         }
 
         return params;
-    },
+    }
 
     /**
      * Show 404 page
      */
-    show404() {
+    static show404() {
         const app = getEl('app');
         if (app) {
             app.innerHTML = `
@@ -94,20 +96,21 @@ const Router = {
                 </div>
             `;
         }
-    },
+    }
 
     /**
      * Initialize router
      */
-    init() {
+    static init() {
         // Listen for hash changes
-        window.addEventListener('hashchange', () => this.resolve());
+        window.addEventListener('hashchange', () => Router.resolve());
 
         // Handle initial load
         if (!window.location.hash) {
             window.location.hash = '#/';
         } else {
-            this.resolve();
+            Router.resolve();
         }
     }
-};
+}
+export { Router };

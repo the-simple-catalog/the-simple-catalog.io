@@ -2,25 +2,27 @@
 // Catalog Manager - Handle products and categories
 // ===================================
 
-const CatalogManager = {
-    STORAGE_KEY_PRODUCTS: 'ecommerce_products',
-    STORAGE_KEY_CATEGORIES: 'ecommerce_categories',
-    MAX_PRODUCTS: 3000,
-    _categoryIconCache: {}, // In-memory cache for category icons
+import { generateUUID } from './utils.js';
+
+class CatalogManager {
+    static STORAGE_KEY_PRODUCTS = 'ecommerce_products';
+    static STORAGE_KEY_CATEGORIES = 'ecommerce_categories';
+    static MAX_PRODUCTS = 3000;
+    static #categoryIconCache = {}; // In-memory cache for category icons (private)
 
     // Synonyms mapping for category icon search fallback
-    CATEGORY_SYNONYMS: {
+    static CATEGORY_SYNONYMS = {
         'beauty': 'body care',
         'fashion': 'dress',
         'auto-moto': 'motorcycle',
         'hair': 'hair care'
-    },
+    };
 
     /**
      * Load products from localStorage
      * @returns {Array} Array of products
      */
-    getProducts() {
+    static getProducts() {
         try {
             const data = localStorage.getItem(this.STORAGE_KEY_PRODUCTS);
             return data ? JSON.parse(data) : [];
@@ -28,13 +30,13 @@ const CatalogManager = {
             console.error('Error loading products:', e);
             return [];
         }
-    },
+    }
 
     /**
      * Load categories from localStorage
      * @returns {Array} Array of categories
      */
-    getCategories() {
+    static getCategories() {
         try {
             const data = localStorage.getItem(this.STORAGE_KEY_CATEGORIES);
             return data ? JSON.parse(data) : [];
@@ -42,14 +44,14 @@ const CatalogManager = {
             console.error('Error loading categories:', e);
             return [];
         }
-    },
+    }
 
     /**
      * Save products to localStorage
      * @param {Array} products - Array of products
      * @returns {boolean} Success status
      */
-    saveProducts(products) {
+    static saveProducts(products) {
         try {
             if (products.length > this.MAX_PRODUCTS) {
                 console.error(`Product limit exceeded. Cannot save ${products.length} products (max: ${this.MAX_PRODUCTS})`);
@@ -61,14 +63,14 @@ const CatalogManager = {
             console.error('Error saving products:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Save categories to localStorage
      * @param {Array} categories - Array of categories
      * @returns {boolean} Success status
      */
-    saveCategories(categories) {
+    static saveCategories(categories) {
         try {
             localStorage.setItem(this.STORAGE_KEY_CATEGORIES, JSON.stringify(categories));
             return true;
@@ -76,7 +78,7 @@ const CatalogManager = {
             console.error('Error saving categories:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Import products from JSON array
@@ -84,7 +86,7 @@ const CatalogManager = {
      * @param {boolean} appendMode - If true, append to existing products; if false, replace all products
      * @returns {Object} Result with success status, count, and mode
      */
-    importProducts(productsData, appendMode = false) {
+    static importProducts(productsData, appendMode = false) {
         try {
             if (!Array.isArray(productsData)) {
                 return { success: false, error: 'Invalid data format. Expected array.' };
@@ -145,7 +147,7 @@ const CatalogManager = {
             const success = this.saveProducts(finalProducts);
 
             // Clear icon cache after importing products
-            this._categoryIconCache = {};
+            CatalogManager.#categoryIconCache = {};
 
             const mode = appendMode ? 'append' : 'replace';
             let message;
@@ -171,14 +173,14 @@ const CatalogManager = {
         } catch (e) {
             return { success: false, error: e.message };
         }
-    },
+    }
 
     /**
      * Import categories from JSON array
      * @param {Array} categoriesData - Raw categories JSON array
      * @returns {Object} Result with success status and count
      */
-    importCategories(categoriesData) {
+    static importCategories(categoriesData) {
         try {
             if (!Array.isArray(categoriesData)) {
                 return { success: false, error: 'Invalid data format. Expected array.' };
@@ -196,7 +198,7 @@ const CatalogManager = {
             const success = this.saveCategories(validCategories);
 
             // Clear icon cache after importing categories
-            this._categoryIconCache = {};
+            CatalogManager.#categoryIconCache = {};
 
             return {
                 success,
@@ -206,58 +208,58 @@ const CatalogManager = {
         } catch (e) {
             return { success: false, error: e.message };
         }
-    },
+    }
 
     /**
      * Get product by ID
      * @param {string} productId - Product ID
      * @returns {Object|null} Product object or null
      */
-    getProductById(productId) {
+    static getProductById(productId) {
         const products = this.getProducts();
         return products.find(p => p.id === productId) || null;
-    },
+    }
 
     /**
      * Get category by ID
      * @param {string} categoryId - Category ID
      * @returns {Object|null} Category object or null
      */
-    getCategoryById(categoryId) {
+    static getCategoryById(categoryId) {
         const categories = this.getCategories();
         return categories.find(c => c.id === categoryId) || null;
-    },
+    }
 
     /**
      * Get products by category ID
      * @param {string} categoryId - Category ID
      * @returns {Array} Array of products
      */
-    getProductsByCategory(categoryId) {
+    static getProductsByCategory(categoryId) {
         const products = this.getProducts();
         return products.filter(product => {
             const categories = product.content.categories || [];
             return categories.includes(categoryId);
         });
-    },
+    }
 
     /**
      * Get child categories of a parent category
      * @param {string} parentId - Parent category ID
      * @returns {Array} Array of child categories
      */
-    getChildCategories(parentId) {
+    static getChildCategories(parentId) {
         const categories = this.getCategories();
         return categories.filter(cat => cat.content.parentId === parentId);
-    },
+    }
 
     /**
      * Get root categories (parentId = "root")
      * @returns {Array} Array of root categories
      */
-    getRootCategories() {
+    static getRootCategories() {
         return this.getChildCategories('root');
-    },
+    }
 
     /**
      * Search products by name
@@ -265,7 +267,7 @@ const CatalogManager = {
      * @param {number} minLength - Minimum query length
      * @returns {Array} Array of matching products
      */
-    searchProducts(query, minLength = 3) {
+    static searchProducts(query, minLength = 3) {
         if (!query || query.length < minLength) {
             return [];
         }
@@ -278,14 +280,14 @@ const CatalogManager = {
             const description = (product.content.shortDescription || '').toLowerCase();
             return name.includes(lowerQuery) || description.includes(lowerQuery);
         });
-    },
+    }
 
     /**
      * Get category breadcrumb path
      * @param {string} categoryId - Category ID
      * @returns {Array} Array of category objects from root to current
      */
-    getCategoryPath(categoryId) {
+    static getCategoryPath(categoryId) {
         const path = [];
         let currentId = categoryId;
 
@@ -298,13 +300,13 @@ const CatalogManager = {
         }
 
         return path;
-    },
+    }
 
     /**
      * Get catalog statistics
      * @returns {Object} Statistics object
      */
-    getStats() {
+    static getStats() {
         const products = this.getProducts();
         const categories = this.getCategories();
 
@@ -313,40 +315,40 @@ const CatalogManager = {
             categoryCount: categories.length,
             rootCategoryCount: this.getRootCategories().length
         };
-    },
+    }
 
     /**
      * Clear all catalog data
      * @returns {boolean} Success status
      */
-    clearAll() {
+    static clearAll() {
         try {
             localStorage.removeItem(this.STORAGE_KEY_PRODUCTS);
             localStorage.removeItem(this.STORAGE_KEY_CATEGORIES);
-            this._categoryIconCache = {};
+            CatalogManager.#categoryIconCache = {};
             return true;
         } catch (e) {
             console.error('Error clearing catalog:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Clear the category icon cache
      * Useful for debugging and testing
      * @returns {boolean} Success status
      */
-    clearCategoryIconCache() {
-        this._categoryIconCache = {};
+    static clearCategoryIconCache() {
+        CatalogManager.#categoryIconCache = {};
         return true;
-    },
+    }
 
     /**
      * Get product brand from characteristics
      * @param {Object} product - Product object
      * @returns {string|null} Brand name or null
      */
-    getProductBrand(product) {
+    static getProductBrand(product) {
         if (!product || !product.content || !product.content.characteristics) {
             return null;
         }
@@ -360,14 +362,14 @@ const CatalogManager = {
         }
 
         return null;
-    },
+    }
 
     /**
      * Get product price (considering promo)
      * @param {Object} product - Product object
      * @returns {Object} Price object with regular and promo prices
      */
-    getProductPrice(product) {
+    static getProductPrice(product) {
         if (!product || !product.content) {
             return { regular: null, promo: null };
         }
@@ -380,7 +382,7 @@ const CatalogManager = {
             promo: promo ? parseFloat(promo) : null,
             hasPromo: promo !== null && promo !== undefined
         };
-    },
+    }
 
     /**
      * Get category icon image from a representative product
@@ -398,15 +400,15 @@ const CatalogManager = {
      * @param {Object} category - Category object
      * @returns {string} Image URL of matching product or placeholder image
      */
-    getCategoryIconImage(category) {
+    static getCategoryIconImage(category) {
         if (!category || !category.content || !category.content.name) {
             return 'https://placehold.co/250x250?text=Category';
         }
 
         // Check cache first
         const cacheKey = category.id;
-        if (this._categoryIconCache[cacheKey]) {
-            return this._categoryIconCache[cacheKey];
+        if (CatalogManager.#categoryIconCache[cacheKey]) {
+            return CatalogManager.#categoryIconCache[cacheKey];
         }
 
         const categoryName = category.content.name;
@@ -419,7 +421,7 @@ const CatalogManager = {
             const matchingProducts = this.searchProducts(fullNameSynonym, 1);
             if (matchingProducts.length > 0 && matchingProducts[0].content.imageUrl) {
                 imageUrl = matchingProducts[0].content.imageUrl;
-                this._categoryIconCache[cacheKey] = imageUrl;
+                CatalogManager.#categoryIconCache[cacheKey] = imageUrl;
                 return imageUrl;
             }
         }
@@ -439,7 +441,7 @@ const CatalogManager = {
                 const matchingProducts = this.searchProducts(synonym, 1);
                 if (matchingProducts.length > 0 && matchingProducts[0].content.imageUrl) {
                     imageUrl = matchingProducts[0].content.imageUrl;
-                    this._categoryIconCache[cacheKey] = imageUrl;
+                    CatalogManager.#categoryIconCache[cacheKey] = imageUrl;
                     return imageUrl;
                 }
             }
@@ -448,7 +450,7 @@ const CatalogManager = {
             const matchingProducts = this.searchProducts(word, 1);
             if (matchingProducts.length > 0 && matchingProducts[0].content.imageUrl) {
                 imageUrl = matchingProducts[0].content.imageUrl;
-                this._categoryIconCache[cacheKey] = imageUrl;
+                CatalogManager.#categoryIconCache[cacheKey] = imageUrl;
                 return imageUrl;
             }
         }
@@ -456,16 +458,16 @@ const CatalogManager = {
         // Fallback to placeholder with category name
         const encodedName = encodeURIComponent(categoryName);
         imageUrl = `https://placehold.co/250x250?text=${encodedName}`;
-        this._categoryIconCache[cacheKey] = imageUrl;
+        CatalogManager.#categoryIconCache[cacheKey] = imageUrl;
         return imageUrl;
     }
-};
+}
 
 // Settings Manager for site configuration
-const Settings = {
-    STORAGE_KEY: 'ecommerce_settings',
+class Settings {
+    static #STORAGE_KEY = 'ecommerce_settings'; // Private
 
-    DEFAULT_SETTINGS: {
+    static DEFAULT_SETTINGS = {
         siteName: 'E-Commerce Demo',
         trackingUrl: 'https://xxxxx.retail.mirakl.net',
         adsServerUrl: 'https://xxxxx.retailmedia.mirakl.net',
@@ -478,55 +480,55 @@ const Settings = {
             postPayment: 2400
         },
         orderPrefix: 'ORDER_'
-    },
+    };
 
     /**
      * Get all settings
      * @returns {Object} Settings object
      */
-    get() {
+    static get() {
         try {
-            const data = localStorage.getItem(this.STORAGE_KEY);
+            const data = localStorage.getItem(Settings.#STORAGE_KEY);
             const stored = data ? JSON.parse(data) : {};
-            return { ...this.DEFAULT_SETTINGS, ...stored };
+            return { ...Settings.DEFAULT_SETTINGS, ...stored };
         } catch (e) {
             console.error('Error loading settings:', e);
-            return { ...this.DEFAULT_SETTINGS };
+            return { ...Settings.DEFAULT_SETTINGS };
         }
-    },
+    }
 
     /**
      * Save settings
      * @param {Object} settings - Settings object
      * @returns {boolean} Success status
      */
-    save(settings) {
+    static save(settings) {
         try {
-            const current = this.get();
+            const current = Settings.get();
             const updated = { ...current, ...settings };
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
+            localStorage.setItem(Settings.#STORAGE_KEY, JSON.stringify(updated));
             return true;
         } catch (e) {
             console.error('Error saving settings:', e);
             return false;
         }
-    },
+    }
 
     /**
      * Get a specific setting
      * @param {string} key - Setting key
      * @returns {*} Setting value
      */
-    getSetting(key) {
-        const settings = this.get();
+    static getSetting(key) {
+        const settings = Settings.get();
         return settings[key];
-    },
+    }
 
     /**
      * Get or create user tracking ID (tID)
      * @returns {string} User tID from localStorage or newly generated
      */
-    getTID() {
+    static getTID() {
         try {
             let tid = localStorage.getItem('user_tid');
             if (!tid) {
@@ -539,13 +541,13 @@ const Settings = {
             // Return a temporary UUID if localStorage fails
             return generateUUID();
         }
-    },
+    }
 
     /**
      * Generate and save a new tracking ID
      * @returns {string} Newly generated tID
      */
-    generateNewTID() {
+    static generateNewTID() {
         try {
             const newTID = generateUUID();
             localStorage.setItem('user_tid', newTID);
@@ -554,22 +556,22 @@ const Settings = {
             console.error('Error generating new tID:', e);
             return generateUUID();
         }
-    },
+    }
 
     /**
      * Reset tID (alias for generateNewTID)
      * @returns {string} Newly generated tID
      */
-    resetTID() {
-        return this.generateNewTID();
-    },
+    static resetTID() {
+        return Settings.generateNewTID();
+    }
 
     /**
      * Save a custom tID value
      * @param {string} customTID - Custom tID to save
      * @returns {boolean} Success status
      */
-    saveTID(customTID) {
+    static saveTID(customTID) {
         if (!customTID || typeof customTID !== 'string') {
             console.error('Invalid tID provided');
             return false;
@@ -590,4 +592,7 @@ const Settings = {
             return false;
         }
     }
-};
+}
+
+// Export classes
+export { CatalogManager, Settings };
