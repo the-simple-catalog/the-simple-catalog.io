@@ -65,18 +65,45 @@ const ProductPage = {
                             ${escapeHtml(product.content.name)}
                         </h1>
 
-                        ${
-                          product.content.stockQuantity
-                            ? `
-                            <div class="product-stock-status">
-                                <svg class="stock-icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z"/>
-                                </svg>
-                                <span>In Stock</span>
-                            </div>
-                        `
-                            : ""
-                        }
+                        <div class="product-status-row">
+                            ${
+                              product.content.stockQuantity
+                                ? `
+                                <div class="product-stock-status">
+                                    <svg class="stock-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z"/>
+                                    </svg>
+                                    <span>In Stock</span>
+                                </div>
+                            `
+                                : ""
+                            }
+                            ${
+                              price.hasPromo
+                                ? `
+                                <div class="product-sale-status">
+                                    <svg class="sale-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                                        <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>Sale</span>
+                                </div>
+                            `
+                                : ""
+                            }
+                            ${
+                              product.content.partyTypes === '3P'
+                                ? `
+                                <div class="product-marketplace-status">
+                                    <svg class="marketplace-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                                    </svg>
+                                    <span>Marketplace</span>
+                                </div>
+                            `
+                                : ""
+                            }
+                        </div>
 
                         <div class="product-detail-price">
                             ${price.hasPromo ? `<span class="original-price">${formatPrice(price.regular)}</span>` : ""}
