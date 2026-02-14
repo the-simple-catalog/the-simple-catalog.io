@@ -946,29 +946,9 @@ img {
     margin-top: var(--spacing-xl);
 }
 
-/* Product Detail Sale Label */
+/* Product Detail Image Container */
 .product-detail-image-container {
     position: relative;
-}
-
-.product-detail-sale-label {
-    position: absolute;
-    top: var(--spacing-md);
-    left: var(--spacing-md);
-    z-index: 20;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #FCA5A5 0%, #DC2626 100%);
-    color: white;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
-    backdrop-filter: blur(10px);
-    opacity: 0;
-    animation: badgeFadeIn 0.4s ease 0.2s forwards;
 }
 
 .product-detail-image {

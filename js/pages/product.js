@@ -32,6 +32,7 @@ const ProductPage = {
     const app = getEl("app");
     const brand = CatalogManager.getProductBrand(product);
     const price = CatalogManager.getProductPrice(product);
+    const badges = generateProductBadges(product, false);
 
     // Get category for breadcrumb
     const categoryId = product.content.categories?.[0];
@@ -46,56 +47,94 @@ const ProductPage = {
                     ${ProductPage.renderBreadcrumb(breadcrumb, product)}
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px;">
+                <div class="product-detail-grid">
                     <!-- Product Image -->
-                    <div>
+                    <div class="product-detail-image-container">
+                        ${badges}
                         <img
                             src="${escapeHtml(product.content.imageUrl || "")}"
                             alt="${escapeHtml(product.content.name)}"
-                            style="width: 100%; border-radius: 12px; box-shadow: var(--shadow-md);"
+                            class="product-detail-image"
                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22600%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'"
                         />
                     </div>
 
                     <!-- Product Info -->
                     <div>
-                        ${brand ? `<div style="color: var(--text-secondary); margin-bottom: 8px;">Brand: ${escapeHtml(brand)}</div>` : ""}
-                        <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 16px;">
+                        <h1 class="product-detail-title">
                             ${escapeHtml(product.content.name)}
                         </h1>
-
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
-                            <div>Fw Product Id: ${escapeHtml(product.id)}</div>
-                            ${product.content.sku ? `<div>SKU: ${escapeHtml(product.content.sku)}</div>` : ""}
-                        </div>
-
-                        <div style="font-size: 32px; font-weight: bold; margin-bottom: 24px; color: ${price.hasPromo ? "var(--error-color)" : "var(--text-primary)"};">
-                            ${price.hasPromo ? `<span style="font-size: 20px; text-decoration: line-through; color: var(--text-secondary); margin-right: 12px;">${formatPrice(price.regular)}</span>` : ""}
-                            ${formatPrice(price.hasPromo ? price.promo : price.regular)}
-                        </div>
 
                         ${
                           product.content.stockQuantity
                             ? `
-                            <div style="color: var(--success-color); margin-bottom: 16px;">
-                                ✓ In Stock (${product.content.stockQuantity} available)
+                            <div class="product-stock-status">
+                                <svg class="stock-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z"/>
+                                </svg>
+                                <span>In Stock</span>
                             </div>
                         `
                             : ""
                         }
 
-                        <div style="margin-bottom: 24px;">
-                            <label class="form-label">Quantity</label>
+                        <div class="product-detail-price">
+                            ${price.hasPromo ? `<span class="original-price">${formatPrice(price.regular)}</span>` : ""}
+                            ${formatPrice(price.hasPromo ? price.promo : price.regular)}
+                        </div>
+
+                        <div class="product-metadata">
+                            <!-- Technical Identifiers -->
+                            <div class="product-metadata-group product-metadata-technical">
+                                <div class="product-metadata-item">
+                                    <span class="label">ID:</span>
+                                    <span class="value">${escapeHtml(product.id)}</span>
+                                </div>
+                                <div class="product-metadata-item">
+                                    <span class="label">SKU:</span>
+                                    <span class="value">${escapeHtml(product.content.sku || 'N/A')}</span>
+                                </div>
+                            </div>
+
+                            <!-- Descriptive Attributes -->
+                            ${(categoryId || brand) ? `
+                            <div class="product-metadata-group product-metadata-descriptive">
+                                ${categoryId ? `
+                                <div class="product-metadata-item">
+                                    <span class="label">Category:</span>
+                                    <span class="value">${escapeHtml(breadcrumb.length > 0 ? breadcrumb[breadcrumb.length - 1].content.name : 'General')}</span>
+                                </div>
+                                ` : ""}
+                                ${brand ? `
+                                <div class="product-metadata-item">
+                                    <span class="label">Brand:</span>
+                                    <span class="value">${escapeHtml(brand)}</span>
+                                </div>
+                                ` : ""}
+                            </div>
+                            ` : ""}
+                        </div>
+
+                        <div class="quantity-selector">
+                            <label>Quantity:</label>
                             <div style="display: flex; gap: 12px; align-items: center;">
-                                <input
-                                    type="number"
-                                    id="product-quantity"
-                                    class="form-input"
-                                    value="1"
-                                    min="1"
-                                    max="${product.content.stockQuantity || 999}"
-                                    style="width: 100px;"
-                                />
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn quantity-decrease" onclick="ProductPage.decreaseQuantity()">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 13H5v-2h14v2z"/>
+                                        </svg>
+                                    </button>
+                                    <input type="text"
+                                           id="product-quantity"
+                                           value="1"
+                                           readonly
+                                           class="quantity-input">
+                                    <button class="quantity-btn quantity-increase" onclick="ProductPage.increaseQuantity()">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
                                 <button
                                     class="btn btn-primary"
                                     onclick="ProductPage.addToCart('${product.id}')"
@@ -109,7 +148,7 @@ const ProductPage = {
                         ${
                           product.content.longDescription
                             ? `
-                            <div style="margin-top: 32px;">
+                            <div class="product-detail-description">
                                 <h2 style="font-size: 20px; margin-bottom: 12px;">Description</h2>
                                 <p style="color: var(--text-secondary); line-height: 1.6;">
                                     ${escapeHtml(product.content.longDescription)}
@@ -168,6 +207,30 @@ const ProductPage = {
                 <a href="#/" class="btn btn-primary" style="margin-top: 16px;">Go to Homepage</a>
             </div>
         `;
+  },
+
+  /**
+   * Increase quantity value in the quantity input
+   */
+  increaseQuantity() {
+    const input = getEl('product-quantity');
+    if (!input) return;
+    const currentQty = parseInt(input.value) || 1;
+    if (currentQty < 99) {
+      input.value = currentQty + 1;
+    }
+  },
+
+  /**
+   * Decrease quantity value in the quantity input
+   */
+  decreaseQuantity() {
+    const input = getEl('product-quantity');
+    if (!input) return;
+    const currentQty = parseInt(input.value) || 1;
+    if (currentQty > 1) {
+      input.value = currentQty - 1;
+    }
   },
 
   /**
