@@ -122,17 +122,31 @@ const CategoryPage = {
     renderProductCard(product) {
         const brand = CatalogManager.getProductBrand(product);
         const price = CatalogManager.getProductPrice(product);
+        const badges = generateProductBadges(product, false);
+        const description = product.content.longDescription || product.content.name;
 
         return `
             <div class="product-card">
-                <a href="#/product/${product.id}">
-                    <img
-                        src="${escapeHtml(product.content.imageUrl || '')}"
-                        alt="${escapeHtml(product.content.name)}"
-                        class="product-card-image"
-                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22250%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22250%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2216%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'"
-                    />
-                </a>
+                <div class="product-card-image-wrapper">
+                    ${badges}
+                    <a href="#/product/${product.id}">
+                        <img
+                            src="${escapeHtml(product.content.imageUrl || '')}"
+                            alt="${escapeHtml(product.content.name)}"
+                            class="product-card-image"
+                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22250%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22250%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2216%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'"
+                        />
+                    </a>
+                    <div class="product-card-info-overlay">
+                        <div class="product-card-overlay-description">${escapeHtml(description)}</div>
+                        <a href="#/product/${product.id}" class="product-card-overlay-cta">
+                            View Details
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
                 <div class="product-card-content">
                     ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
                     <a href="#/product/${product.id}">
