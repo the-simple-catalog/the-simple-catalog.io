@@ -22,15 +22,25 @@ A static e-commerce website demo built for API integration demonstration purpose
 - 🔍 **Search** - Find products by name (minimum 3 characters)
 - 📊 **Tracking** - Page view tracking (console.log )
 - 🎯 **Ad Serving** - Sponsored products zones (console.log placeholder)
-- 💾 **LocalStorage** - All data stored locally (max 1000 products)
+- 💾 **LocalStorage** - All data stored locally (max 3000 products)
 
 ## Getting Started
 
-### 1. Open the Site
+### 1. Start a Local Server
 
-Simply open `index.html` in a modern web browser (Chrome, Firefox, Safari, Edge).
+While you can open `index.html` directly, using a local server is recommended for proper module loading:
 
-No server required - it's a fully static site!
+```bash
+# Option 1: Python (recommended)
+python3 -m http.server 8000
+# Then open http://localhost:8000
+
+# Option 2: Node.js
+npx http-server -p 8000
+
+# Option 3: Direct file (may have limitations)
+open index.html
+```
 
 ### 2. Import Catalog Data
 
@@ -64,33 +74,24 @@ Total: ~600 products available
 
 ## Tracking & Ad Serving
 
-Currently implemented as console.log placeholders:
+Fully integrated with Mirakl APIs (configure in Admin settings):
 
-### Page View Tracking
-Every page logs tracking information:
-```javascript
-{
-  pageId: "1000",
-  pageType: "homepage",
-  timestamp: "2026-02-11T..."
-}
-```
+### T2S Page View Tracking
+Real API integration that tracks:
+- Page views (category, product, search, cart, order confirmation)
+- Add-to-cart events with product details
+- Post-payment events with order data
+- All events sent to configured T2S Tracking URL
 
-### Ad Serving Requests
-Category, Search, and Product pages log ad serving requests:
-```javascript
-{
-  pageId: "1400",
-  pageType: "category",
-  context: { categoryId: "1-1" },
-  timestamp: "2026-02-11T..."
-}
-```
+### Mirakl Ads API Integration
+Real sponsored product serving:
+- Fetches sponsored products from Mirakl Ads API
+- Displays ads on category, search, and product pages
+- Tracks impressions (on image load)
+- Tracks clicks (on product link click)
+- Falls back to "Ad Slot" placeholders when no ads returned
 
-**Sponsored Products Zones** display 4 grey placeholders on:
-- Category pages
-- Search results
-- Product details
+**Console Logging**: All tracking and ad events are logged with `📊 [TRACKING]` and `✅/⚠️ [AD SERVING]` prefixes for debugging
 
 ## Technical Details
 
@@ -119,12 +120,14 @@ demo/
 │   ├── cart.js             # Shopping cart logic
 │   ├── tracking.js         # Tracking & ad serving
 │   └── pages/
-│       ├── home.js         # Homepage
-│       ├── category.js     # Category page
-│       ├── product.js      # Product detail page
-│       ├── search.js       # Search page
-│       ├── checkout.js     # Checkout page
-│       └── admin.js        # Admin page
+│       ├── home.js              # Homepage
+│       ├── category.js          # Category page
+│       ├── product.js           # Product detail page
+│       ├── search.js            # Search page
+│       ├── cart.js              # Cart page
+│       ├── checkout.js          # Checkout page
+│       ├── orderconfirmation.js # Order confirmation
+│       └── admin.js             # Admin page
 └── catalog/                # Example catalog data
     ├── categories_t2s.json
     ├── products_1P_t2s.json
@@ -141,8 +144,11 @@ demo/
 
 ### Settings (Admin Page)
 - **Site Name** - Customize the site branding
-- **T2S Tracking URL** - For future API integration
-- **Ads Server URL** - For future API integration
+- **T2S Customer ID** - Your Mirakl customer identifier
+- **T2S Tracking URL** - T2S Tracking API endpoint
+- **Ads Server URL** - Mirakl Ads API endpoint
+- **Catalog Import** - Upload categories and products JSON files
+- **Clear Data** - Reset catalog and cart
 
 ### Styling
 Edit `css/styles.css` to customize:
@@ -167,25 +173,44 @@ Edit `css/styles.css` to customize:
 ## Browser Console
 
 Open the browser console (F12) to see:
-- 📊 Tracking events (page views)
-- 🎯 Ad serving requests
-- Any errors or warnings
+- 📊 `[TRACKING]` - T2S tracking events and API calls
+- ✅ `[AD SERVING]` - Successful ad responses
+- ⚠️ `[AD SERVING]` - Ad configuration warnings
+- ❌ `[TRACKING/AD SERVING]` - API errors
+- Cart operations and navigation events
 
 ## Notes
 
 - All payment processing is mocked and always succeeds
-- No actual API calls are made yet (placeholder console.logs)
+- T2S Tracking and Ads APIs are fully integrated (configure in Admin)
 - Cart and catalog data persist in localStorage
-- Maximum 1000 products supported
+- Maximum 3000 products supported
+- Test card: `4111111111111111` (always succeeds)
 
-## Future Integration
+## Testing with Chrome DevTools MCP
 
-To integrate with real APIs:
+The project includes `.mcp.json` for automated browser testing:
 
-1. Update `js/tracking.js` - Replace console.log with actual API calls
-2. Update settings in Admin page with real API URLs
-3. Process sponsored product responses and render real ads
+1. Start Chrome with remote debugging:
+   ```bash
+   /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+   ```
+
+2. Run E2E tests using the test scenario in `doc/test/e2e-test-scenario.md`
+
+3. MCP tools can interact with the site for automated testing
+
+## API Configuration
+
+To use the real Mirakl APIs:
+
+1. Navigate to Admin page
+2. Configure API settings:
+   - T2S Customer ID
+   - T2S Tracking URL (e.g., `https://tracking.example.com`)
+   - Ads Server URL (e.g., `https://ads.example.com`)
+3. Browse the site - all tracking and ad serving will use real API calls
 
 ---
 
-Built with ❤️ for API Integration demonstration
+Built with ❤️ for Mirakl API Integration demonstration

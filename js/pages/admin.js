@@ -2,11 +2,14 @@
 // Admin Page - Catalog import and settings
 // ===================================
 
-const AdminPage = {
+import { getEl, escapeHtml } from '../utils.js';
+import { CatalogManager, Settings } from '../catalog.js';
+
+class AdminPage {
     /**
      * Render admin page
      */
-    render() {
+    static render() {
         const app = getEl('app');
         const settings = Settings.get();
         const stats = CatalogManager.getStats();
@@ -253,52 +256,52 @@ const AdminPage = {
         `;
 
         // Initialize product capacity indicator
-        this.updateProductCapacity();
-    },
+        AdminPage.updateProductCapacity();
+    }
 
     /**
      * Import categories from file
      */
-    async importCategories() {
+    static async importCategories() {
         const fileInput = getEl('categories-file');
         const messagesDiv = getEl('import-messages');
 
         if (!fileInput.files || fileInput.files.length === 0) {
-            this.showImportMessage('Please select a categories JSON file', 'error');
+            AdminPage.showImportMessage('Please select a categories JSON file', 'error');
             return;
         }
 
         try {
             const file = fileInput.files[0];
-            const content = await this.readFileAsText(file);
+            const content = await AdminPage.readFileAsText(file);
             const data = JSON.parse(content);
 
             const result = CatalogManager.importCategories(data);
 
             if (result.success) {
-                this.showImportMessage(result.message, 'success');
-                this.updateStats();
+                AdminPage.showImportMessage(result.message, 'success');
+                AdminPage.updateStats();
 
                 // Reload main navigation to show new categories
-                if (window.loadMainNavigation) {
-                    window.loadMainNavigation();
+                if (window.populateCategoriesDropdown) {
+                    window.populateCategoriesDropdown();
                 }
             } else {
-                this.showImportMessage(result.error, 'error');
+                AdminPage.showImportMessage(result.error, 'error');
             }
         } catch (e) {
-            this.showImportMessage(`Error importing categories: ${e.message}`, 'error');
+            AdminPage.showImportMessage(`Error importing categories: ${e.message}`, 'error');
         }
-    },
+    }
 
     /**
      * Import products from file
      */
-    async importProducts() {
+    static async importProducts() {
         const fileInput = getEl('products-file');
 
         if (!fileInput.files || fileInput.files.length === 0) {
-            this.showImportMessage('Please select a products JSON file', 'error');
+            AdminPage.showImportMessage('Please select a products JSON file', 'error');
             return;
         }
 
@@ -325,30 +328,30 @@ const AdminPage = {
 
         try {
             const file = fileInput.files[0];
-            const content = await this.readFileAsText(file);
+            const content = await AdminPage.readFileAsText(file);
             const data = JSON.parse(content);
 
             const result = CatalogManager.importProducts(data, appendMode);
 
             if (result.success) {
-                this.showImportMessage(result.message, 'success');
-                this.updateStats();
-                this.updateProductCapacity();
+                AdminPage.showImportMessage(result.message, 'success');
+                AdminPage.updateStats();
+                AdminPage.updateProductCapacity();
 
                 // Clear file input to allow immediate next import
                 fileInput.value = '';
             } else {
-                this.showImportMessage(result.error, 'error');
+                AdminPage.showImportMessage(result.error, 'error');
             }
         } catch (e) {
-            this.showImportMessage(`Error importing products: ${e.message}`, 'error');
+            AdminPage.showImportMessage(`Error importing products: ${e.message}`, 'error');
         }
-    },
+    }
 
     /**
      * Clear all catalog data
      */
-    clearCatalog() {
+    static clearCatalog() {
         if (!confirm('Are you sure you want to clear all catalog data? This cannot be undone.')) {
             return;
         }
@@ -356,23 +359,23 @@ const AdminPage = {
         const success = CatalogManager.clearAll();
 
         if (success) {
-            this.showImportMessage('Catalog data cleared successfully', 'success');
-            this.updateStats();
-            this.updateProductCapacity();
+            AdminPage.showImportMessage('Catalog data cleared successfully', 'success');
+            AdminPage.updateStats();
+            AdminPage.updateProductCapacity();
 
             // Reload main navigation
             if (window.loadMainNavigation) {
                 window.loadMainNavigation();
             }
         } else {
-            this.showImportMessage('Error clearing catalog data', 'error');
+            AdminPage.showImportMessage('Error clearing catalog data', 'error');
         }
-    },
+    }
 
     /**
      * Save settings
      */
-    saveSettings(event) {
+    static saveSettings(event) {
         event.preventDefault();
 
         const siteName = getEl('setting-site-name').value;
@@ -399,12 +402,12 @@ const AdminPage = {
         setTimeout(() => {
             messageDiv.innerHTML = '';
         }, 3000);
-    },
+    }
 
     /**
      * Show import message
      */
-    showImportMessage(message, type) {
+    static showImportMessage(message, type) {
         const messagesDiv = getEl('import-messages');
         messagesDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
 
@@ -412,12 +415,12 @@ const AdminPage = {
         setTimeout(() => {
             messagesDiv.innerHTML = '';
         }, 5000);
-    },
+    }
 
     /**
      * Update statistics display
      */
-    updateStats() {
+    static updateStats() {
         const stats = CatalogManager.getStats();
 
         const productsEl = getEl('stat-products');
@@ -427,12 +430,12 @@ const AdminPage = {
         if (productsEl) productsEl.textContent = stats.productCount;
         if (categoriesEl) categoriesEl.textContent = stats.categoryCount;
         if (rootCategoriesEl) rootCategoriesEl.textContent = stats.rootCategoryCount;
-    },
+    }
 
     /**
      * Update product capacity indicator
      */
-    updateProductCapacity() {
+    static updateProductCapacity() {
         const stats = CatalogManager.getStats();
         const maxProducts = CatalogManager.MAX_PRODUCTS;
         const currentCount = stats.productCount;
@@ -468,24 +471,24 @@ const AdminPage = {
             // Apply color to the capacity indicator
             capacityDiv.style.borderLeft = `4px solid ${color}`;
         }
-    },
+    }
 
     /**
      * Read file as text
      */
-    readFileAsText(file) {
+    static readFileAsText(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => resolve(e.target.result);
             reader.onerror = (e) => reject(e);
             reader.readAsText(file);
         });
-    },
+    }
 
     /**
      * Save T2S settings
      */
-    saveT2SSettings(event) {
+    static saveT2SSettings(event) {
         event.preventDefault();
 
         const trackingUrl = getEl('setting-tracking-url').value.trim();
@@ -499,11 +502,11 @@ const AdminPage = {
         try {
             pageIds = JSON.parse(pageIdsText);
             if (typeof pageIds !== 'object' || Array.isArray(pageIds)) {
-                this.showT2SMessage('Page IDs must be a JSON object', 'error');
+                AdminPage.showT2SMessage('Page IDs must be a JSON object', 'error');
                 return;
             }
         } catch (e) {
-            this.showT2SMessage('Invalid JSON format for Page IDs', 'error');
+            AdminPage.showT2SMessage('Invalid JSON format for Page IDs', 'error');
             return;
         }
 
@@ -516,44 +519,44 @@ const AdminPage = {
         });
 
         if (success) {
-            this.showT2SMessage('T2S settings saved successfully!', 'success');
+            AdminPage.showT2SMessage('T2S settings saved successfully!', 'success');
         } else {
-            this.showT2SMessage('Error saving T2S settings', 'error');
+            AdminPage.showT2SMessage('Error saving T2S settings', 'error');
         }
-    },
+    }
 
     /**
      * Generate new tID
      */
-    generateNewTID() {
+    static generateNewTID() {
         const newTID = Settings.generateNewTID();
         const tidInput = getEl('current-tid');
         if (tidInput) {
             tidInput.value = newTID;
         }
-        this.showTIDMessage('New tID generated successfully!', 'success');
-    },
+        AdminPage.showTIDMessage('New tID generated successfully!', 'success');
+    }
 
     /**
      * Reset tID
      */
-    resetTID() {
+    static resetTID() {
         const newTID = Settings.resetTID();
         const tidInput = getEl('current-tid');
         if (tidInput) {
             tidInput.value = newTID;
         }
-        this.showTIDMessage('tID reset successfully!', 'success');
-    },
+        AdminPage.showTIDMessage('tID reset successfully!', 'success');
+    }
 
     /**
      * Save custom tID
      */
-    saveCustomTID() {
+    static saveCustomTID() {
         const customTID = getEl('custom-tid').value.trim();
 
         if (!customTID) {
-            this.showTIDMessage('Please enter a custom tID', 'error');
+            AdminPage.showTIDMessage('Please enter a custom tID', 'error');
             return;
         }
 
@@ -565,28 +568,28 @@ const AdminPage = {
                 tidInput.value = customTID;
             }
             getEl('custom-tid').value = '';
-            this.showTIDMessage('Custom tID saved successfully!', 'success');
+            AdminPage.showTIDMessage('Custom tID saved successfully!', 'success');
         } else {
-            this.showTIDMessage('Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'error');
+            AdminPage.showTIDMessage('Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'error');
         }
-    },
+    }
 
     /**
      * Show T2S settings message
      */
-    showT2SMessage(message, type) {
+    static showT2SMessage(message, type) {
         const messageDiv = getEl('t2s-settings-message');
         messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
 
         setTimeout(() => {
             messageDiv.innerHTML = '';
         }, 3000);
-    },
+    }
 
     /**
      * Show tID message
      */
-    showTIDMessage(message, type) {
+    static showTIDMessage(message, type) {
         const messageDiv = getEl('tid-message');
         messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
 
@@ -594,7 +597,7 @@ const AdminPage = {
             messageDiv.innerHTML = '';
         }, 3000);
     }
-};
+}
 
 // Add CSS for admin section
 const adminStyles = `
@@ -613,3 +616,4 @@ if (!document.getElementById('admin-styles')) {
     style.textContent = adminStyles;
     document.head.appendChild(style);
 }
+export { AdminPage };

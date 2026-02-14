@@ -179,3 +179,18 @@ function generateProductBadges(product, isSponsored = false) {
         ? `<div class="product-badges">${badges.join('')}</div>`
         : '';
 }
+
+// Export utility functions
+export {
+    formatPrice,
+    getEl,
+    createElement,
+    escapeHtml,
+    debounce,
+    showMessage,
+    getQueryParam,
+    parseRoute,
+    navigateTo,
+    generateUUID,
+    generateProductBadges
+};

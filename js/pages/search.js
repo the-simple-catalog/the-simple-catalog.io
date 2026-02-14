@@ -2,28 +2,33 @@
 // Search Page - Product search functionality
 // ===================================
 
-const SearchPage = {
+import { getEl, escapeHtml, formatPrice, showMessage, generateProductBadges } from '../utils.js';
+import { CatalogManager } from '../catalog.js';
+import { Cart } from '../cart.js';
+import { Tracking } from '../tracking.js';
+
+class SearchPage {
     /**
      * Render search page
      * This page displays search results only. The search input is in the header.
      * Tracks all search queries for analytics purposes.
      */
-    render(params) {
+    static render(params) {
         const query = params.q || '';
 
         // Track page view
-        Tracking.trackPageView(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
+        Tracking.trackPageView(Tracking.PAGE_IDS.SEARCH, Tracking.PAGE_TYPES.SEARCH, {
             searchQuery: query
         });
 
         // Log search query for analytics if query exists
         if (query) {
-            this.logSearchQuery(query);
+            SearchPage.logSearchQuery(query);
         }
 
         // Request sponsored products if there's a search query
         const sponsoredAdsPromise = query.length >= 3
-            ? Tracking.requestSponsoredProducts(PAGE_IDS.SEARCH, PAGE_TYPES.SEARCH, {
+            ? Tracking.requestSponsoredProducts(Tracking.PAGE_IDS.SEARCH, Tracking.PAGE_TYPES.SEARCH, {
                 searchQuery: query
             })
             : null;
@@ -46,7 +51,7 @@ const SearchPage = {
                 ${query.length >= 3 ? `<div id="sponsored-container">${Tracking.renderEmptySponsoredSection()}</div>` : ''}
 
                 <div id="search-results">
-                    ${this.renderSearchResults(query)}
+                    ${SearchPage.renderSearchResults(query)}
                 </div>
             </div>
         `;
@@ -57,18 +62,19 @@ const SearchPage = {
                 const container = document.getElementById('sponsored-container');
                 if (container && adsData) {
                     container.innerHTML = Tracking.renderSponsoredProducts(adsData);
+                    Tracking.attachSponsoredTracking(container);
                 }
             }).catch(error => {
                 console.error('Failed to load sponsored products:', error);
             });
         }
-    },
+    }
 
     /**
      * Log search query for analytics
      * Stores search history in localStorage with timestamp and result count
      */
-    logSearchQuery(query) {
+    static logSearchQuery(query) {
         // Get search results count
         const products = CatalogManager.searchProducts(query);
         const resultCount = products.length;
@@ -103,12 +109,12 @@ const SearchPage = {
         } catch (e) {
             console.error('Failed to store search history:', e);
         }
-    },
+    }
 
     /**
      * Render search results
      */
-    renderSearchResults(query) {
+    static renderSearchResults(query) {
         if (!query) {
             return `
                 <div class="message message-info">
@@ -141,16 +147,16 @@ const SearchPage = {
                     Found ${products.length} product${products.length !== 1 ? 's' : ''} for "${escapeHtml(query)}"
                 </h2>
                 <div class="product-grid">
-                    ${products.map(product => this.renderProductCard(product)).join('')}
+                    ${products.map(product => SearchPage.renderProductCard(product)).join('')}
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Render a single product card
      */
-    renderProductCard(product) {
+    static renderProductCard(product) {
         const brand = CatalogManager.getProductBrand(product);
         const price = CatalogManager.getProductPrice(product);
         const badges = generateProductBadges(product, false);
@@ -196,12 +202,12 @@ const SearchPage = {
                 </div>
             </div>
         `;
-    },
+    }
 
     /**
      * Add product to cart
      */
-    addToCart(productId) {
+    static addToCart(productId) {
         const success = Cart.addItem(productId, 1);
         if (success) {
             showMessage('Product added to cart!', 'success');
@@ -209,4 +215,5 @@ const SearchPage = {
             showMessage('Error adding product to cart', 'error');
         }
     }
-};
+}
+export { SearchPage };

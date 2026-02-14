@@ -2,6 +2,20 @@
 // Main Application Entry Point
 // ===================================
 
+// Import dependencies
+import { getEl, escapeHtml, createElement } from './utils.js';
+import { CatalogManager, Settings } from './catalog.js';
+import { Cart } from './cart.js';
+import { Router } from './router.js';
+import { HomePage } from './pages/home.js';
+import { CategoryPage } from './pages/category.js';
+import { ProductPage } from './pages/product.js';
+import { SearchPage } from './pages/search.js';
+import { CartPage } from './pages/cart.js';
+import { CheckoutPage } from './pages/checkout.js';
+import { OrderConfirmationPage } from './pages/orderconfirmation.js';
+import { AdminPage } from './pages/admin.js';
+
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     console.log('E-Commerce Demo App Starting...');
@@ -107,7 +121,6 @@ function initHeaderSearch() {
  *
  * Interaction Pattern:
  * - CLICK button: open/close main dropdown (mobile-friendly)
- * - HOVER over category: show subcategories in adjacent panel (desktop experience)
  * - CLICK category name: navigate to category page
  */
 function initCategoriesDropdown() {
@@ -140,11 +153,10 @@ function initCategoriesDropdown() {
 }
 
 /**
- * Populate categories dropdown with root categories only (SIMPLIFIED)
+ * Populate categories dropdown with root categories only
  * This function builds a simple flat dropdown menu with:
  * - Root categories with emoji icons
  * - Click handlers for navigation
- * - No nested subcategories (simplified for easier use)
  *
  * Category Structure:
  * [Icon] Category Name
@@ -167,7 +179,7 @@ function populateCategoriesDropdown() {
     }
 
     // Icon mapping: Maps category names to emoji icons
-    // Fallback icon (📦) is used for unmapped categories
+    // Fallback icon is used for unmapped categories
     const categoryIcons = {
         'Book': '📚',
         'Electronics': '💻',
@@ -182,30 +194,22 @@ function populateCategoriesDropdown() {
     // Clear existing content
     dropdownMenu.innerHTML = '';
 
-    // Create dropdown items for each root category (simple flat list)
+    // Create dropdown items for each root category
     categories.forEach(category => {
         // Get icon for this category (use fallback if not mapped)
         const icon = categoryIcons[category.content.name] || '📦';
 
         // Create the dropdown item element
-        const item = createElement('div', {
-            className: 'category-dropdown-item'
-        });
+        const item = createElement('div', { className: 'category-dropdown-item' });
 
-        // Create and append icon element
-        const iconEl = createElement('span', {
-            className: 'category-dropdown-icon'
-        }, icon);
-
-        // Create and append category name element (escaped for security)
-        const nameEl = createElement('span', {
-            className: 'category-dropdown-name'
-        }, escapeHtml(category.content.name));
+        // Create and append icon and name elements
+        const iconEl = createElement('span', { className: 'category-dropdown-icon' }, icon);
+        const nameEl = createElement('span', { className: 'category-dropdown-name' }, escapeHtml(category.content.name));
 
         item.appendChild(iconEl);
         item.appendChild(nameEl);
 
-        // CLICK BEHAVIOR: Navigate to category page
+        // Navigate to category page on click
         item.addEventListener('click', function() {
             window.location.hash = `/category/${category.id}`;
             dropdownMenu.classList.remove('active'); // Close dropdown after navigation
@@ -215,9 +219,6 @@ function populateCategoriesDropdown() {
         dropdownMenu.appendChild(item);
     });
 }
-
-// NOTE: createSubcategoryPanel() function removed - no longer needed
-// The dropdown now only shows root categories (simplified)
 
 /**
  * Update cart count badge in header
@@ -236,3 +237,11 @@ window.updateCartCount = updateCartCount;
 
 // Make populateCategoriesDropdown available globally for catalog updates
 window.populateCategoriesDropdown = populateCategoriesDropdown;
+
+// Expose page classes globally for inline onclick handlers
+window.CategoryPage = CategoryPage;
+window.ProductPage = ProductPage;
+window.SearchPage = SearchPage;
+window.AdminPage = AdminPage;
+window.CartPage = CartPage;
+window.CheckoutPage = CheckoutPage;
