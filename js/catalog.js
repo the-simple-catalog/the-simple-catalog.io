@@ -5,7 +5,7 @@
 const CatalogManager = {
     STORAGE_KEY_PRODUCTS: 'ecommerce_products',
     STORAGE_KEY_CATEGORIES: 'ecommerce_categories',
-    MAX_PRODUCTS: 2000,
+    MAX_PRODUCTS: 3000,
     _categoryIconCache: {}, // In-memory cache for category icons
 
     // Synonyms mapping for category icon search fallback
@@ -52,8 +52,8 @@ const CatalogManager = {
     saveProducts(products) {
         try {
             if (products.length > this.MAX_PRODUCTS) {
-                console.warn(`Product limit exceeded. Trimming to ${this.MAX_PRODUCTS}`);
-                products = products.slice(0, this.MAX_PRODUCTS);
+                console.error(`Product limit exceeded. Cannot save ${products.length} products (max: ${this.MAX_PRODUCTS})`);
+                return false;
             }
             localStorage.setItem(this.STORAGE_KEY_PRODUCTS, JSON.stringify(products));
             return true;
@@ -81,9 +81,10 @@ const CatalogManager = {
     /**
      * Import products from JSON array
      * @param {Array} productsData - Raw products JSON array
-     * @returns {Object} Result with success status and count
+     * @param {boolean} appendMode - If true, append to existing products; if false, replace all products
+     * @returns {Object} Result with success status, count, and mode
      */
-    importProducts(productsData) {
+    importProducts(productsData, appendMode = false) {
         try {
             if (!Array.isArray(productsData)) {
                 return { success: false, error: 'Invalid data format. Expected array.' };
@@ -98,15 +99,74 @@ const CatalogManager = {
                 return { success: false, error: 'No valid products found in data.' };
             }
 
-            const success = this.saveProducts(validProducts);
+            let finalProducts;
+            let addedCount = 0;
+
+            if (appendMode) {
+                // Append mode: merge with existing products, deduplicating by ID
+                const existingProducts = this.getProducts();
+
+                // Use Map for efficient deduplication
+                const productsMap = new Map();
+
+                // Add existing products to map
+                existingProducts.forEach(product => {
+                    productsMap.set(product.id, product);
+                });
+
+                // Add/update with new products (newer products overwrite)
+                validProducts.forEach(product => {
+                    const isNew = !productsMap.has(product.id);
+                    productsMap.set(product.id, product);
+                    if (isNew) {
+                        addedCount++;
+                    }
+                });
+
+                // Convert map back to array
+                finalProducts = Array.from(productsMap.values());
+
+                // Check if total would exceed limit
+                if (finalProducts.length > this.MAX_PRODUCTS) {
+                    const current = existingProducts.length;
+                    const attempted = validProducts.length;
+                    const wouldResult = finalProducts.length;
+                    return {
+                        success: false,
+                        error: `Import would exceed maximum of ${this.MAX_PRODUCTS} products. Current: ${current}, Attempting to add: ${attempted}, Would result in: ${wouldResult}`
+                    };
+                }
+            } else {
+                // Replace mode: use only new products
+                finalProducts = validProducts;
+                addedCount = validProducts.length;
+            }
+
+            const success = this.saveProducts(finalProducts);
 
             // Clear icon cache after importing products
             this._categoryIconCache = {};
 
+            const mode = appendMode ? 'append' : 'replace';
+            let message;
+
+            if (appendMode) {
+                const duplicates = validProducts.length - addedCount;
+                if (duplicates > 0) {
+                    message = `Successfully appended products: ${addedCount} new products added, ${duplicates} duplicates updated. Total: ${finalProducts.length}`;
+                } else {
+                    message = `Successfully appended ${addedCount} products. Total: ${finalProducts.length}`;
+                }
+            } else {
+                message = `Successfully replaced all products with ${validProducts.length} new products`;
+            }
+
             return {
                 success,
                 count: validProducts.length,
-                message: `Successfully imported ${validProducts.length} products`
+                addedCount,
+                mode,
+                message
             };
         } catch (e) {
             return { success: false, error: e.message };

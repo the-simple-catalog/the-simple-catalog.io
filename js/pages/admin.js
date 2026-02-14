@@ -37,8 +37,42 @@ const AdminPage = {
                             </button>
                         </div>
 
+                        <!-- Product Capacity Indicator -->
+                        <div id="product-capacity" style="margin-bottom: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
+                            <div style="font-size: 14px; margin-bottom: 4px;">
+                                <strong>Product Capacity:</strong> <span id="capacity-current">0</span> / <span id="capacity-max">3000</span> products (<span id="capacity-percent">0</span>%)
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">
+                                Available capacity: <span id="capacity-remaining">3000</span> slots
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="form-label">Products JSON File</label>
+
+                            <!-- Import Mode Selection -->
+                            <div style="margin-bottom: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Import Mode:</div>
+                                <label style="display: flex; align-items: start; margin-bottom: 8px; cursor: pointer;">
+                                    <input type="radio" name="import-mode" value="replace" checked style="margin-right: 8px; margin-top: 3px;" />
+                                    <div>
+                                        <strong>Replace all products</strong>
+                                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                                            Clears existing products and imports new catalog
+                                        </div>
+                                    </div>
+                                </label>
+                                <label style="display: flex; align-items: start; cursor: pointer;">
+                                    <input type="radio" name="import-mode" value="append" style="margin-right: 8px; margin-top: 3px;" />
+                                    <div>
+                                        <strong>Append to existing products</strong>
+                                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                                            Adds new products to existing catalog (duplicates by ID will be updated)
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
                             <input type="file" id="products-file" accept=".json" class="form-input" />
                             <button onclick="AdminPage.importProducts()" class="btn btn-primary" style="margin-top: 8px;">
                                 Import Products
@@ -217,6 +251,9 @@ const AdminPage = {
                 </div>
             </div>
         `;
+
+        // Initialize product capacity indicator
+        this.updateProductCapacity();
     },
 
     /**
@@ -265,16 +302,41 @@ const AdminPage = {
             return;
         }
 
+        // Get selected import mode
+        const importModeRadios = document.getElementsByName('import-mode');
+        let appendMode = false;
+        for (const radio of importModeRadios) {
+            if (radio.checked) {
+                appendMode = radio.value === 'append';
+                break;
+            }
+        }
+
+        // Show confirmation dialog for replace mode if products exist
+        if (!appendMode) {
+            const stats = CatalogManager.getStats();
+            if (stats.productCount > 0) {
+                const confirmMessage = `⚠️ This will DELETE all ${stats.productCount} existing products and replace them with the imported catalog.`;
+                if (!confirm(confirmMessage)) {
+                    return; // User cancelled
+                }
+            }
+        }
+
         try {
             const file = fileInput.files[0];
             const content = await this.readFileAsText(file);
             const data = JSON.parse(content);
 
-            const result = CatalogManager.importProducts(data);
+            const result = CatalogManager.importProducts(data, appendMode);
 
             if (result.success) {
                 this.showImportMessage(result.message, 'success');
                 this.updateStats();
+                this.updateProductCapacity();
+
+                // Clear file input to allow immediate next import
+                fileInput.value = '';
             } else {
                 this.showImportMessage(result.error, 'error');
             }
@@ -296,6 +358,7 @@ const AdminPage = {
         if (success) {
             this.showImportMessage('Catalog data cleared successfully', 'success');
             this.updateStats();
+            this.updateProductCapacity();
 
             // Reload main navigation
             if (window.loadMainNavigation) {
@@ -364,6 +427,47 @@ const AdminPage = {
         if (productsEl) productsEl.textContent = stats.productCount;
         if (categoriesEl) categoriesEl.textContent = stats.categoryCount;
         if (rootCategoriesEl) rootCategoriesEl.textContent = stats.rootCategoryCount;
+    },
+
+    /**
+     * Update product capacity indicator
+     */
+    updateProductCapacity() {
+        const stats = CatalogManager.getStats();
+        const maxProducts = CatalogManager.MAX_PRODUCTS;
+        const currentCount = stats.productCount;
+        const percentage = Math.round((currentCount / maxProducts) * 100);
+        const remaining = maxProducts - currentCount;
+
+        // Update text elements
+        const currentEl = getEl('capacity-current');
+        const maxEl = getEl('capacity-max');
+        const percentEl = getEl('capacity-percent');
+        const remainingEl = getEl('capacity-remaining');
+
+        if (currentEl) currentEl.textContent = currentCount;
+        if (maxEl) maxEl.textContent = maxProducts;
+        if (percentEl) percentEl.textContent = percentage;
+        if (remainingEl) remainingEl.textContent = remaining;
+
+        // Update color based on capacity
+        const capacityDiv = getEl('product-capacity');
+        if (capacityDiv) {
+            let color;
+            if (currentCount >= maxProducts) {
+                // 100% - Red
+                color = '#ef4444'; // red
+            } else if (percentage >= 90) {
+                // 90-99% - Orange
+                color = '#f59e0b'; // orange
+            } else {
+                // 0-89% - Green
+                color = '#10b981'; // green
+            }
+
+            // Apply color to the capacity indicator
+            capacityDiv.style.borderLeft = `4px solid ${color}`;
+        }
     },
 
     /**
