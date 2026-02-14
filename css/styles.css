@@ -979,6 +979,15 @@ img {
     margin-top: var(--spacing-lg);
 }
 
+/* Product Status Row - Container for stock and marketplace labels */
+.product-status-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
 /* Stock Status Label */
 .product-stock-status {
     display: inline-flex;
@@ -988,7 +997,6 @@ img {
     background-color: rgba(16, 185, 129, 0.1);
     border: 1px solid var(--success-color);
     border-radius: var(--radius-sm);
-    margin-bottom: var(--spacing-md);
 }
 
 .stock-icon {
@@ -1002,6 +1010,58 @@ img {
     font-size: 14px;
     font-weight: 600;
     color: var(--success-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Sale Status Label */
+.product-sale-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: rgba(220, 38, 38, 0.1);
+    border: 1px solid var(--sale-color);
+    border-radius: var(--radius-sm);
+}
+
+.sale-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--sale-color);
+}
+
+.product-sale-status span {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--sale-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Marketplace Status Label */
+.product-marketplace-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: rgba(14, 165, 233, 0.1);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--radius-sm);
+}
+
+.marketplace-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--accent-color);
+}
+
+.product-marketplace-status span {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-color);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
