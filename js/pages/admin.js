@@ -2,19 +2,31 @@
 // Admin Page - Catalog import and settings
 // ===================================
 
-import { getEl, escapeHtml } from '../utils.js';
-import { CatalogManager, Settings } from '../catalog.js';
+import { getEl, escapeHtml } from "../utils.js";
+import { CatalogManager, Settings } from "../catalog.js";
+
+// ===================================
+// Default Configuration Placeholders
+// CHANGE THESE VALUES to update all default placeholders in the admin UI.
+// Page ID defaults are managed in Settings.DEFAULT_SETTINGS (catalog.js).
+// ===================================
+export const DEFAULT_T2S_CUSTOMER_ID = "CUSTOMER_PUBLIC_ID";
+export const DEFAULT_TRACKING_URL =
+  "https://xxxxx.retail.mirakl.net";
+export const DEFAULT_ADS_SERVER_URL =
+  "https://xxxxx.retailmedia.mirakl.net";
+export const DEFAULT_ORDER_PREFIX = "ORDER_";
 
 class AdminPage {
-    /**
-     * Render admin page
-     */
-    static render() {
-        const app = getEl('app');
-        const settings = Settings.get();
-        const stats = CatalogManager.getStats();
+  /**
+   * Render admin page
+   */
+  static render() {
+    const app = getEl("app");
+    const settings = Settings.get();
+    const stats = CatalogManager.getStats();
 
-        app.innerHTML = `
+    app.innerHTML = `
             <div class="container fade-in">
                 <div class="page-header">
                     <div class="breadcrumb">
@@ -138,8 +150,8 @@ class AdminPage {
                                     type="text"
                                     id="setting-tracking-url"
                                     class="form-input"
-                                    value="${escapeHtml(settings.trackingUrl)}"
-                                    placeholder="https://xxxxx.retail.mirakl.net"
+                                    value="${escapeHtml(settings.trackingUrl || DEFAULT_TRACKING_URL)}"
+                                    placeholder="${DEFAULT_TRACKING_URL}"
                                 />
                             </div>
 
@@ -149,8 +161,8 @@ class AdminPage {
                                     type="text"
                                     id="setting-ads-url"
                                     class="form-input"
-                                    value="${escapeHtml(settings.adsServerUrl)}"
-                                    placeholder="https://xxxxx.retailmedia.mirakl.net"
+                                    value="${escapeHtml(settings.adsServerUrl || DEFAULT_ADS_SERVER_URL)}"
+                                    placeholder="${DEFAULT_ADS_SERVER_URL}"
                                 />
                             </div>
 
@@ -160,8 +172,8 @@ class AdminPage {
                                     type="text"
                                     id="setting-customer-id"
                                     class="form-input"
-                                    value="${escapeHtml(settings.t2sCustomerId || '')}"
-                                    placeholder="CUSTOMER_PUBLIC_ID"
+                                    value="${escapeHtml(settings.t2sCustomerId || DEFAULT_T2S_CUSTOMER_ID)}"
+                                    placeholder="${DEFAULT_T2S_CUSTOMER_ID}"
                                 />
                             </div>
 
@@ -171,9 +183,9 @@ class AdminPage {
                                     id="setting-page-ids"
                                     class="form-input"
                                     rows="6"
-                                    placeholder='{"search": 2000, "category": 1400, "product": 1200, "cart": 1600, "postPayment": 2400}'
+                                    placeholder='${JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2)}'
                                     style="font-family: monospace; font-size: 13px;"
-                                >${JSON.stringify(settings.t2sPageIds || {}, null, 2)}</textarea>
+                                >${JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2)}</textarea>
                                 <small style="color: var(--text-secondary); font-size: 12px;">
                                     JSON object with page type to page ID mappings
                                 </small>
@@ -185,8 +197,8 @@ class AdminPage {
                                     type="text"
                                     id="setting-order-prefix"
                                     class="form-input"
-                                    value="${escapeHtml(settings.orderPrefix || '')}"
-                                    placeholder="ORDER_"
+                                    value="${escapeHtml(settings.orderPrefix || "")}"
+                                    placeholder="${DEFAULT_ORDER_PREFIX}"
                                 />
                             </div>
 
@@ -248,165 +260,203 @@ class AdminPage {
             </div>
         `;
 
-        // Initialize product capacity indicator
+    // Initialize product capacity indicator
+    AdminPage.updateProductCapacity();
+  }
+
+  /**
+   * Import categories from file
+   */
+  static async importCategories() {
+    const fileInput = getEl("categories-file");
+    const messagesDivId = "categories-messages";
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      AdminPage.showImportMessage(
+        "Please select a categories JSON file",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    try {
+      const file = fileInput.files[0];
+      const content = await AdminPage.readFileAsText(file);
+      const data = JSON.parse(content);
+
+      // Show progress bar
+      AdminPage.showProgressBar(data.length, "categories", messagesDivId);
+
+      // Add slight delay to show animation (import is instant otherwise)
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      const result = CatalogManager.importCategories(data);
+
+      if (result.success) {
+        AdminPage.showSuccessBanner(result, "categories", messagesDivId);
+        AdminPage.updateStats();
+
+        // Reload main navigation to show new categories
+        if (window.populateCategoriesDropdown) {
+          window.populateCategoriesDropdown();
+        }
+      } else {
+        AdminPage.hideProgressBar(messagesDivId);
+        AdminPage.showImportMessage(result.error, "error", messagesDivId);
+      }
+    } catch (e) {
+      AdminPage.hideProgressBar(messagesDivId);
+      AdminPage.showImportMessage(
+        `Error importing categories: ${e.message}`,
+        "error",
+        messagesDivId,
+      );
+    }
+  }
+
+  /**
+   * Import products from file
+   */
+  static async importProducts() {
+    const fileInput = getEl("products-file");
+    const messagesDivId = "products-messages";
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      AdminPage.showImportMessage(
+        "Please select a products JSON file",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    // Get selected import mode
+    const checkedRadio = document.querySelector(
+      'input[name="import-mode"]:checked',
+    );
+    const appendMode = checkedRadio?.value === "append";
+
+    // Show confirmation dialog for replace mode if products exist
+    if (!appendMode) {
+      const stats = CatalogManager.getStats();
+      if (stats.productCount > 0) {
+        const confirmMessage = `⚠️ This will DELETE all ${stats.productCount} existing products and replace them with the imported catalog.`;
+        if (!confirm(confirmMessage)) {
+          return; // User cancelled
+        }
+      }
+    }
+
+    try {
+      const file = fileInput.files[0];
+      const content = await AdminPage.readFileAsText(file);
+      const data = JSON.parse(content);
+
+      // Show progress bar
+      AdminPage.showProgressBar(data.length, "products", messagesDivId);
+
+      // Add slight delay to show animation (import is instant otherwise)
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      const result = CatalogManager.importProducts(data, appendMode);
+
+      if (result.success) {
+        AdminPage.showSuccessBanner(result, "products", messagesDivId);
+        AdminPage.updateStats();
         AdminPage.updateProductCapacity();
+
+        // Clear file input to allow immediate next import
+        fileInput.value = "";
+      } else {
+        AdminPage.hideProgressBar(messagesDivId);
+        AdminPage.showImportMessage(result.error, "error", messagesDivId);
+      }
+    } catch (e) {
+      AdminPage.hideProgressBar(messagesDivId);
+      AdminPage.showImportMessage(
+        `Error importing products: ${e.message}`,
+        "error",
+        messagesDivId,
+      );
+    }
+  }
+
+  /**
+   * Clear all catalog data
+   */
+  static clearCatalog() {
+    if (
+      !confirm(
+        "Are you sure you want to clear all catalog data? This cannot be undone.",
+      )
+    ) {
+      return;
     }
 
-    /**
-     * Import categories from file
-     */
-    static async importCategories() {
-        const fileInput = getEl('categories-file');
-        const messagesDivId = 'categories-messages';
+    const messagesDivId = "products-messages";
+    const success = CatalogManager.clearAll();
 
-        if (!fileInput.files || fileInput.files.length === 0) {
-            AdminPage.showImportMessage('Please select a categories JSON file', 'error', messagesDivId);
-            return;
-        }
+    if (success) {
+      AdminPage.showImportMessage(
+        "Catalog data cleared successfully",
+        "success",
+        messagesDivId,
+      );
+      AdminPage.updateStats();
+      AdminPage.updateProductCapacity();
 
-        try {
-            const file = fileInput.files[0];
-            const content = await AdminPage.readFileAsText(file);
-            const data = JSON.parse(content);
-
-            // Show progress bar
-            AdminPage.showProgressBar(data.length, 'categories', messagesDivId);
-
-            // Add slight delay to show animation (import is instant otherwise)
-            await new Promise(resolve => setTimeout(resolve, 1600));
-
-            const result = CatalogManager.importCategories(data);
-
-            if (result.success) {
-                AdminPage.showSuccessBanner(result, 'categories', messagesDivId);
-                AdminPage.updateStats();
-
-                // Reload main navigation to show new categories
-                if (window.populateCategoriesDropdown) {
-                    window.populateCategoriesDropdown();
-                }
-            } else {
-                AdminPage.hideProgressBar(messagesDivId);
-                AdminPage.showImportMessage(result.error, 'error', messagesDivId);
-            }
-        } catch (e) {
-            AdminPage.hideProgressBar(messagesDivId);
-            AdminPage.showImportMessage(`Error importing categories: ${e.message}`, 'error', messagesDivId);
-        }
+      // Reload main navigation
+      if (window.loadMainNavigation) {
+        window.loadMainNavigation();
+      }
+    } else {
+      AdminPage.showImportMessage(
+        "Error clearing catalog data",
+        "error",
+        messagesDivId,
+      );
     }
+  }
 
-    /**
-     * Import products from file
-     */
-    static async importProducts() {
-        const fileInput = getEl('products-file');
-        const messagesDivId = 'products-messages';
+  /**
+   * Save settings
+   */
+  static saveSettings(event) {
+    event.preventDefault();
 
-        if (!fileInput.files || fileInput.files.length === 0) {
-            AdminPage.showImportMessage('Please select a products JSON file', 'error', messagesDivId);
-            return;
-        }
+    const siteName = getEl("setting-site-name").value;
 
-        // Get selected import mode
-        const checkedRadio = document.querySelector('input[name="import-mode"]:checked');
-        const appendMode = checkedRadio?.value === 'append';
+    const success = Settings.save({ siteName });
 
-        // Show confirmation dialog for replace mode if products exist
-        if (!appendMode) {
-            const stats = CatalogManager.getStats();
-            if (stats.productCount > 0) {
-                const confirmMessage = `⚠️ This will DELETE all ${stats.productCount} existing products and replace them with the imported catalog.`;
-                if (!confirm(confirmMessage)) {
-                    return; // User cancelled
-                }
-            }
-        }
-
-        try {
-            const file = fileInput.files[0];
-            const content = await AdminPage.readFileAsText(file);
-            const data = JSON.parse(content);
-
-            // Show progress bar
-            AdminPage.showProgressBar(data.length, 'products', messagesDivId);
-
-            // Add slight delay to show animation (import is instant otherwise)
-            await new Promise(resolve => setTimeout(resolve, 1600));
-
-            const result = CatalogManager.importProducts(data, appendMode);
-
-            if (result.success) {
-                AdminPage.showSuccessBanner(result, 'products', messagesDivId);
-                AdminPage.updateStats();
-                AdminPage.updateProductCapacity();
-
-                // Clear file input to allow immediate next import
-                fileInput.value = '';
-            } else {
-                AdminPage.hideProgressBar(messagesDivId);
-                AdminPage.showImportMessage(result.error, 'error', messagesDivId);
-            }
-        } catch (e) {
-            AdminPage.hideProgressBar(messagesDivId);
-            AdminPage.showImportMessage(`Error importing products: ${e.message}`, 'error', messagesDivId);
-        }
+    if (success) {
+      // Update site name in header
+      const siteNameEl = getEl("site-name");
+      if (siteNameEl) {
+        siteNameEl.textContent = siteName;
+      }
+      AdminPage.showTemporaryMessage(
+        "settings-message",
+        "Settings saved successfully!",
+        "success",
+      );
+    } else {
+      AdminPage.showTemporaryMessage(
+        "settings-message",
+        "Error saving settings",
+        "error",
+      );
     }
+  }
 
-    /**
-     * Clear all catalog data
-     */
-    static clearCatalog() {
-        if (!confirm('Are you sure you want to clear all catalog data? This cannot be undone.')) {
-            return;
-        }
+  /**
+   * Show animated progress bar during import
+   */
+  static showProgressBar(itemCount, type, messagesDivId) {
+    const messagesDiv = getEl(messagesDivId);
+    if (!messagesDiv) return;
 
-        const messagesDivId = 'products-messages';
-        const success = CatalogManager.clearAll();
-
-        if (success) {
-            AdminPage.showImportMessage('Catalog data cleared successfully', 'success', messagesDivId);
-            AdminPage.updateStats();
-            AdminPage.updateProductCapacity();
-
-            // Reload main navigation
-            if (window.loadMainNavigation) {
-                window.loadMainNavigation();
-            }
-        } else {
-            AdminPage.showImportMessage('Error clearing catalog data', 'error', messagesDivId);
-        }
-    }
-
-    /**
-     * Save settings
-     */
-    static saveSettings(event) {
-        event.preventDefault();
-
-        const siteName = getEl('setting-site-name').value;
-
-        const success = Settings.save({ siteName });
-
-        if (success) {
-            // Update site name in header
-            const siteNameEl = getEl('site-name');
-            if (siteNameEl) {
-                siteNameEl.textContent = siteName;
-            }
-            AdminPage.showTemporaryMessage('settings-message', 'Settings saved successfully!', 'success');
-        } else {
-            AdminPage.showTemporaryMessage('settings-message', 'Error saving settings', 'error');
-        }
-    }
-
-    /**
-     * Show animated progress bar during import
-     */
-    static showProgressBar(itemCount, type, messagesDivId) {
-        const messagesDiv = getEl(messagesDivId);
-        if (!messagesDiv) return;
-
-        messagesDiv.innerHTML = `
+    messagesDiv.innerHTML = `
             <div id="${messagesDivId}-progress" class="import-progress">
                 <div class="progress-icon">📦</div>
                 <div class="progress-text">Importing ${type}...</div>
@@ -417,83 +467,83 @@ class AdminPage {
             </div>
         `;
 
-        // Animate progress from 0 to 100% over 1.5 seconds using requestAnimationFrame
-        const fill = messagesDiv.querySelector('.progress-bar-fill');
-        const progressText = messagesDiv.querySelector('.progress-text');
-        const progressStatus = messagesDiv.querySelector('.progress-status');
+    // Animate progress from 0 to 100% over 1.5 seconds using requestAnimationFrame
+    const fill = messagesDiv.querySelector(".progress-bar-fill");
+    const progressText = messagesDiv.querySelector(".progress-text");
+    const progressStatus = messagesDiv.querySelector(".progress-status");
 
-        const duration = 1500;
-        const startTime = performance.now();
+    const duration = 1500;
+    const startTime = performance.now();
 
-        const animate = (currentTime) => {
-            // Stop if elements were removed (e.g. error teardown)
-            if (!fill.isConnected) return;
+    const animate = (currentTime) => {
+      // Stop if elements were removed (e.g. error teardown)
+      if (!fill.isConnected) return;
 
-            const elapsed = currentTime - startTime;
-            const progress = Math.min((elapsed / duration) * 100, 100);
+      const elapsed = currentTime - startTime;
+      const progress = Math.min((elapsed / duration) * 100, 100);
 
-            // Smooth easing function (ease-out-cubic)
-            const eased = 1 - Math.pow(1 - (progress / 100), 3);
-            fill.style.width = `${eased * 100}%`;
+      // Smooth easing function (ease-out-cubic)
+      const eased = 1 - Math.pow(1 - progress / 100, 3);
+      fill.style.width = `${eased * 100}%`;
 
-            // Update text at milestones
-            if (progress > 30 && progress < 35) {
-                progressStatus.textContent = 'Validating data...';
-            } else if (progress > 60 && progress < 65) {
-                progressStatus.textContent = `Importing ${itemCount.toLocaleString()} items...`;
-            } else if (progress > 90) {
-                progressStatus.textContent = 'Finalizing...';
-                progressText.textContent = 'Almost done!';
-            }
+      // Update text at milestones
+      if (progress > 30 && progress < 35) {
+        progressStatus.textContent = "Validating data...";
+      } else if (progress > 60 && progress < 65) {
+        progressStatus.textContent = `Importing ${itemCount.toLocaleString()} items...`;
+      } else if (progress > 90) {
+        progressStatus.textContent = "Finalizing...";
+        progressText.textContent = "Almost done!";
+      }
 
-            if (progress < 100) {
-                requestAnimationFrame(animate);
-            }
-        };
-
+      if (progress < 100) {
         requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }
+
+  /**
+   * Hide progress bar
+   */
+  static hideProgressBar(messagesDivId) {
+    const messagesDiv = getEl(messagesDivId);
+    if (!messagesDiv) return;
+
+    const progressEl = messagesDiv.querySelector('[id$="-progress"]');
+    if (progressEl) {
+      progressEl.style.opacity = "0";
+      setTimeout(() => progressEl.remove(), 300);
+    }
+  }
+
+  /**
+   * Show success banner with animated stats
+   */
+  static showSuccessBanner(result, type, messagesDivId) {
+    AdminPage.hideProgressBar(messagesDivId);
+
+    const messagesDiv = getEl(messagesDivId);
+    if (!messagesDiv) return;
+    const stats = CatalogManager.getStats();
+
+    let itemsText;
+    let itemsIcon = "📦";
+
+    if (type === "products") {
+      if (result.mode === "append") {
+        itemsText = `Added ${result.addedCount.toLocaleString()} new products`;
+        itemsIcon = "➕";
+      } else {
+        itemsText = `Imported ${result.count.toLocaleString()} products`;
+      }
+    } else {
+      itemsText = `Imported ${result.count.toLocaleString()} categories`;
+      itemsIcon = "📂";
     }
 
-    /**
-     * Hide progress bar
-     */
-    static hideProgressBar(messagesDivId) {
-        const messagesDiv = getEl(messagesDivId);
-        if (!messagesDiv) return;
-
-        const progressEl = messagesDiv.querySelector('[id$="-progress"]');
-        if (progressEl) {
-            progressEl.style.opacity = '0';
-            setTimeout(() => progressEl.remove(), 300);
-        }
-    }
-
-    /**
-     * Show success banner with animated stats
-     */
-    static showSuccessBanner(result, type, messagesDivId) {
-        AdminPage.hideProgressBar(messagesDivId);
-
-        const messagesDiv = getEl(messagesDivId);
-        if (!messagesDiv) return;
-        const stats = CatalogManager.getStats();
-
-        let itemsText;
-        let itemsIcon = '📦';
-
-        if (type === 'products') {
-            if (result.mode === 'append') {
-                itemsText = `Added ${result.addedCount.toLocaleString()} new products`;
-                itemsIcon = '➕';
-            } else {
-                itemsText = `Imported ${result.count.toLocaleString()} products`;
-            }
-        } else {
-            itemsText = `Imported ${result.count.toLocaleString()} categories`;
-            itemsIcon = '📂';
-        }
-
-        messagesDiv.innerHTML = `
+    messagesDiv.innerHTML = `
             <div class="import-success-banner">
                 <div class="success-checkmark">✓</div>
                 <div class="success-content">
@@ -512,106 +562,107 @@ class AdminPage {
             </div>
         `;
 
-        // Animate numbers counting up
+    // Animate numbers counting up
+    setTimeout(() => {
+      AdminPage.animateNumber("banner-products", stats.productCount, 800);
+      AdminPage.animateNumber("banner-categories", stats.categoryCount, 800);
+    }, 400);
+
+    // Auto-dismiss after 6 seconds
+    setTimeout(() => {
+      const banner = messagesDiv.querySelector(".import-success-banner");
+      if (banner) {
+        banner.style.opacity = "0";
+        banner.style.transform = "translateY(-20px)";
         setTimeout(() => {
-            AdminPage.animateNumber('banner-products', stats.productCount, 800);
-            AdminPage.animateNumber('banner-categories', stats.categoryCount, 800);
+          messagesDiv.innerHTML = "";
         }, 400);
+      }
+    }, 6000);
+  }
 
-        // Auto-dismiss after 6 seconds
-        setTimeout(() => {
-            const banner = messagesDiv.querySelector('.import-success-banner');
-            if (banner) {
-                banner.style.opacity = '0';
-                banner.style.transform = 'translateY(-20px)';
-                setTimeout(() => {
-                    messagesDiv.innerHTML = '';
-                }, 400);
-            }
-        }, 6000);
-    }
+  /**
+   * Animate number counting up from 0 to target
+   */
+  static animateNumber(elementId, target, duration) {
+    const element = getEl(elementId);
+    if (!element) return;
 
-    /**
-     * Animate number counting up from 0 to target
-     */
-    static animateNumber(elementId, target, duration) {
-        const element = getEl(elementId);
-        if (!element) return;
+    const startTime = performance.now();
 
-        const startTime = performance.now();
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
 
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
+      // Ease-out-cubic for smooth deceleration
+      const eased = 1 - Math.pow(1 - progress, 3);
+      element.textContent = Math.floor(target * eased).toLocaleString();
 
-            // Ease-out-cubic for smooth deceleration
-            const eased = 1 - Math.pow(1 - progress, 3);
-            element.textContent = Math.floor(target * eased).toLocaleString();
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                element.textContent = target.toLocaleString();
-            }
-        };
-
+      if (progress < 1) {
         requestAnimationFrame(animate);
+      } else {
+        element.textContent = target.toLocaleString();
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }
+
+  /**
+   * Show import message (for errors)
+   */
+  static showImportMessage(message, type, messagesDivId) {
+    const messagesDiv = getEl(messagesDivId);
+    if (!messagesDiv) return;
+
+    messagesDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      messagesDiv.innerHTML = "";
+    }, 5000);
+  }
+
+  /**
+   * Update statistics display
+   */
+  static updateStats() {
+    const stats = CatalogManager.getStats();
+
+    const productsEl = getEl("stat-products");
+    const categoriesEl = getEl("stat-categories");
+    const rootCategoriesEl = getEl("stat-root-categories");
+
+    if (productsEl) productsEl.textContent = stats.productCount;
+    if (categoriesEl) categoriesEl.textContent = stats.categoryCount;
+    if (rootCategoriesEl)
+      rootCategoriesEl.textContent = stats.rootCategoryCount;
+  }
+
+  /**
+   * Update product capacity indicator (smart display - only shows when >= 90%)
+   */
+  static updateProductCapacity() {
+    const stats = CatalogManager.getStats();
+    const maxProducts = CatalogManager.MAX_PRODUCTS;
+    const currentCount = stats.productCount;
+    const percentage = Math.round((currentCount / maxProducts) * 100);
+
+    const capacityDiv = getEl("product-capacity");
+    if (!capacityDiv) return;
+
+    // Only show if >= 90% or at limit
+    if (percentage < 90) {
+      capacityDiv.style.display = "none";
+      return;
     }
 
-    /**
-     * Show import message (for errors)
-     */
-    static showImportMessage(message, type, messagesDivId) {
-        const messagesDiv = getEl(messagesDivId);
-        if (!messagesDiv) return;
+    capacityDiv.style.display = "block";
 
-        messagesDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            messagesDiv.innerHTML = '';
-        }, 5000);
-    }
-
-    /**
-     * Update statistics display
-     */
-    static updateStats() {
-        const stats = CatalogManager.getStats();
-
-        const productsEl = getEl('stat-products');
-        const categoriesEl = getEl('stat-categories');
-        const rootCategoriesEl = getEl('stat-root-categories');
-
-        if (productsEl) productsEl.textContent = stats.productCount;
-        if (categoriesEl) categoriesEl.textContent = stats.categoryCount;
-        if (rootCategoriesEl) rootCategoriesEl.textContent = stats.rootCategoryCount;
-    }
-
-    /**
-     * Update product capacity indicator (smart display - only shows when >= 90%)
-     */
-    static updateProductCapacity() {
-        const stats = CatalogManager.getStats();
-        const maxProducts = CatalogManager.MAX_PRODUCTS;
-        const currentCount = stats.productCount;
-        const percentage = Math.round((currentCount / maxProducts) * 100);
-
-        const capacityDiv = getEl('product-capacity');
-        if (!capacityDiv) return;
-
-        // Only show if >= 90% or at limit
-        if (percentage < 90) {
-            capacityDiv.style.display = 'none';
-            return;
-        }
-
-        capacityDiv.style.display = 'block';
-
-        // Update content based on capacity level
-        if (currentCount >= maxProducts) {
-            // 100% - Red alert with pulse animation
-            capacityDiv.innerHTML = `
+    // Update content based on capacity level
+    if (currentCount >= maxProducts) {
+      // 100% - Red alert with pulse animation
+      capacityDiv.innerHTML = `
                 <div style="font-size: 15px; font-weight: 600; color: #dc2626; margin-bottom: 6px;">
                     🚫 Capacity limit reached: ${currentCount.toLocaleString()} / ${maxProducts.toLocaleString()} products
                 </div>
@@ -619,14 +670,14 @@ class AdminPage {
                     Cannot import more products. Delete existing products to free up space.
                 </div>
             `;
-            capacityDiv.style.borderLeft = '4px solid #dc2626';
-            capacityDiv.style.background = '#fef2f2';
-            capacityDiv.classList.add('capacity-alert-pulse');
-            capacityDiv.classList.remove('capacity-warning-pulse');
-        } else {
-            // 90-99% - Orange warning with subtle pulse
-            const remaining = maxProducts - currentCount;
-            capacityDiv.innerHTML = `
+      capacityDiv.style.borderLeft = "4px solid #dc2626";
+      capacityDiv.style.background = "#fef2f2";
+      capacityDiv.classList.add("capacity-alert-pulse");
+      capacityDiv.classList.remove("capacity-warning-pulse");
+    } else {
+      // 90-99% - Orange warning with subtle pulse
+      const remaining = maxProducts - currentCount;
+      capacityDiv.innerHTML = `
                 <div style="font-size: 15px; font-weight: 600; color: #ea580c; margin-bottom: 6px;">
                     ⚠️ Approaching capacity: ${currentCount.toLocaleString()} / ${maxProducts.toLocaleString()} products (${percentage}%)
                 </div>
@@ -634,127 +685,163 @@ class AdminPage {
                     ${remaining.toLocaleString()} products remaining before limit
                 </div>
             `;
-            capacityDiv.style.borderLeft = '4px solid #f97316';
-            capacityDiv.style.background = '#fff7ed';
-            capacityDiv.classList.add('capacity-warning-pulse');
-            capacityDiv.classList.remove('capacity-alert-pulse');
-        }
+      capacityDiv.style.borderLeft = "4px solid #f97316";
+      capacityDiv.style.background = "#fff7ed";
+      capacityDiv.classList.add("capacity-warning-pulse");
+      capacityDiv.classList.remove("capacity-alert-pulse");
+    }
+  }
+
+  /**
+   * Read file as text
+   */
+  static readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(e);
+      reader.readAsText(file);
+    });
+  }
+
+  /**
+   * Save T2S settings
+   */
+  static saveT2SSettings(event) {
+    event.preventDefault();
+
+    const trackingUrl = getEl("setting-tracking-url").value.trim();
+    const adsServerUrl = getEl("setting-ads-url").value.trim();
+    const customerId = getEl("setting-customer-id").value.trim();
+    const pageIdsText = getEl("setting-page-ids").value.trim();
+    const orderPrefix = getEl("setting-order-prefix").value.trim();
+
+    // Validate page IDs JSON
+    let pageIds;
+    try {
+      pageIds = JSON.parse(pageIdsText);
+      if (typeof pageIds !== "object" || Array.isArray(pageIds)) {
+        AdminPage.showTemporaryMessage(
+          "t2s-settings-message",
+          "Page IDs must be a JSON object",
+          "error",
+        );
+        return;
+      }
+    } catch (e) {
+      AdminPage.showTemporaryMessage(
+        "t2s-settings-message",
+        "Invalid JSON format for Page IDs",
+        "error",
+      );
+      return;
     }
 
-    /**
-     * Read file as text
-     */
-    static readFileAsText(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = (e) => reject(e);
-            reader.readAsText(file);
-        });
+    const success = Settings.save({
+      trackingUrl,
+      adsServerUrl,
+      t2sCustomerId: customerId,
+      t2sPageIds: pageIds,
+      orderPrefix,
+    });
+
+    if (success) {
+      AdminPage.showTemporaryMessage(
+        "t2s-settings-message",
+        "T2S settings saved successfully!",
+        "success",
+      );
+    } else {
+      AdminPage.showTemporaryMessage(
+        "t2s-settings-message",
+        "Error saving T2S settings",
+        "error",
+      );
+    }
+  }
+
+  /**
+   * Generate new tID
+   */
+  static generateNewTID() {
+    const newTID = Settings.generateNewTID();
+    const tidInput = getEl("current-tid");
+    if (tidInput) {
+      tidInput.value = newTID;
+    }
+    AdminPage.showTemporaryMessage(
+      "tid-message",
+      "New tID generated successfully!",
+      "success",
+    );
+  }
+
+  /**
+   * Reset tID
+   */
+  static resetTID() {
+    const newTID = Settings.resetTID();
+    const tidInput = getEl("current-tid");
+    if (tidInput) {
+      tidInput.value = newTID;
+    }
+    AdminPage.showTemporaryMessage(
+      "tid-message",
+      "tID reset successfully!",
+      "success",
+    );
+  }
+
+  /**
+   * Save custom tID
+   */
+  static saveCustomTID() {
+    const customTID = getEl("custom-tid").value.trim();
+
+    if (!customTID) {
+      AdminPage.showTemporaryMessage(
+        "tid-message",
+        "Please enter a custom tID",
+        "error",
+      );
+      return;
     }
 
-    /**
-     * Save T2S settings
-     */
-    static saveT2SSettings(event) {
-        event.preventDefault();
+    const success = Settings.saveTID(customTID);
 
-        const trackingUrl = getEl('setting-tracking-url').value.trim();
-        const adsServerUrl = getEl('setting-ads-url').value.trim();
-        const customerId = getEl('setting-customer-id').value.trim();
-        const pageIdsText = getEl('setting-page-ids').value.trim();
-        const orderPrefix = getEl('setting-order-prefix').value.trim();
-
-        // Validate page IDs JSON
-        let pageIds;
-        try {
-            pageIds = JSON.parse(pageIdsText);
-            if (typeof pageIds !== 'object' || Array.isArray(pageIds)) {
-                AdminPage.showTemporaryMessage('t2s-settings-message', 'Page IDs must be a JSON object', 'error');
-                return;
-            }
-        } catch (e) {
-            AdminPage.showTemporaryMessage('t2s-settings-message', 'Invalid JSON format for Page IDs', 'error');
-            return;
-        }
-
-        const success = Settings.save({
-            trackingUrl,
-            adsServerUrl,
-            t2sCustomerId: customerId,
-            t2sPageIds: pageIds,
-            orderPrefix
-        });
-
-        if (success) {
-            AdminPage.showTemporaryMessage('t2s-settings-message', 'T2S settings saved successfully!', 'success');
-        } else {
-            AdminPage.showTemporaryMessage('t2s-settings-message', 'Error saving T2S settings', 'error');
-        }
+    if (success) {
+      const tidInput = getEl("current-tid");
+      if (tidInput) {
+        tidInput.value = customTID;
+      }
+      getEl("custom-tid").value = "";
+      AdminPage.showTemporaryMessage(
+        "tid-message",
+        "Custom tID saved successfully!",
+        "success",
+      );
+    } else {
+      AdminPage.showTemporaryMessage(
+        "tid-message",
+        "Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "error",
+      );
     }
+  }
 
-    /**
-     * Generate new tID
-     */
-    static generateNewTID() {
-        const newTID = Settings.generateNewTID();
-        const tidInput = getEl('current-tid');
-        if (tidInput) {
-            tidInput.value = newTID;
-        }
-        AdminPage.showTemporaryMessage('tid-message', 'New tID generated successfully!', 'success');
-    }
+  /**
+   * Show a temporary message in the given container, auto-dismissed after 3 seconds
+   */
+  static showTemporaryMessage(elementId, message, type) {
+    const messageDiv = getEl(elementId);
+    if (!messageDiv) return;
 
-    /**
-     * Reset tID
-     */
-    static resetTID() {
-        const newTID = Settings.resetTID();
-        const tidInput = getEl('current-tid');
-        if (tidInput) {
-            tidInput.value = newTID;
-        }
-        AdminPage.showTemporaryMessage('tid-message', 'tID reset successfully!', 'success');
-    }
+    messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
 
-    /**
-     * Save custom tID
-     */
-    static saveCustomTID() {
-        const customTID = getEl('custom-tid').value.trim();
-
-        if (!customTID) {
-            AdminPage.showTemporaryMessage('tid-message', 'Please enter a custom tID', 'error');
-            return;
-        }
-
-        const success = Settings.saveTID(customTID);
-
-        if (success) {
-            const tidInput = getEl('current-tid');
-            if (tidInput) {
-                tidInput.value = customTID;
-            }
-            getEl('custom-tid').value = '';
-            AdminPage.showTemporaryMessage('tid-message', 'Custom tID saved successfully!', 'success');
-        } else {
-            AdminPage.showTemporaryMessage('tid-message', 'Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'error');
-        }
-    }
-
-    /**
-     * Show a temporary message in the given container, auto-dismissed after 3 seconds
-     */
-    static showTemporaryMessage(elementId, message, type) {
-        const messageDiv = getEl(elementId);
-        if (!messageDiv) return;
-
-        messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
-
-        setTimeout(() => {
-            messageDiv.innerHTML = '';
-        }, 3000);
-    }
+    setTimeout(() => {
+      messageDiv.innerHTML = "";
+    }, 3000);
+  }
 }
 
 // Add CSS for admin section and import animations
@@ -1016,10 +1103,10 @@ const adminStyles = `
 `;
 
 // Inject styles if not already present
-if (!document.getElementById('admin-styles')) {
-    const style = document.createElement('style');
-    style.id = 'admin-styles';
-    style.textContent = adminStyles;
-    document.head.appendChild(style);
+if (!document.getElementById("admin-styles")) {
+  const style = document.createElement("style");
+  style.id = "admin-styles";
+  style.textContent = adminStyles;
+  document.head.appendChild(style);
 }
 export { AdminPage };

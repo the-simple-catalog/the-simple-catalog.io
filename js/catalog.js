@@ -467,17 +467,20 @@ class CatalogManager {
 class Settings {
     static #STORAGE_KEY = 'ecommerce_settings'; // Private
 
+    // Minimal defaults - configure via Admin page for actual values
     static DEFAULT_SETTINGS = {
         siteName: 'E-Commerce Demo',
-        trackingUrl: 'https://xxxxx.retail.mirakl.net',
-        adsServerUrl: 'https://xxxxx.retailmedia.mirakl.net',
-        t2sCustomerId: 'CUSTOMER_PUBLIC_ID',
+        trackingUrl: '',
+        adsServerUrl: '',
+        t2sCustomerId: '',
         t2sPageIds: {
-            search: 2000,
+            homepage: 1000,
             category: 1400,
             product: 1200,
             cart: 1600,
-            postPayment: 2400
+            search: 2000,
+            postPayment: 2400,
+            payment: 3200
         },
         orderPrefix: 'ORDER_'
     };

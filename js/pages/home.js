@@ -12,7 +12,8 @@ class HomePage {
      */
     static render() {
         // Track page view
-        Tracking.trackPageView(Tracking.PAGE_IDS.HOMEPAGE, Tracking.PAGE_TYPES.HOMEPAGE);
+        const pageType = Tracking.PAGE_TYPES.HOMEPAGE;
+        Tracking.trackPageView(Tracking.getPageId(pageType), pageType);
 
         const app = getEl('app');
         const rootCategories = CatalogManager.getRootCategories();

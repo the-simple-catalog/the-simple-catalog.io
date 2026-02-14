@@ -13,7 +13,8 @@ class CartPage {
      */
     static render() {
         // Track page view
-        Tracking.trackPageView(Tracking.PAGE_IDS.CART, Tracking.PAGE_TYPES.CART);
+        const pageType = Tracking.PAGE_TYPES.CART;
+        Tracking.trackPageView(Tracking.getPageId(pageType), pageType);
 
         const app = getEl('app');
         const items = Cart.getItemsWithDetails();
