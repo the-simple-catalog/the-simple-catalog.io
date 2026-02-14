@@ -463,18 +463,36 @@ const Tracking = {
         const price = product ? CatalogManager.getProductPrice(product) : null;
         const brand = product ? CatalogManager.getProductBrand(product) : null;
 
+        // Generate badges with sponsored flag set to true
+        const badges = product ? generateProductBadges(product, true) : '<div class="product-badges"><span class="product-badge product-badge-sponsored">Sponsored</span></div>';
+        const description = product?.content.longDescription || product?.content.name || productId;
+
         return `
             <div class="product-card">
-                <a href="#/product/${escapeHtml(productId)}"
-                   onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;">
-                    <img
-                        src="${escapeHtml(imageUrl)}"
-                        alt="${escapeHtml(productName)}"
-                        class="product-card-image"
-                        onload="Tracking.trackSponsoredImpression('${escapeHtml(adId)}')"
-                        onerror="this.src='https://placehold.co/250x250?text=${encodeURIComponent(productId)}'"
-                    />
-                </a>
+                <div class="product-card-image-wrapper">
+                    ${badges}
+                    <a href="#/product/${escapeHtml(productId)}"
+                       onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;">
+                        <img
+                            src="${escapeHtml(imageUrl)}"
+                            alt="${escapeHtml(productName)}"
+                            class="product-card-image"
+                            onload="Tracking.trackSponsoredImpression('${escapeHtml(adId)}')"
+                            onerror="this.src='https://placehold.co/250x250?text=${encodeURIComponent(productId)}'"
+                        />
+                    </a>
+                    <div class="product-card-info-overlay">
+                        <div class="product-card-overlay-description">${escapeHtml(description)}</div>
+                        <a href="#/product/${escapeHtml(productId)}"
+                           onclick="Tracking.trackSponsoredClick('${escapeHtml(adId)}'); return true;"
+                           class="product-card-overlay-cta">
+                            View Details
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
                 <div class="product-card-content">
                     ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
                     <a href="#/product/${escapeHtml(productId)}"
@@ -487,7 +505,7 @@ const Tracking = {
                             ${formatPrice(price.hasPromo ? price.promo : price.regular)}
                         </div>
                     ` : ''}
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; font-family: var(--font-mono);">
                         Sponsored ${digitalServiceAct?.sponsor ? `by ${escapeHtml(digitalServiceAct.sponsor)}` : ''}
                     </div>
                 </div>

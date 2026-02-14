@@ -144,20 +144,38 @@ function navigateTo(path) {
 }
 
 /**
- * Generate a UUID v4
- * Uses crypto.randomUUID() with fallback to Math.random() for older browsers
+ * Generate a UUID v4 using native browser API
  * @returns {string} UUID v4 format string
  */
 function generateUUID() {
-    // Use native crypto.randomUUID if available
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID();
+    return crypto.randomUUID();
+}
+
+/**
+ * Generate product badges based on product data and sponsorship status
+ * @param {Object} product - Product object from catalog
+ * @param {boolean} isSponsored - Whether this is a sponsored product
+ * @returns {string} HTML string with badge elements
+ */
+function generateProductBadges(product, isSponsored = false) {
+    const badges = [];
+
+    // SALE badge - Product has promotional price
+    if (product?.content?.promoPrice) {
+        badges.push('<span class="product-badge product-badge-sale">Sale</span>');
     }
 
-    // Fallback to Math.random() implementation
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+    // SPONSORED badge - Marked as sponsored (ads)
+    if (isSponsored) {
+        badges.push('<span class="product-badge product-badge-sponsored">Sponsored</span>');
+    }
+
+    // MARKETPLACE badge - 3P (third-party) product
+    if (product?.content?.partyTypes === '3P') {
+        badges.push('<span class="product-badge product-badge-marketplace">Marketplace</span>');
+    }
+
+    return badges.length > 0
+        ? `<div class="product-badges">${badges.join('')}</div>`
+        : '';
 }

@@ -61,6 +61,65 @@ const HomePage = {
                     </div>
                 </div>
 
+                <!-- Features Section: 4 feature blocks highlighting key benefits -->
+                <section class="features-section">
+                    <div class="features-grid">
+                        <div class="features-item teal">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="1" y="3" width="15" height="13"></rect>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                </svg>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Free Shipping</h3>
+                                <p>On orders over $50</p>
+                            </div>
+                        </div>
+
+                        <div class="features-item green">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                                </svg>
+                            </div>
+                            <div class="feature-text">
+                                <h3>24/7 Support</h3>
+                                <p>Always here to help</p>
+                            </div>
+                        </div>
+
+                        <div class="features-item orange">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    <path d="M9 12l2 2 4-4"></path>
+                                </svg>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Secure Payment</h3>
+                                <p>100% protected</p>
+                            </div>
+                        </div>
+
+                        <div class="features-item cyan">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                </svg>
+                            </div>
+                            <div class="feature-text">
+                                <h3>Daily Offers</h3>
+                                <p>Up to 70% off</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Categories Section: Grid of clickable category cards -->
                 <h2 class="category-section-title">Shop by Category</h2>
                 <div class="category-list">
