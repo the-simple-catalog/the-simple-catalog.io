@@ -236,6 +236,41 @@ class CatalogManager {
 - **Class Benefits**: Better encapsulation, clearer intent, easier to refactor, and IDE-friendly
 - When adding new modules, always use class syntax with static methods
 
+### Git Commit Conventions
+
+All commits must use gitmoji prefixes to clearly indicate the type of change:
+
+**Format**: `<gitmoji> <subject>`
+
+Example: `✨ Add product filtering by brand`
+
+**Common gitmojis**:
+- ✨ `:sparkles:` - New feature or enhancement
+- 🐛 `:bug:` - Bug fix
+- 🔧 `:wrench:` - Configuration changes (settings, JSON files)
+- 📝 `:memo:` - Documentation updates
+- 💄 `:lipstick:` - UI/styling changes (CSS, HTML structure)
+- ♻️ `:recycle:` - Code refactoring (no functional changes)
+- ⚡ `:zap:` - Performance improvements
+- 🔒 `:lock:` - Security fixes
+- ➕ `:heavy_plus_sign:` - Add dependency or file
+- ➖ `:heavy_minus_sign:` - Remove dependency or file
+- 🎨 `:art:` - Code structure/formatting improvements
+- 🚀 `:rocket:` - Deployment or production-related changes
+- 🔥 `:fire:` - Remove code, files, or features
+- 🙈 `:see_no_evil:` - Add or update .gitignore
+- 🚧 `:construction:` - Work in progress
+- 🎉 `:tada:` - Initial commit or major milestone
+
+**Examples**:
+- `✨ Add sponsored products carousel on homepage`
+- `🐛 Fix cart total calculation rounding error`
+- `💄 Redesign admin import UI with progress animation`
+- `🔧 Update T2S tracking endpoint configuration`
+- `♻️ Refactor tracking module to use ES6 classes`
+- `📝 Update CLAUDE.md with gitmoji conventions`
+- `🙈 Add .claude/ to gitignore`
+
 ### Browser Support
 
 - **Target modern browsers only** - Primarily Google Chrome
