@@ -28,9 +28,7 @@ class AdminPage {
                 <div style="display: grid; gap: 24px; max-width: 800px;">
                     <!-- Catalog Import Section -->
                     <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">Import Catalog</h2>
-
-                        <div id="import-messages"></div>
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">📦 Import Catalog</h2>
 
                         <div class="form-group">
                             <label class="form-label">Categories JSON File</label>
@@ -38,17 +36,11 @@ class AdminPage {
                             <button onclick="AdminPage.importCategories()" class="btn btn-primary" style="margin-top: 8px;">
                                 Import Categories
                             </button>
+                            <div id="categories-messages" style="margin-top: 16px;"></div>
                         </div>
 
-                        <!-- Product Capacity Indicator -->
-                        <div id="product-capacity" style="margin-bottom: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
-                            <div style="font-size: 14px; margin-bottom: 4px;">
-                                <strong>Product Capacity:</strong> <span id="capacity-current">0</span> / <span id="capacity-max">3000</span> products (<span id="capacity-percent">0</span>%)
-                            </div>
-                            <div style="font-size: 13px; color: var(--text-secondary);">
-                                Available capacity: <span id="capacity-remaining">3000</span> slots
-                            </div>
-                        </div>
+                        <!-- Product Capacity Indicator (shown only when >= 90% or at limit) -->
+                        <div id="product-capacity" style="display: none; margin-bottom: 16px; padding: 14px 16px; border-radius: var(--radius-lg); transition: all var(--transition-base);"></div>
 
                         <div class="form-group">
                             <label class="form-label">Products JSON File</label>
@@ -80,6 +72,7 @@ class AdminPage {
                             <button onclick="AdminPage.importProducts()" class="btn btn-primary" style="margin-top: 8px;">
                                 Import Products
                             </button>
+                            <div id="products-messages" style="margin-top: 16px;"></div>
                         </div>
 
                         <div class="form-group">
@@ -91,7 +84,7 @@ class AdminPage {
 
                     <!-- Catalog Statistics -->
                     <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">Catalog Statistics</h2>
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">📊 Catalog Statistics</h2>
                         <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px;">
                             <div style="display: grid; gap: 12px;">
                                 <div style="display: flex; justify-content: space-between;">
@@ -112,7 +105,7 @@ class AdminPage {
 
                     <!-- Site Settings -->
                     <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">Site Settings</h2>
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">⚙️ Site Settings</h2>
 
                         <form id="settings-form" onsubmit="AdminPage.saveSettings(event)">
                             <div class="form-group">
@@ -136,7 +129,7 @@ class AdminPage {
 
                     <!-- T2S Configuration -->
                     <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">T2S Tracking Configuration</h2>
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">🔧 T2S Tracking Configuration</h2>
 
                         <form id="t2s-settings-form" onsubmit="AdminPage.saveT2SSettings(event)">
                             <div class="form-group">
@@ -207,7 +200,7 @@ class AdminPage {
 
                     <!-- tID Management -->
                     <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">User Tracking ID (tID) Management</h2>
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">🔑 User Tracking ID (tID) Management</h2>
 
                         <div class="form-group">
                             <label class="form-label">Current tID</label>
@@ -264,10 +257,10 @@ class AdminPage {
      */
     static async importCategories() {
         const fileInput = getEl('categories-file');
-        const messagesDiv = getEl('import-messages');
+        const messagesDivId = 'categories-messages';
 
         if (!fileInput.files || fileInput.files.length === 0) {
-            AdminPage.showImportMessage('Please select a categories JSON file', 'error');
+            AdminPage.showImportMessage('Please select a categories JSON file', 'error', messagesDivId);
             return;
         }
 
@@ -276,10 +269,16 @@ class AdminPage {
             const content = await AdminPage.readFileAsText(file);
             const data = JSON.parse(content);
 
+            // Show progress bar
+            AdminPage.showProgressBar(data.length, 'categories', messagesDivId);
+
+            // Add slight delay to show animation (import is instant otherwise)
+            await new Promise(resolve => setTimeout(resolve, 1600));
+
             const result = CatalogManager.importCategories(data);
 
             if (result.success) {
-                AdminPage.showImportMessage(result.message, 'success');
+                AdminPage.showSuccessBanner(result, 'categories', messagesDivId);
                 AdminPage.updateStats();
 
                 // Reload main navigation to show new categories
@@ -287,10 +286,12 @@ class AdminPage {
                     window.populateCategoriesDropdown();
                 }
             } else {
-                AdminPage.showImportMessage(result.error, 'error');
+                AdminPage.hideProgressBar(messagesDivId);
+                AdminPage.showImportMessage(result.error, 'error', messagesDivId);
             }
         } catch (e) {
-            AdminPage.showImportMessage(`Error importing categories: ${e.message}`, 'error');
+            AdminPage.hideProgressBar(messagesDivId);
+            AdminPage.showImportMessage(`Error importing categories: ${e.message}`, 'error', messagesDivId);
         }
     }
 
@@ -299,21 +300,16 @@ class AdminPage {
      */
     static async importProducts() {
         const fileInput = getEl('products-file');
+        const messagesDivId = 'products-messages';
 
         if (!fileInput.files || fileInput.files.length === 0) {
-            AdminPage.showImportMessage('Please select a products JSON file', 'error');
+            AdminPage.showImportMessage('Please select a products JSON file', 'error', messagesDivId);
             return;
         }
 
         // Get selected import mode
-        const importModeRadios = document.getElementsByName('import-mode');
-        let appendMode = false;
-        for (const radio of importModeRadios) {
-            if (radio.checked) {
-                appendMode = radio.value === 'append';
-                break;
-            }
-        }
+        const checkedRadio = document.querySelector('input[name="import-mode"]:checked');
+        const appendMode = checkedRadio?.value === 'append';
 
         // Show confirmation dialog for replace mode if products exist
         if (!appendMode) {
@@ -331,20 +327,28 @@ class AdminPage {
             const content = await AdminPage.readFileAsText(file);
             const data = JSON.parse(content);
 
+            // Show progress bar
+            AdminPage.showProgressBar(data.length, 'products', messagesDivId);
+
+            // Add slight delay to show animation (import is instant otherwise)
+            await new Promise(resolve => setTimeout(resolve, 1600));
+
             const result = CatalogManager.importProducts(data, appendMode);
 
             if (result.success) {
-                AdminPage.showImportMessage(result.message, 'success');
+                AdminPage.showSuccessBanner(result, 'products', messagesDivId);
                 AdminPage.updateStats();
                 AdminPage.updateProductCapacity();
 
                 // Clear file input to allow immediate next import
                 fileInput.value = '';
             } else {
-                AdminPage.showImportMessage(result.error, 'error');
+                AdminPage.hideProgressBar(messagesDivId);
+                AdminPage.showImportMessage(result.error, 'error', messagesDivId);
             }
         } catch (e) {
-            AdminPage.showImportMessage(`Error importing products: ${e.message}`, 'error');
+            AdminPage.hideProgressBar(messagesDivId);
+            AdminPage.showImportMessage(`Error importing products: ${e.message}`, 'error', messagesDivId);
         }
     }
 
@@ -356,10 +360,11 @@ class AdminPage {
             return;
         }
 
+        const messagesDivId = 'products-messages';
         const success = CatalogManager.clearAll();
 
         if (success) {
-            AdminPage.showImportMessage('Catalog data cleared successfully', 'success');
+            AdminPage.showImportMessage('Catalog data cleared successfully', 'success', messagesDivId);
             AdminPage.updateStats();
             AdminPage.updateProductCapacity();
 
@@ -368,7 +373,7 @@ class AdminPage {
                 window.loadMainNavigation();
             }
         } else {
-            AdminPage.showImportMessage('Error clearing catalog data', 'error');
+            AdminPage.showImportMessage('Error clearing catalog data', 'error', messagesDivId);
         }
     }
 
@@ -380,35 +385,186 @@ class AdminPage {
 
         const siteName = getEl('setting-site-name').value;
 
-        const success = Settings.save({
-            siteName
-        });
-
-        const messageDiv = getEl('settings-message');
+        const success = Settings.save({ siteName });
 
         if (success) {
-            messageDiv.innerHTML = '<div class="message message-success fade-in">Settings saved successfully!</div>';
-
             // Update site name in header
             const siteNameEl = getEl('site-name');
             if (siteNameEl) {
                 siteNameEl.textContent = siteName;
             }
+            AdminPage.showTemporaryMessage('settings-message', 'Settings saved successfully!', 'success');
         } else {
-            messageDiv.innerHTML = '<div class="message message-error fade-in">Error saving settings</div>';
+            AdminPage.showTemporaryMessage('settings-message', 'Error saving settings', 'error');
         }
-
-        // Auto-remove message after 3 seconds
-        setTimeout(() => {
-            messageDiv.innerHTML = '';
-        }, 3000);
     }
 
     /**
-     * Show import message
+     * Show animated progress bar during import
      */
-    static showImportMessage(message, type) {
-        const messagesDiv = getEl('import-messages');
+    static showProgressBar(itemCount, type, messagesDivId) {
+        const messagesDiv = getEl(messagesDivId);
+        if (!messagesDiv) return;
+
+        messagesDiv.innerHTML = `
+            <div id="${messagesDivId}-progress" class="import-progress">
+                <div class="progress-icon">📦</div>
+                <div class="progress-text">Importing ${type}...</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-status">Processing ${itemCount.toLocaleString()} items...</div>
+            </div>
+        `;
+
+        // Animate progress from 0 to 100% over 1.5 seconds using requestAnimationFrame
+        const fill = messagesDiv.querySelector('.progress-bar-fill');
+        const progressText = messagesDiv.querySelector('.progress-text');
+        const progressStatus = messagesDiv.querySelector('.progress-status');
+
+        const duration = 1500;
+        const startTime = performance.now();
+
+        const animate = (currentTime) => {
+            // Stop if elements were removed (e.g. error teardown)
+            if (!fill.isConnected) return;
+
+            const elapsed = currentTime - startTime;
+            const progress = Math.min((elapsed / duration) * 100, 100);
+
+            // Smooth easing function (ease-out-cubic)
+            const eased = 1 - Math.pow(1 - (progress / 100), 3);
+            fill.style.width = `${eased * 100}%`;
+
+            // Update text at milestones
+            if (progress > 30 && progress < 35) {
+                progressStatus.textContent = 'Validating data...';
+            } else if (progress > 60 && progress < 65) {
+                progressStatus.textContent = `Importing ${itemCount.toLocaleString()} items...`;
+            } else if (progress > 90) {
+                progressStatus.textContent = 'Finalizing...';
+                progressText.textContent = 'Almost done!';
+            }
+
+            if (progress < 100) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    /**
+     * Hide progress bar
+     */
+    static hideProgressBar(messagesDivId) {
+        const messagesDiv = getEl(messagesDivId);
+        if (!messagesDiv) return;
+
+        const progressEl = messagesDiv.querySelector('[id$="-progress"]');
+        if (progressEl) {
+            progressEl.style.opacity = '0';
+            setTimeout(() => progressEl.remove(), 300);
+        }
+    }
+
+    /**
+     * Show success banner with animated stats
+     */
+    static showSuccessBanner(result, type, messagesDivId) {
+        AdminPage.hideProgressBar(messagesDivId);
+
+        const messagesDiv = getEl(messagesDivId);
+        if (!messagesDiv) return;
+        const stats = CatalogManager.getStats();
+
+        let itemsText;
+        let itemsIcon = '📦';
+
+        if (type === 'products') {
+            if (result.mode === 'append') {
+                itemsText = `Added ${result.addedCount.toLocaleString()} new products`;
+                itemsIcon = '➕';
+            } else {
+                itemsText = `Imported ${result.count.toLocaleString()} products`;
+            }
+        } else {
+            itemsText = `Imported ${result.count.toLocaleString()} categories`;
+            itemsIcon = '📂';
+        }
+
+        messagesDiv.innerHTML = `
+            <div class="import-success-banner">
+                <div class="success-checkmark">✓</div>
+                <div class="success-content">
+                    <div class="success-title">Import Successful!</div>
+                    <div class="success-stats">
+                        <div class="stat-item">
+                            <span class="stat-icon">${itemsIcon}</span>
+                            <span class="stat-text">${itemsText}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">📊</span>
+                            <span class="stat-text">Total: <strong id="banner-products">0</strong> products, <strong id="banner-categories">0</strong> categories</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Animate numbers counting up
+        setTimeout(() => {
+            AdminPage.animateNumber('banner-products', stats.productCount, 800);
+            AdminPage.animateNumber('banner-categories', stats.categoryCount, 800);
+        }, 400);
+
+        // Auto-dismiss after 6 seconds
+        setTimeout(() => {
+            const banner = messagesDiv.querySelector('.import-success-banner');
+            if (banner) {
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    messagesDiv.innerHTML = '';
+                }, 400);
+            }
+        }, 6000);
+    }
+
+    /**
+     * Animate number counting up from 0 to target
+     */
+    static animateNumber(elementId, target, duration) {
+        const element = getEl(elementId);
+        if (!element) return;
+
+        const startTime = performance.now();
+
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease-out-cubic for smooth deceleration
+            const eased = 1 - Math.pow(1 - progress, 3);
+            element.textContent = Math.floor(target * eased).toLocaleString();
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                element.textContent = target.toLocaleString();
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    /**
+     * Show import message (for errors)
+     */
+    static showImportMessage(message, type, messagesDivId) {
+        const messagesDiv = getEl(messagesDivId);
+        if (!messagesDiv) return;
+
         messagesDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
 
         // Auto-remove after 5 seconds
@@ -433,43 +589,55 @@ class AdminPage {
     }
 
     /**
-     * Update product capacity indicator
+     * Update product capacity indicator (smart display - only shows when >= 90%)
      */
     static updateProductCapacity() {
         const stats = CatalogManager.getStats();
         const maxProducts = CatalogManager.MAX_PRODUCTS;
         const currentCount = stats.productCount;
         const percentage = Math.round((currentCount / maxProducts) * 100);
-        const remaining = maxProducts - currentCount;
 
-        // Update text elements
-        const currentEl = getEl('capacity-current');
-        const maxEl = getEl('capacity-max');
-        const percentEl = getEl('capacity-percent');
-        const remainingEl = getEl('capacity-remaining');
-
-        if (currentEl) currentEl.textContent = currentCount;
-        if (maxEl) maxEl.textContent = maxProducts;
-        if (percentEl) percentEl.textContent = percentage;
-        if (remainingEl) remainingEl.textContent = remaining;
-
-        // Update color based on capacity
         const capacityDiv = getEl('product-capacity');
-        if (capacityDiv) {
-            let color;
-            if (currentCount >= maxProducts) {
-                // 100% - Red
-                color = '#ef4444'; // red
-            } else if (percentage >= 90) {
-                // 90-99% - Orange
-                color = '#f59e0b'; // orange
-            } else {
-                // 0-89% - Green
-                color = '#10b981'; // green
-            }
+        if (!capacityDiv) return;
 
-            // Apply color to the capacity indicator
-            capacityDiv.style.borderLeft = `4px solid ${color}`;
+        // Only show if >= 90% or at limit
+        if (percentage < 90) {
+            capacityDiv.style.display = 'none';
+            return;
+        }
+
+        capacityDiv.style.display = 'block';
+
+        // Update content based on capacity level
+        if (currentCount >= maxProducts) {
+            // 100% - Red alert with pulse animation
+            capacityDiv.innerHTML = `
+                <div style="font-size: 15px; font-weight: 600; color: #dc2626; margin-bottom: 6px;">
+                    🚫 Capacity limit reached: ${currentCount.toLocaleString()} / ${maxProducts.toLocaleString()} products
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    Cannot import more products. Delete existing products to free up space.
+                </div>
+            `;
+            capacityDiv.style.borderLeft = '4px solid #dc2626';
+            capacityDiv.style.background = '#fef2f2';
+            capacityDiv.classList.add('capacity-alert-pulse');
+            capacityDiv.classList.remove('capacity-warning-pulse');
+        } else {
+            // 90-99% - Orange warning with subtle pulse
+            const remaining = maxProducts - currentCount;
+            capacityDiv.innerHTML = `
+                <div style="font-size: 15px; font-weight: 600; color: #ea580c; margin-bottom: 6px;">
+                    ⚠️ Approaching capacity: ${currentCount.toLocaleString()} / ${maxProducts.toLocaleString()} products (${percentage}%)
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    ${remaining.toLocaleString()} products remaining before limit
+                </div>
+            `;
+            capacityDiv.style.borderLeft = '4px solid #f97316';
+            capacityDiv.style.background = '#fff7ed';
+            capacityDiv.classList.add('capacity-warning-pulse');
+            capacityDiv.classList.remove('capacity-alert-pulse');
         }
     }
 
@@ -502,11 +670,11 @@ class AdminPage {
         try {
             pageIds = JSON.parse(pageIdsText);
             if (typeof pageIds !== 'object' || Array.isArray(pageIds)) {
-                AdminPage.showT2SMessage('Page IDs must be a JSON object', 'error');
+                AdminPage.showTemporaryMessage('t2s-settings-message', 'Page IDs must be a JSON object', 'error');
                 return;
             }
         } catch (e) {
-            AdminPage.showT2SMessage('Invalid JSON format for Page IDs', 'error');
+            AdminPage.showTemporaryMessage('t2s-settings-message', 'Invalid JSON format for Page IDs', 'error');
             return;
         }
 
@@ -519,9 +687,9 @@ class AdminPage {
         });
 
         if (success) {
-            AdminPage.showT2SMessage('T2S settings saved successfully!', 'success');
+            AdminPage.showTemporaryMessage('t2s-settings-message', 'T2S settings saved successfully!', 'success');
         } else {
-            AdminPage.showT2SMessage('Error saving T2S settings', 'error');
+            AdminPage.showTemporaryMessage('t2s-settings-message', 'Error saving T2S settings', 'error');
         }
     }
 
@@ -534,7 +702,7 @@ class AdminPage {
         if (tidInput) {
             tidInput.value = newTID;
         }
-        AdminPage.showTIDMessage('New tID generated successfully!', 'success');
+        AdminPage.showTemporaryMessage('tid-message', 'New tID generated successfully!', 'success');
     }
 
     /**
@@ -546,7 +714,7 @@ class AdminPage {
         if (tidInput) {
             tidInput.value = newTID;
         }
-        AdminPage.showTIDMessage('tID reset successfully!', 'success');
+        AdminPage.showTemporaryMessage('tid-message', 'tID reset successfully!', 'success');
     }
 
     /**
@@ -556,7 +724,7 @@ class AdminPage {
         const customTID = getEl('custom-tid').value.trim();
 
         if (!customTID) {
-            AdminPage.showTIDMessage('Please enter a custom tID', 'error');
+            AdminPage.showTemporaryMessage('tid-message', 'Please enter a custom tID', 'error');
             return;
         }
 
@@ -568,29 +736,19 @@ class AdminPage {
                 tidInput.value = customTID;
             }
             getEl('custom-tid').value = '';
-            AdminPage.showTIDMessage('Custom tID saved successfully!', 'success');
+            AdminPage.showTemporaryMessage('tid-message', 'Custom tID saved successfully!', 'success');
         } else {
-            AdminPage.showTIDMessage('Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'error');
+            AdminPage.showTemporaryMessage('tid-message', 'Invalid UUID format. Must match pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'error');
         }
     }
 
     /**
-     * Show T2S settings message
+     * Show a temporary message in the given container, auto-dismissed after 3 seconds
      */
-    static showT2SMessage(message, type) {
-        const messageDiv = getEl('t2s-settings-message');
-        messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
+    static showTemporaryMessage(elementId, message, type) {
+        const messageDiv = getEl(elementId);
+        if (!messageDiv) return;
 
-        setTimeout(() => {
-            messageDiv.innerHTML = '';
-        }, 3000);
-    }
-
-    /**
-     * Show tID message
-     */
-    static showTIDMessage(message, type) {
-        const messageDiv = getEl('tid-message');
         messageDiv.innerHTML = `<div class="message message-${type} fade-in">${escapeHtml(message)}</div>`;
 
         setTimeout(() => {
@@ -599,13 +757,261 @@ class AdminPage {
     }
 }
 
-// Add CSS for admin section
+// Add CSS for admin section and import animations
 const adminStyles = `
     .admin-section {
         background: var(--bg-primary);
         padding: 24px;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
+    }
+
+    /* ===================================
+       Import Progress Bar
+       =================================== */
+    .import-progress {
+        background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+        padding: 24px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 20px;
+        border: 2px solid var(--primary-light);
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+        animation: slideInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: opacity 0.3s ease;
+    }
+
+    .progress-icon {
+        font-size: 32px;
+        text-align: center;
+        margin-bottom: 12px;
+        animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .progress-text {
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 16px;
+        text-align: center;
+        font-family: var(--font-heading);
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 10px;
+        background: var(--bg-secondary);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 12px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border-radius: 20px;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 1.5s infinite;
+    }
+
+    .progress-status {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-align: center;
+        font-weight: 500;
+    }
+
+    /* ===================================
+       Success Banner
+       =================================== */
+    .import-success-banner {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px solid var(--success-color);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+        animation: slideInDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .success-checkmark {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        background: var(--success-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        animation: checkmarkPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both;
+    }
+
+    .success-content {
+        flex: 1;
+    }
+
+    .success-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--success-color);
+        margin-bottom: 12px;
+        font-family: var(--font-heading);
+    }
+
+    .success-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .stat-icon {
+        font-size: 18px;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .stat-text {
+        line-height: 1.4;
+    }
+
+    .stat-text strong {
+        color: var(--primary-dark);
+        font-weight: 700;
+    }
+
+    /* ===================================
+       Capacity Warnings
+       =================================== */
+    .capacity-warning-pulse {
+        animation: warningPulse 2s ease-in-out infinite;
+    }
+
+    .capacity-alert-pulse {
+        animation: alertPulse 1.5s ease-in-out infinite;
+    }
+
+    /* ===================================
+       Animations
+       =================================== */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes checkmarkPop {
+        0% {
+            opacity: 0;
+            transform: scale(0) rotate(-180deg);
+        }
+        70% {
+            transform: scale(1.2) rotate(10deg);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            left: -100%;
+        }
+        100% {
+            left: 100%;
+        }
+    }
+
+    @keyframes warningPulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.2);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
+        }
+    }
+
+    @keyframes alertPulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+        }
+    }
+
+    /* ===================================
+       Responsive
+       =================================== */
+    @media (max-width: 768px) {
+        .import-success-banner {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .success-checkmark {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            font-size: 28px;
+        }
+
+        .success-title {
+            font-size: 18px;
+        }
+
+        .stat-item {
+            justify-content: center;
+            font-size: 14px;
+        }
     }
 `;
 
