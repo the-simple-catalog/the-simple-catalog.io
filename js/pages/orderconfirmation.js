@@ -12,7 +12,8 @@ class OrderConfirmationPage {
      */
     static render() {
         // Track page view
-        Tracking.trackPageView(Tracking.PAGE_IDS.ORDER_CONFIRMATION, Tracking.PAGE_TYPES.POSTPAYMENT);
+        const pageType = Tracking.PAGE_TYPES.POST_PAYMENT;
+        Tracking.trackPageView(Tracking.getPageId(pageType), pageType);
 
         const app = getEl('app');
 

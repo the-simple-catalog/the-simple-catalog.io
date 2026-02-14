@@ -49,27 +49,26 @@ import { Settings, CatalogManager } from './catalog.js';
 import { escapeHtml, formatPrice, generateProductBadges } from './utils.js';
 
 class Tracking {
-    // Page IDs as constants for consistency
-    static PAGE_IDS = {
-        HOMEPAGE: '1000',
-        SEARCH: '2000',
-        CATEGORY: '1400',
-        PRODUCT: '1200',
-        CART: '1600',
-        PAYMENT: '3200',
-        ORDER_CONFIRMATION: '2400'
-    };
-
-    // Page types for tracking
+    // Page type constants - values match the keys used in Settings.DEFAULT_SETTINGS.t2sPageIds
     static PAGE_TYPES = {
         HOMEPAGE: 'homepage',
         CATEGORY: 'category',
-        SEARCH: 'search',
         PRODUCT: 'product',
         CART: 'cart',
-        PAYMENT: 'payment',
-        POSTPAYMENT: 'postpayment'
+        SEARCH: 'search',
+        POST_PAYMENT: 'postPayment',
+        PAYMENT: 'payment'
     };
+
+    /**
+     * Get page ID from settings (configurable via Admin page)
+     * @param {string} pageType - One of: 'homepage', 'category', 'product', 'cart', 'search', 'postPayment', 'payment'
+     * @returns {number} Page ID from settings, falling back to Settings.DEFAULT_SETTINGS
+     */
+    static getPageId(pageType) {
+        const settings = Settings.get();
+        return settings.t2sPageIds?.[pageType] ?? Settings.DEFAULT_SETTINGS.t2sPageIds[pageType];
+    }
 
     /**
      * Send tracking event to T2S API
@@ -151,12 +150,9 @@ class Tracking {
      * - referer: Previous page URL (auto-added if available)
      */
     static trackCategoryView(categoryId) {
-        const settings = Settings.get();
-        const pageIdValue = settings.t2sPageIds?.category || 1400;
-
         this.sendTrackingEvent({
-            cID: settings.t2sCustomerId,
-            pageId: pageIdValue,
+            cID: Settings.get().t2sCustomerId,
+            pageId: this.getPageId('category'),
             categoryId: categoryId,
             pageNumber: 1,
             userConsent: true,
@@ -182,12 +178,9 @@ class Tracking {
      * - referer: Previous page URL (auto-added if available)
      */
     static trackSearchView(searchQuery, productIds = []) {
-        const settings = Settings.get();
-        const pageIdValue = settings.t2sPageIds?.search || 2000;
-
         const eventData = {
-            cID: settings.t2sCustomerId,
-            pageId: pageIdValue,
+            cID: Settings.get().t2sCustomerId,
+            pageId: this.getPageId('search'),
             keywords: searchQuery,
             userConsent: true,
             userId: Settings.getTID(),
@@ -217,12 +210,9 @@ class Tracking {
      * - referer: Previous page URL (auto-added if available)
      */
     static trackProductView(productId) {
-        const settings = Settings.get();
-        const pageIdValue = settings.t2sPageIds?.product || 1200;
-
         this.sendTrackingEvent({
-            cID: settings.t2sCustomerId,
-            pageId: pageIdValue,
+            cID: Settings.get().t2sCustomerId,
+            pageId: this.getPageId('product'),
             productId: productId,
             userConsent: true,
             userId: Settings.getTID(),
@@ -249,12 +239,9 @@ class Tracking {
      * - referer: Previous page URL (auto-added if available)
      */
     static trackAddToCart(productId, quantity, price) {
-        const settings = Settings.get();
-        const pageIdValue = settings.t2sPageIds?.cart || 1600;
-
         this.sendTrackingEvent({
-            cID: settings.t2sCustomerId,
-            pageId: pageIdValue,
+            cID: Settings.get().t2sCustomerId,
+            pageId: this.getPageId('cart'),
             productId: productId,
             userConsent: true,
             userId: Settings.getTID(),
@@ -293,17 +280,14 @@ class Tracking {
      * Result: priceList="90|45.50|120", productsQuantity="2|1|3", basketAmount=255.50
      */
     static trackPostPayment(orderData) {
-        const settings = Settings.get();
-        const pageIdValue = settings.t2sPageIds?.postPayment || 2400;
-
-        // Extract product IDs, quantities, and priceList (quantity × unit price) (pipe-separated)
+        // Extract product IDs, quantities, and priceList (quantity x unit price) (pipe-separated)
         const productIds = orderData.items.map(item => item.productId).join('|');
         const quantities = orderData.items.map(item => item.quantity).join('|');
         const priceList = orderData.items.map(item => item.quantity * item.price).join('|');
 
         this.sendTrackingEvent({
-            cID: settings.t2sCustomerId,
-            pageId: pageIdValue,
+            cID: Settings.get().t2sCustomerId,
+            pageId: this.getPageId('postPayment'),
             productId: productIds,
             userConsent: true,
             userId: Settings.getTID(),

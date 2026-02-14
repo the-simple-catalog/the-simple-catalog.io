@@ -20,8 +20,10 @@ class CategoryPage {
             return;
         }
 
+        const pageType = Tracking.PAGE_TYPES.CATEGORY;
+
         // Track page view
-        Tracking.trackPageView(Tracking.PAGE_IDS.CATEGORY, Tracking.PAGE_TYPES.CATEGORY, {
+        Tracking.trackPageView(Tracking.getPageId(pageType), pageType, {
             categoryId,
             categoryName: category.content.name
         });
@@ -31,7 +33,7 @@ class CategoryPage {
 
         // Request sponsored products
         const sponsoredAdsPromise = Tracking.requestSponsoredProducts(
-            Tracking.PAGE_IDS.CATEGORY, Tracking.PAGE_TYPES.CATEGORY, { categoryId }
+            Tracking.getPageId(pageType), pageType, { categoryId }
         );
 
         const app = getEl('app');

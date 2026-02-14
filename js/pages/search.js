@@ -15,9 +15,10 @@ class SearchPage {
      */
     static render(params) {
         const query = params.q || '';
+        const pageType = Tracking.PAGE_TYPES.SEARCH;
 
         // Track page view
-        Tracking.trackPageView(Tracking.PAGE_IDS.SEARCH, Tracking.PAGE_TYPES.SEARCH, {
+        Tracking.trackPageView(Tracking.getPageId(pageType), pageType, {
             searchQuery: query
         });
 
@@ -28,7 +29,7 @@ class SearchPage {
 
         // Request sponsored products if there's a search query
         const sponsoredAdsPromise = query.length >= 3
-            ? Tracking.requestSponsoredProducts(Tracking.PAGE_IDS.SEARCH, Tracking.PAGE_TYPES.SEARCH, {
+            ? Tracking.requestSponsoredProducts(Tracking.getPageId(pageType), pageType, {
                 searchQuery: query
             })
             : null;
