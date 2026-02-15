@@ -2,6 +2,8 @@
 
 > A fully static e-commerce Single Page Application built to demonstrate **Mirakl T2S Tracking** and **Mirakl Ads API** integration. No frameworks, no build tools, no backend — just pure HTML, CSS, and JavaScript.
 
+**🌐 Live Demo**: [https://the-simple-catalog.github.io/the-simple-catalog.io](https://the-simple-catalog.github.io/the-simple-catalog.io)
+
 ## Table of Contents
 
 - [Features](#-features)
