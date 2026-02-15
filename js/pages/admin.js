@@ -176,10 +176,10 @@ class AdminPage {
                                     id="setting-ads-token"
                                     class="form-input"
                                     value="${escapeHtml(settings.adsServerToken || "")}"
-                                    placeholder="JWT token for authenticated endpoint"
+                                    placeholder="JWT token (xxx.yyy.zzz format)"
                                 />
                                 <small style="color: var(--text-secondary); font-size: 12px;">
-                                    With token: /ads/v1/rendered-content | Without token: /ads/v1/public/rendered-content
+                                    Valid JWT (3 parts, 20+ chars): /ads/v1/rendered-content | Invalid/empty: /ads/v1/public/rendered-content
                                 </small>
                             </div>
 

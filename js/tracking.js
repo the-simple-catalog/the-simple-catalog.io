@@ -46,12 +46,17 @@
 // Mirakl Ads API Documentation
 // =============================
 //
-// Endpoint: POST {adsServerUrl}/ads/v1/rendered-content (with token - authenticated)
-//           POST {adsServerUrl}/ads/v1/public/rendered-content (without token - public)
+// Endpoint: POST {adsServerUrl}/ads/v1/rendered-content (with valid JWT token - authenticated)
+//           POST {adsServerUrl}/ads/v1/public/rendered-content (without token or invalid token - public)
 // Content-Type: application/json
 // Headers:
 //   - x-customer-id: Customer ID (required)
 //   - Authorization: Bearer {token} (required for authenticated endpoint)
+//
+// Token Validation:
+// - Token must be in valid JWT format (xxx.yyy.zzz - 3 parts separated by dots)
+// - Token must be at least 20 characters long
+// - Invalid or placeholder tokens (e.g., "YOUR_JWT_TOKEN") will use public endpoint
 //
 // Request Body:
 // - pageId:      Page type identifier
@@ -374,15 +379,17 @@ class Tracking {
                 'Content-Type': 'application/json'
             };
 
-            // Determine endpoint based on token presence
-            // With token (authenticated): /ads/v1/rendered-content
-            // Without token (public): /ads/v1/public/rendered-content
-            const hasToken = settings.adsServerToken && settings.adsServerToken.trim();
-            const endpoint = hasToken ? '/ads/v1/rendered-content' : '/ads/v1/public/rendered-content';
+            // Determine endpoint based on token presence and validity
+            // With valid token (authenticated): /ads/v1/rendered-content
+            // Without token or invalid token (public): /ads/v1/public/rendered-content
+            // JWT tokens should have format: xxx.yyy.zzz (3 parts separated by dots)
+            const token = settings.adsServerToken?.trim();
+            const isValidJWT = token && token.split('.').length === 3 && token.length > 20;
+            const endpoint = isValidJWT ? '/ads/v1/rendered-content' : '/ads/v1/public/rendered-content';
 
-            // Add Authorization header if token is configured
-            if (hasToken) {
-                headers['Authorization'] = `Bearer ${settings.adsServerToken.trim()}`;
+            // Add Authorization header if token is valid
+            if (isValidJWT) {
+                headers['Authorization'] = `Bearer ${token}`;
             }
 
             // Make API request
