@@ -108,8 +108,9 @@ Pages: `home.js`, `category.js`, `product.js`, `search.js`, `cart.js`, `checkout
 - `Tracking.trackPostPayment(orderData)` - Order confirmations
 
 **Mirakl Ads API**:
-- Endpoint: `POST {adsServerUrl}/ads/v1/public/rendered-content`
-- Headers: `x-customer-id`, `Content-Type: application/json`
+- Endpoint (authenticated with token): `POST {adsServerUrl}/ads/v1/rendered-content`
+- Endpoint (public without token): `POST {adsServerUrl}/ads/v1/public/rendered-content`
+- Headers: `x-customer-id`, `Content-Type: application/json`, `Authorization: Bearer {token}` (when token present)
 - Returns sponsored products for category, search, and product pages
 - Handles impression/click tracking
 

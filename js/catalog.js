@@ -472,6 +472,7 @@ class Settings {
         siteName: 'E-Commerce Demo',
         trackingUrl: '',
         adsServerUrl: '',
+        adsServerToken: '',
         t2sCustomerId: '',
         t2sPageIds: {
             homepage: 1000,

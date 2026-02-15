@@ -11,18 +11,21 @@ import { CatalogManager, Settings } from "../catalog.js";
 // Page ID defaults are managed in Settings.DEFAULT_SETTINGS (catalog.js).
 // ===================================
 export const DEFAULT_T2S_CUSTOMER_ID = "CUSTOMER_PUBLIC_ID";
-export const DEFAULT_TRACKING_URL =
-  "https://xxxxx.retail.mirakl.net";
-export const DEFAULT_ADS_SERVER_URL =
-  "https://xxxxx.retailmedia.mirakl.net";
+export const DEFAULT_TRACKING_URL = "https://xxxxx.retail.mirakl.net";
+export const DEFAULT_ADS_SERVER_URL = "https://xxxxx.retailmedia.mirakl.net";
 export const DEFAULT_ORDER_PREFIX = "ORDER_";
 
 class AdminPage {
   /**
    * Render admin page
+   * Checks for URL parameters and imports settings before rendering the form.
    */
   static render() {
     const app = getEl("app");
+
+    // Import settings from URL parameters before rendering form
+    const urlImported = AdminPage.loadSettingsFromUrl();
+
     const settings = Settings.get();
     const stats = CatalogManager.getStats();
 
@@ -167,6 +170,20 @@ class AdminPage {
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label">Ads Server Token (Optional)</label>
+                                <input
+                                    type="password"
+                                    id="setting-ads-token"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.adsServerToken || "")}"
+                                    placeholder="JWT token for authenticated endpoint"
+                                />
+                                <small style="color: var(--text-secondary); font-size: 12px;">
+                                    With token: /ads/v1/rendered-content | Without token: /ads/v1/public/rendered-content
+                                </small>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">T2S Customer ID</label>
                                 <input
                                     type="text"
@@ -262,6 +279,15 @@ class AdminPage {
 
     // Initialize product capacity indicator
     AdminPage.updateProductCapacity();
+
+    // Show success notification if settings were imported from URL
+    if (urlImported) {
+      AdminPage.showTemporaryMessage(
+        "t2s-settings-message",
+        "Settings imported from URL parameters",
+        "success",
+      );
+    }
   }
 
   /**
@@ -712,6 +738,7 @@ class AdminPage {
 
     const trackingUrl = getEl("setting-tracking-url").value.trim();
     const adsServerUrl = getEl("setting-ads-url").value.trim();
+    const adsServerToken = getEl("setting-ads-token").value.trim();
     const customerId = getEl("setting-customer-id").value.trim();
     const pageIdsText = getEl("setting-page-ids").value.trim();
     const orderPrefix = getEl("setting-order-prefix").value.trim();
@@ -740,6 +767,7 @@ class AdminPage {
     const success = Settings.save({
       trackingUrl,
       adsServerUrl,
+      adsServerToken,
       t2sCustomerId: customerId,
       t2sPageIds: pageIds,
       orderPrefix,
@@ -827,6 +855,180 @@ class AdminPage {
         "error",
       );
     }
+  }
+
+  // ===================================
+  // URL Parameter Loading & Validation
+  // ===================================
+
+  /**
+   * Validate a URL string
+   * Must start with http:// or https:// and contain a valid domain.
+   * Rejects malicious patterns (javascript:, data:, etc.)
+   * @param {string} url - URL string to validate
+   * @returns {boolean} True if valid
+   */
+  static validateUrl(url) {
+    if (!url || typeof url !== "string") return false;
+    const trimmed = url.trim();
+
+    // Must start with http:// or https://
+    if (!/^https?:\/\//i.test(trimmed)) {
+      console.warn("⚠️ [ADMIN] Invalid URL scheme:", trimmed);
+      return false;
+    }
+
+    // Reject dangerous schemes embedded in the URL
+    if (/javascript:/i.test(trimmed) || /data:/i.test(trimmed)) {
+      console.warn("⚠️ [ADMIN] Rejected malicious URL pattern:", trimmed);
+      return false;
+    }
+
+    // Basic domain validation: must have at least one dot after the scheme
+    try {
+      const parsed = new URL(trimmed);
+      if (!parsed.hostname || !parsed.hostname.includes(".")) {
+        console.warn("⚠️ [ADMIN] Invalid domain in URL:", trimmed);
+        return false;
+      }
+    } catch {
+      console.warn("⚠️ [ADMIN] Malformed URL:", trimmed);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Validate a customer ID string
+   * Alphanumeric, dashes, and underscores only. Max 100 characters.
+   * @param {string} id - Customer ID to validate
+   * @returns {boolean} True if valid
+   */
+  static validateCustomerId(id) {
+    if (!id || typeof id !== "string") return false;
+    const trimmed = id.trim();
+
+    if (trimmed.length > 100) {
+      console.warn(
+        "⚠️ [ADMIN] Customer ID too long (max 100):",
+        trimmed.length,
+      );
+      return false;
+    }
+
+    if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
+      console.warn("⚠️ [ADMIN] Invalid customer ID characters:", trimmed);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Validate a bearer token string
+   * Alphanumeric, dashes, underscores, and dots only. Max 2000 characters.
+   * @param {string} token - Token to validate
+   * @returns {boolean} True if valid
+   */
+  static validateToken(token) {
+    if (!token || typeof token !== "string") return false;
+    const trimmed = token.trim();
+
+    if (trimmed.length > 2000) {
+      console.warn("⚠️ [ADMIN] Token too long (max 2000):", trimmed.length);
+      return false;
+    }
+
+    if (!/^[a-zA-Z0-9._-]+$/.test(trimmed)) {
+      console.warn("⚠️ [ADMIN] Invalid token characters");
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Load settings from URL parameters and save to localStorage
+   * Supported parameters: customerId, trackingUrl, adsServerUrl, adsToken, orderPrefix
+   * Empty parameters are ignored. Invalid parameters are skipped with console warnings.
+   * @returns {boolean} True if at least one parameter was imported
+   */
+  static loadSettingsFromUrl() {
+    // Parse query string from hash-based URL (e.g., #/admin?customerId=...)
+    const hash = window.location.hash || "";
+    const queryIndex = hash.indexOf("?");
+    if (queryIndex === -1) return false;
+
+    const queryString = hash.substring(queryIndex + 1);
+    const urlParams = new URLSearchParams(queryString);
+
+    // Track which settings were imported
+    const importedSettings = {};
+    let importCount = 0;
+
+    // customerId → t2sCustomerId
+    const customerId = urlParams.get("customerId");
+    if (customerId && customerId.trim()) {
+      if (AdminPage.validateCustomerId(customerId)) {
+        importedSettings.t2sCustomerId = customerId.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid customerId parameter");
+      }
+    }
+
+    // trackingUrl → trackingUrl
+    const trackingUrl = urlParams.get("trackingUrl");
+    if (trackingUrl && trackingUrl.trim()) {
+      if (AdminPage.validateUrl(trackingUrl)) {
+        importedSettings.trackingUrl = trackingUrl.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid trackingUrl parameter");
+      }
+    }
+
+    // adsServerUrl → adsServerUrl
+    const adsServerUrl = urlParams.get("adsServerUrl");
+    if (adsServerUrl && adsServerUrl.trim()) {
+      if (AdminPage.validateUrl(adsServerUrl)) {
+        importedSettings.adsServerUrl = adsServerUrl.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid adsServerUrl parameter");
+      }
+    }
+
+    // adsToken → adsServerToken
+    const adsToken = urlParams.get("adsToken");
+    if (adsToken && adsToken.trim()) {
+      if (AdminPage.validateToken(adsToken)) {
+        importedSettings.adsServerToken = adsToken.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid adsToken parameter");
+      }
+    }
+
+    // orderPrefix → orderPrefix (no strict validation, just trim)
+    const orderPrefix = urlParams.get("orderPrefix");
+    if (orderPrefix && orderPrefix.trim()) {
+      importedSettings.orderPrefix = orderPrefix.trim();
+      importCount++;
+    }
+
+    // Save imported settings if any were valid
+    if (importCount > 0) {
+      Settings.save(importedSettings);
+      console.log(
+        `✅ [ADMIN] Imported ${importCount} setting(s) from URL:`,
+        Object.keys(importedSettings),
+      );
+      return true;
+    }
+
+    return false;
   }
 
   /**
