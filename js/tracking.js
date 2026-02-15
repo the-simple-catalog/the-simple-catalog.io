@@ -46,17 +46,19 @@
 // Mirakl Ads API Documentation
 // =============================
 //
-// Endpoint: POST {adsServerUrl}/ads/v1/rendered-content (with valid JWT token - authenticated)
-//           POST {adsServerUrl}/ads/v1/public/rendered-content (without token or invalid token - public)
+// Endpoint: POST {adsServerUrl}/ads/v1/rendered-content (with valid JWT - authenticated)
+//           POST {adsServerUrl}/ads/v1/public/rendered-content (without valid JWT - public)
 // Content-Type: application/json
 // Headers:
 //   - x-customer-id: Customer ID (required)
-//   - Authorization: Bearer {token} (required for authenticated endpoint)
+//   - Content-Type: application/json (required)
+//   - Authorization: Bearer {token} (only with valid JWT token)
 //
-// Token Validation:
+// Token Validation (STRICT):
 // - Token must be in valid JWT format (xxx.yyy.zzz - 3 parts separated by dots)
-// - Token must be at least 20 characters long
-// - Invalid or placeholder tokens (e.g., "YOUR_JWT_TOKEN") will use public endpoint
+// - Token must be at least 50 characters long (real JWTs are typically 100+ chars)
+// - Token must NOT contain placeholder patterns: "YOUR_", "TOKEN", "XXX"
+// - Invalid tokens will ALWAYS use the public endpoint (never authenticated)
 //
 // Request Body:
 // - pageId:      Page type identifier
@@ -379,15 +381,20 @@ class Tracking {
                 'Content-Type': 'application/json'
             };
 
-            // Determine endpoint based on token presence and validity
-            // With valid token (authenticated): /ads/v1/rendered-content
-            // Without token or invalid token (public): /ads/v1/public/rendered-content
-            // JWT tokens should have format: xxx.yyy.zzz (3 parts separated by dots)
+            // Validate token format - must be valid JWT (xxx.yyy.zzz)
+            // Invalid or missing tokens will always use public endpoint
             const token = settings.adsServerToken?.trim();
-            const isValidJWT = token && token.split('.').length === 3 && token.length > 20;
+            const isValidJWT = token &&
+                               token.length > 50 && // Real JWTs are typically much longer
+                               token.split('.').length === 3 &&
+                               !token.includes('YOUR_') && // Reject placeholder tokens
+                               !token.includes('TOKEN') &&
+                               !token.includes('XXX');
+
+            // Use authenticated endpoint ONLY with valid JWT token
             const endpoint = isValidJWT ? '/ads/v1/rendered-content' : '/ads/v1/public/rendered-content';
 
-            // Add Authorization header if token is valid
+            // Add Authorization header only if token is valid
             if (isValidJWT) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
