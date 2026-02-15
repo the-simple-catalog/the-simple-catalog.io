@@ -46,7 +46,7 @@
 // Mirakl Ads API Documentation
 // =============================
 //
-// Endpoint: POST {adsServerUrl}/ads/v1/rendered-content (with valid JWT - authenticated)
+// Endpoint: POST {adsServerUrl}/ads/v1 (with valid JWT - authenticated)
 //           POST {adsServerUrl}/ads/v1/public/rendered-content (without valid JWT - public)
 // Content-Type: application/json
 // Headers:
@@ -56,8 +56,8 @@
 //
 // Token Validation (STRICT):
 // - Token must be in valid JWT format (xxx.yyy.zzz - 3 parts separated by dots)
-// - Token must be at least 50 characters long (real JWTs are typically 100+ chars)
-// - Token must NOT contain placeholder patterns: "YOUR_", "TOKEN", "XXX"
+// - Token length must be between 50 and 2000 characters
+// - Each segment must contain only base64url characters: A-Z, a-z, 0-9, hyphen (-), underscore (_)
 // - Invalid tokens will ALWAYS use the public endpoint (never authenticated)
 //
 // Request Body:
@@ -76,6 +76,9 @@ import { Settings, CatalogManager } from './catalog.js';
 import { escapeHtml, formatPrice, generateProductBadges } from './utils.js';
 
 class Tracking {
+    // JWT format: three base64url segments separated by dots, 50-2000 characters total
+    static #JWT_PATTERN = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+
     // Page type constants - values match the keys used in Settings.DEFAULT_SETTINGS.t2sPageIds
     static PAGE_TYPES = {
         HOMEPAGE: 'homepage',
@@ -95,6 +98,20 @@ class Tracking {
     static getPageId(pageType) {
         const settings = Settings.get();
         return settings.t2sPageIds?.[pageType] ?? Settings.DEFAULT_SETTINGS.t2sPageIds[pageType];
+    }
+
+    /**
+     * Validate whether a token string is a well-formed JWT.
+     * A valid JWT has three base64url segments separated by dots and is 50-2000 characters long.
+     * @param {string|null|undefined} token - Raw token string
+     * @returns {boolean} True if the token passes structural JWT validation
+     */
+    static isValidJWT(token) {
+        if (!token) return false;
+        const trimmed = token.trim();
+        return trimmed.length >= 50 &&
+               trimmed.length <= 2000 &&
+               this.#JWT_PATTERN.test(trimmed);
     }
 
     /**
@@ -381,22 +398,15 @@ class Tracking {
                 'Content-Type': 'application/json'
             };
 
-            // Validate token format - must be valid JWT (xxx.yyy.zzz)
-            // Invalid or missing tokens will always use public endpoint
+            // Use authenticated endpoint with Authorization header for valid JWTs,
+            // otherwise fall back to the public endpoint without auth
             const token = settings.adsServerToken?.trim();
-            const isValidJWT = token &&
-                               token.length > 50 && // Real JWTs are typically much longer
-                               token.split('.').length === 3 &&
-                               !token.includes('YOUR_') && // Reject placeholder tokens
-                               !token.includes('TOKEN') &&
-                               !token.includes('XXX');
-
-            // Use authenticated endpoint ONLY with valid JWT token
-            const endpoint = isValidJWT ? '/ads/v1/rendered-content' : '/ads/v1/public/rendered-content';
-
-            // Add Authorization header only if token is valid
-            if (isValidJWT) {
+            let endpoint;
+            if (this.isValidJWT(token)) {
+                endpoint = '/ads/v1';
                 headers['Authorization'] = `Bearer ${token}`;
+            } else {
+                endpoint = '/ads/v1/public/rendered-content';
             }
 
             // Make API request
