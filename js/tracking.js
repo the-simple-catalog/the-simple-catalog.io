@@ -43,6 +43,26 @@
 //   - basketAmount:      Order total
 //   - orderId:           Order identifier
 //
+// Mirakl Ads API Documentation
+// =============================
+//
+// Endpoint: POST {adsServerUrl}/ads/v1/rendered-content (with token - authenticated)
+//           POST {adsServerUrl}/ads/v1/public/rendered-content (without token - public)
+// Content-Type: application/json
+// Headers:
+//   - x-customer-id: Customer ID (required)
+//   - Authorization: Bearer {token} (required for authenticated endpoint)
+//
+// Request Body:
+// - pageId:      Page type identifier
+// - userId:      User tracking ID
+// - categoryId:  Category ID (for category pages)
+// - keywords:    Search query (for search pages)
+// - productId:   Product ID (for product pages)
+//
+// Response:
+// - productAds:  Array of ad units with sponsored products
+//
 // ===================================
 
 import { Settings, CatalogManager } from './catalog.js';
@@ -348,13 +368,27 @@ class Tracking {
                 requestBody.productId = context.productId;
             }
 
+            // Build request headers
+            const headers = {
+                'x-customer-id': customerId,
+                'Content-Type': 'application/json'
+            };
+
+            // Determine endpoint based on token presence
+            // With token (authenticated): /ads/v1/rendered-content
+            // Without token (public): /ads/v1/public/rendered-content
+            const hasToken = settings.adsServerToken && settings.adsServerToken.trim();
+            const endpoint = hasToken ? '/ads/v1/rendered-content' : '/ads/v1/public/rendered-content';
+
+            // Add Authorization header if token is configured
+            if (hasToken) {
+                headers['Authorization'] = `Bearer ${settings.adsServerToken.trim()}`;
+            }
+
             // Make API request
-            const response = await fetch(`${adsUrl}/ads/v1/public/rendered-content`, {
+            const response = await fetch(`${adsUrl}${endpoint}`, {
                 method: 'POST',
-                headers: {
-                    'x-customer-id': customerId,
-                    'Content-Type': 'application/json'
-                },
+                headers,
                 body: JSON.stringify(requestBody)
             });
 
