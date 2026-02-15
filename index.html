@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Demo</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header with navigation and cart -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <a href="#/" id="site-name">E-Commerce Demo</a>
+                    </div>
+
+                    <!-- Categories Dropdown -->
+                    <div class="categories-dropdown">
+                        <button class="categories-dropdown-btn" id="categories-dropdown-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                            Explore All Categories
+                        </button>
+                        <div class="categories-dropdown-menu" id="categories-dropdown-menu">
+                            <!-- Categories will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="header-search">
+                    <form class="search-form" id="header-search-form">
+                        <input type="text" class="search-input" id="header-search-input" placeholder="Search for products..." />
+                        <button type="submit" class="search-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="header-actions">
+                    <a href="#/cart" class="cart-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        Cart
+                        <span class="cart-count" id="cart-count">0</span>
+                    </a>
+
+                    <a href="#/admin" class="admin-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m8.66-11.66l-4.24 4.24m-4.84 4.84l-4.24 4.24M23 12h-6m-6 0H1m19.66 8.66l-4.24-4.24m-4.84-4.84l-4.24-4.24"></path>
+                        </svg>
+                        Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content area - pages will be rendered here -->
+    <main class="main-content" id="app">
+        <!-- Dynamic content will be loaded here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 E-Commerce Demo. Built for API Integration demonstration.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Modern ES Modules - Single entry point -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
