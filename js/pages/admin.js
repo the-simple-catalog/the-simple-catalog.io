@@ -172,15 +172,13 @@ class AdminPage {
                             <div class="form-group">
                                 <label class="form-label">Ads Server Token (Optional - JWT only)</label>
                                 <input
-                                    type="password"
+                                    type="text"
                                     id="setting-ads-token"
                                     class="form-input"
                                     value="${escapeHtml(settings.adsServerToken || "")}"
                                     placeholder="Leave empty to use public endpoint"
                                 />
-                                <small style="color: var(--text-secondary); font-size: 12px;">
-                                    Valid JWT (50+ chars, xxx.yyy.zzz): /ads/v1/rendered-content | Invalid/empty: /ads/v1/public/rendered-content
-                                </small>
+
                             </div>
 
                             <div class="form-group">

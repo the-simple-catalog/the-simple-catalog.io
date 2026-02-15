@@ -108,10 +108,10 @@ Pages: `home.js`, `category.js`, `product.js`, `search.js`, `cart.js`, `checkout
 - `Tracking.trackPostPayment(orderData)` - Order confirmations
 
 **Mirakl Ads API**:
-- Endpoint (authenticated with valid JWT): `POST {adsServerUrl}/ads/v1/rendered-content`
+- Endpoint (authenticated with valid JWT): `POST {adsServerUrl}/ads/v1`
 - Endpoint (public without token or invalid token): `POST {adsServerUrl}/ads/v1/public/rendered-content`
 - Headers: `x-customer-id`, `Content-Type: application/json`, `Authorization: Bearer {token}` (only with valid JWT)
-- Token validation (STRICT): Must be valid JWT format (xxx.yyy.zzz), 50+ characters, no placeholder patterns
+- Token validation (STRICT): Must be valid JWT format (xxx.yyy.zzz), 50-2000 characters, base64url chars (A-Z, a-z, 0-9, ., -, _)
 - Invalid tokens will ALWAYS use public endpoint (never authenticated)
 - Returns sponsored products for category, search, and product pages
 - Handles impression/click tracking
