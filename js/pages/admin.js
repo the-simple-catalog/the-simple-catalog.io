@@ -49,8 +49,23 @@ class AdminPage {
                             <label class="form-label">Categories JSON File</label>
                             <input type="file" id="categories-file" accept=".json" class="form-input" />
                             <button onclick="AdminPage.importCategories()" class="btn btn-primary" style="margin-top: 8px;">
-                                Import Categories
+                                Import from File
                             </button>
+
+                            <div style="margin: 16px 0; text-align: center; color: var(--text-secondary); font-size: 14px;">OR</div>
+
+                            <label class="form-label">Categories URL</label>
+                            <input
+                                type="text"
+                                id="categories-url"
+                                class="form-input"
+                                placeholder="https://example.com/categories.json"
+                                value="${escapeHtml(settings.categoriesUrl || '')}"
+                            />
+                            <button onclick="AdminPage.importCategoriesFromUrl()" class="btn btn-primary" style="margin-top: 8px;">
+                                Import from URL
+                            </button>
+
                             <div id="categories-messages" style="margin-top: 16px;"></div>
                         </div>
 
@@ -85,8 +100,36 @@ class AdminPage {
 
                             <input type="file" id="products-file" accept=".json" class="form-input" />
                             <button onclick="AdminPage.importProducts()" class="btn btn-primary" style="margin-top: 8px;">
-                                Import Products
+                                Import from File
                             </button>
+
+                            <div style="margin: 16px 0; text-align: center; color: var(--text-secondary); font-size: 14px;">OR</div>
+
+                            <label class="form-label">Product URL 1</label>
+                            <input
+                                type="text"
+                                id="products-url"
+                                class="form-input"
+                                placeholder="https://example.com/products_1P.json"
+                                value="${escapeHtml(settings.productsUrl || '')}"
+                            />
+
+                            <label class="form-label" style="margin-top: 12px;">Product URL 2 (Optional)</label>
+                            <input
+                                type="text"
+                                id="products-url2"
+                                class="form-input"
+                                placeholder="https://example.com/products_3P.json"
+                                value="${escapeHtml(settings.productsUrl2 || '')}"
+                            />
+                            <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">
+                                Second URL will be auto-appended if provided
+                            </small>
+
+                            <button onclick="AdminPage.importProductsFromUrl()" class="btn btn-primary" style="margin-top: 8px;">
+                                Import from URL
+                            </button>
+
                             <div id="products-messages" style="margin-top: 16px;"></div>
                         </div>
 
@@ -437,6 +480,132 @@ class AdminPage {
     }
   }
 
+  // ===================================
+  // URL Import Helpers
+  // ===================================
+
+  /**
+   * Fetch and parse JSON from a URL
+   * Validates the URL, fetches the response, and parses as JSON.
+   * @param {string} url - URL to fetch
+   * @param {string} label - Label for error messages (e.g., "URL 1")
+   * @returns {Promise<Array>} Parsed JSON data
+   * @throws {Error} On invalid URL, network failure, or parse error
+   */
+  static async #fetchJsonFromUrl(url, label = "URL") {
+    if (!AdminPage.validateUrl(url)) {
+      throw new Error(
+        `Invalid URL format for ${label}. URL must start with http:// or https://`,
+      );
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch ${label}: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Update progress status text inside the messages container
+   * @param {string} messagesDivId - ID of the messages container
+   * @param {string} text - Status text to display
+   */
+  static #updateProgressStatus(messagesDivId, text) {
+    const messagesDiv = getEl(messagesDivId);
+    if (!messagesDiv) return;
+
+    const statusEl = messagesDiv.querySelector(".progress-status");
+    if (statusEl) statusEl.textContent = text;
+  }
+
+  /**
+   * Format an error for URL import, distinguishing network errors from other failures
+   * @param {Error} error - The caught error
+   * @param {string} type - Import type ("categories" or "products")
+   * @returns {string} Formatted error message
+   */
+  static #formatImportError(error, type) {
+    const isNetworkError =
+      error.name === "TypeError" ||
+      error.message.includes("fetch") ||
+      error.message.includes("Failed to fetch");
+
+    if (isNetworkError) {
+      return `Network error: ${error.message}. Check URL and CORS settings.`;
+    }
+    return `Error importing ${type}: ${error.message}`;
+  }
+
+  /**
+   * Import categories from URL
+   */
+  static async importCategoriesFromUrl() {
+    const urlInput = getEl("categories-url");
+    const messagesDivId = "categories-messages";
+
+    if (!urlInput || !urlInput.value.trim()) {
+      AdminPage.showImportMessage(
+        "Please enter a categories URL",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    const url = urlInput.value.trim();
+
+    // Validate URL before starting any progress UI
+    if (!AdminPage.validateUrl(url)) {
+      AdminPage.showImportMessage(
+        "Invalid URL format. URL must start with http:// or https://",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    try {
+      // Fetch JSON from URL with progress indication
+      AdminPage.showProgressBar(0, "categories", messagesDivId);
+      AdminPage.#updateProgressStatus(messagesDivId, "Fetching from URL...");
+
+      const data = await AdminPage.#fetchJsonFromUrl(url);
+
+      // Update progress bar with item count and animate
+      AdminPage.showProgressBar(data.length, "categories", messagesDivId);
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      const result = CatalogManager.importCategories(data);
+
+      if (result.success) {
+        AdminPage.showSuccessBanner(result, "categories", messagesDivId);
+        AdminPage.updateStats();
+
+        // Save URL to settings for future use
+        Settings.save({ categoriesUrl: url });
+
+        // Reload main navigation to show new categories
+        if (window.populateCategoriesDropdown) {
+          window.populateCategoriesDropdown();
+        }
+      } else {
+        AdminPage.hideProgressBar(messagesDivId);
+        AdminPage.showImportMessage(result.error, "error", messagesDivId);
+      }
+    } catch (e) {
+      AdminPage.hideProgressBar(messagesDivId);
+      AdminPage.showImportMessage(
+        AdminPage.#formatImportError(e, "categories"),
+        "error",
+        messagesDivId,
+      );
+    }
+  }
+
   /**
    * Import products from file
    */
@@ -498,6 +667,125 @@ class AdminPage {
       AdminPage.hideProgressBar(messagesDivId);
       AdminPage.showImportMessage(
         `Error importing products: ${e.message}`,
+        "error",
+        messagesDivId,
+      );
+    }
+  }
+
+  /**
+   * Import products from URLs (supports two URLs with append mode)
+   */
+  static async importProductsFromUrl() {
+    const urlInput1 = getEl("products-url");
+    const urlInput2 = getEl("products-url2");
+    const messagesDivId = "products-messages";
+
+    if (!urlInput1 || !urlInput1.value.trim()) {
+      AdminPage.showImportMessage(
+        "Please enter at least one product URL",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    const url1 = urlInput1.value.trim();
+    const url2 = urlInput2 ? urlInput2.value.trim() : "";
+
+    // Validate URLs upfront before any side effects
+    if (!AdminPage.validateUrl(url1)) {
+      AdminPage.showImportMessage(
+        "Invalid URL format for Product URL 1. URL must start with http:// or https://",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    if (url2 && !AdminPage.validateUrl(url2)) {
+      AdminPage.showImportMessage(
+        "Invalid URL format for Product URL 2. URL must start with http:// or https://",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    // Get selected import mode
+    const checkedRadio = document.querySelector(
+      'input[name="import-mode"]:checked',
+    );
+    const appendMode = checkedRadio?.value === "append";
+
+    // Show confirmation dialog for replace mode if products exist
+    if (!appendMode) {
+      const stats = CatalogManager.getStats();
+      if (stats.productCount > 0) {
+        const confirmMessage = `⚠️ This will DELETE all ${stats.productCount} existing products and replace them with the imported catalog.`;
+        if (!confirm(confirmMessage)) {
+          return; // User cancelled
+        }
+      }
+    }
+
+    try {
+      // === IMPORT FROM URL 1 ===
+      AdminPage.showProgressBar(0, "products", messagesDivId);
+      AdminPage.#updateProgressStatus(messagesDivId, "Fetching from URL 1...");
+
+      const data1 = await AdminPage.#fetchJsonFromUrl(url1, "URL 1");
+
+      AdminPage.showProgressBar(data1.length, "products", messagesDivId);
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      const result1 = CatalogManager.importProducts(data1, appendMode);
+
+      if (!result1.success) {
+        AdminPage.hideProgressBar(messagesDivId);
+        AdminPage.showImportMessage(result1.error, "error", messagesDivId);
+        return;
+      }
+
+      // === IMPORT FROM URL 2 (if provided) ===
+      let result2 = null;
+      if (url2) {
+        AdminPage.#updateProgressStatus(messagesDivId, "Fetching from URL 2...");
+
+        const data2 = await AdminPage.#fetchJsonFromUrl(url2, "URL 2");
+
+        AdminPage.showProgressBar(data2.length, "products", messagesDivId);
+        await new Promise((resolve) => setTimeout(resolve, 1600));
+
+        // Always append URL2 (never replace)
+        result2 = CatalogManager.importProducts(data2, true);
+
+        if (!result2.success) {
+          AdminPage.hideProgressBar(messagesDivId);
+          AdminPage.showImportMessage(
+            `URL 1 imported successfully, but URL 2 failed: ${result2.error}`,
+            "error",
+            messagesDivId,
+          );
+          return;
+        }
+      }
+
+      // Show success banner with combined results
+      const finalResult = url2 && result2 ? result2 : result1;
+      AdminPage.showSuccessBanner(finalResult, "products", messagesDivId);
+      AdminPage.updateStats();
+      AdminPage.updateProductCapacity();
+
+      // Save URLs to settings for future use
+      Settings.save({
+        productsUrl: url1,
+        productsUrl2: url2,
+      });
+    } catch (e) {
+      AdminPage.hideProgressBar(messagesDivId);
+      AdminPage.showImportMessage(
+        AdminPage.#formatImportError(e, "products"),
         "error",
         messagesDivId,
       );
@@ -982,10 +1270,10 @@ class AdminPage {
       return false;
     }
 
-    // Basic domain validation: must have at least one dot after the scheme
+    // Basic domain validation: must have valid hostname (allow localhost and IPs)
     try {
       const parsed = new URL(trimmed);
-      if (!parsed.hostname || !parsed.hostname.includes(".")) {
+      if (!parsed.hostname) {
         console.warn("⚠️ [ADMIN] Invalid domain in URL:", trimmed);
         return false;
       }
@@ -1133,6 +1421,39 @@ class AdminPage {
       }
     }
 
+    // categoriesUrl → categoriesUrl
+    const categoriesUrl = urlParams.get("categoriesUrl");
+    if (categoriesUrl && categoriesUrl.trim()) {
+      if (AdminPage.validateUrl(categoriesUrl)) {
+        importedSettings.categoriesUrl = categoriesUrl.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid categoriesUrl parameter");
+      }
+    }
+
+    // productsUrl → productsUrl
+    const productsUrl = urlParams.get("productsUrl");
+    if (productsUrl && productsUrl.trim()) {
+      if (AdminPage.validateUrl(productsUrl)) {
+        importedSettings.productsUrl = productsUrl.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid productsUrl parameter");
+      }
+    }
+
+    // productsUrl2 → productsUrl2
+    const productsUrl2 = urlParams.get("productsUrl2");
+    if (productsUrl2 && productsUrl2.trim()) {
+      if (AdminPage.validateUrl(productsUrl2)) {
+        importedSettings.productsUrl2 = productsUrl2.trim();
+        importCount++;
+      } else {
+        console.warn("⚠️ [ADMIN] Skipping invalid productsUrl2 parameter");
+      }
+    }
+
     // Save imported settings if any were valid
     if (importCount > 0) {
       Settings.save(importedSettings);
@@ -1259,6 +1580,17 @@ class AdminPage {
     // Add useAdsProxy only if false (true is default)
     if (settings.useAdsProxy === false) {
       params.append("useAdsProxy", "false");
+    }
+
+    // Add catalog URLs if set
+    if (settings.categoriesUrl) {
+      params.append("categoriesUrl", settings.categoriesUrl);
+    }
+    if (settings.productsUrl) {
+      params.append("productsUrl", settings.productsUrl);
+    }
+    if (settings.productsUrl2) {
+      params.append("productsUrl2", settings.productsUrl2);
     }
 
     // Construct full URL

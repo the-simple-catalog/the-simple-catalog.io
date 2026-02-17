@@ -484,7 +484,10 @@ class Settings {
             postPayment: 2400,
             payment: 3200
         },
-        orderPrefix: 'ORDER_'
+        orderPrefix: 'ORDER_',
+        categoriesUrl: '', // URL to categories JSON file
+        productsUrl: '', // URL to first products JSON file
+        productsUrl2: '' // URL to second products JSON file (optional)
     };
 
     /**
