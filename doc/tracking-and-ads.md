@@ -24,6 +24,12 @@ This document describes how the demo site integrates with the Mirakl T2S Trackin
   - [Response Structure](#response-structure)
   - [Rendering Sponsored Products](#rendering-sponsored-products)
   - [Impression and Click Tracking](#impression-and-click-tracking)
+- [Media Display Ads](#media-display-ads)
+  - [Response Structure](#response-structure-1)
+  - [Creative Formats](#creative-formats)
+  - [Rendering Media Displays](#rendering-media-displays)
+  - [Impression and Click Tracking](#impression-and-click-tracking-1)
+  - [Pages with Media Display Integration](#pages-with-media-display-integration)
 - [Event Tracking Flow by Page](#event-tracking-flow-by-page)
 - [Configuration](#configuration)
 - [How to Add a New Tracking Event](#how-to-add-a-new-tracking-event)
@@ -345,6 +351,128 @@ Both methods call `sendTrackingEvent()` with:
 - `eventName: "impression"` or `eventName: "click"`
 - `adId: {adId}`
 - `cID` and `userId` as usual
+
+---
+
+## Media Display Ads
+
+In addition to sponsored products, the Ads API also returns **media display ads** in the `display` array. These are banner-style advertising units that can include images and products.
+
+### Response Structure
+
+The Ads API response includes a `display` array alongside `productAds`:
+
+```json
+{
+  "productAds": [...],
+  "display": [
+    {
+      "adUnitId": "1400-display-5",
+      "adId": "ad-sh:01khp7vrftanbsz...",
+      "creativeFormat": "SPONSORED_BRAND_IMAGE",
+      "creativeSet": {
+        "asset": {
+          "format": "728:90",
+          "url": "https://cdn.example.com/banner.png"
+        }
+      },
+      "redirectionUrl": "https://example.com",
+      "products": [
+        {
+          "productId": "4123018557133-0-master",
+          "adId": "ad-shp:01khp7vrfvz4...",
+          "position": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Creative Formats
+
+Three formats are supported:
+
+#### 1. BANNER_IMAGE
+Simple banner image with click-through URL.
+
+**Fields:**
+- `creativeSet.asset.url` - Banner image URL
+- `creativeSet.asset.format` - Dimensions (e.g., "728:90")
+- `redirectionUrl` - Click destination
+
+#### 2. SPONSORED_BRAND_IMAGE
+Banner image plus a grid of product cards.
+
+**Fields:**
+- `creativeSet.asset.url` - Brand banner image
+- `creativeSet.asset.format` - Banner dimensions
+- `products[]` - Array of product IDs to display below banner
+- `redirectionUrl` - Banner click destination
+
+**Note:** Products are looked up from the local catalog using `CatalogManager.getProductById()`.
+
+#### 3. NATIVE_BANNER
+Generic format with custom attributes.
+
+**Fields:**
+- `creativeSet.attributes` - Object with custom attribute names/values
+- `redirectionUrl` - Click destination
+
+**Note:** Currently renders a placeholder since attributes are customizable per campaign.
+
+### Rendering Media Displays
+
+**Method:** `Tracking.renderMediaDisplayAds(adsData)`
+
+Returns HTML for all media display ads from the `display` array. The method:
+1. Iterates through each display ad
+2. Routes to format-specific renderer based on `creativeFormat`
+3. Wraps all ads in a "Sponsored Media" section
+
+**Usage pattern (same as sponsored products):**
+
+```javascript
+// In page HTML template
+<div id="media-sponsored-container">
+    ${Tracking.renderEmptyMediaSection()}
+</div>
+
+// After ads load
+const adsData = await Tracking.requestSponsoredProducts(pageId, pageType, context);
+const mediaContainer = document.getElementById('media-sponsored-container');
+mediaContainer.innerHTML = Tracking.renderMediaDisplayAds(adsData);
+Tracking.attachMediaTracking(mediaContainer);
+```
+
+### Impression and Click Tracking
+
+After rendering media displays, call:
+
+```javascript
+Tracking.attachMediaTracking(containerElement);
+```
+
+This attaches:
+- **Impression tracking**: Fires when banner image loads (`data-media-impression` attribute)
+- **Click tracking**: Fires when banner or product is clicked (`data-media-click` attribute)
+
+Both use the same tracking methods as sponsored products (`trackSponsoredImpression`, `trackSponsoredClick`).
+
+### Pages with Media Display Integration
+
+Media display ads are currently integrated on:
+- **Homepage** (`js/pages/home.js`) - Media display ads ONLY (no sponsored products)
+- **Category page** (`js/pages/category.js`)
+- **Search page** (`js/pages/search.js`)
+- **Product page** (`js/pages/product.js`)
+
+**Display order (category, search, product pages):**
+1. Sponsored Products section (product ads)
+2. Sponsored Media section (media display ads)
+
+**Display order (homepage):**
+1. Sponsored Media section only (no sponsored products shown)
 
 ---
 

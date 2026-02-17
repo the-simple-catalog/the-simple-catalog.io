@@ -15,6 +15,11 @@ class HomePage {
         const pageType = Tracking.PAGE_TYPES.HOMEPAGE;
         Tracking.trackPageView(Tracking.getPageId(pageType), pageType);
 
+        // Request media display ads for homepage
+        const sponsoredAdsPromise = Tracking.requestSponsoredProducts(
+            Tracking.getPageId(pageType), pageType, {}
+        );
+
         const app = getEl('app');
         const rootCategories = CatalogManager.getRootCategories();
 
@@ -128,8 +133,26 @@ class HomePage {
                         return HomePage.renderCategoryCard(category, imageUrl);
                     }).join('')}
                 </div>
+
+                <!-- Media Display Section: Only media display ads (no sponsored products) -->
+                <div id="media-sponsored-container">
+                    ${Tracking.renderEmptyMediaSection()}
+                </div>
             </div>
         `;
+
+        // Populate media display container when ads load (sponsored products section not rendered on homepage)
+        if (sponsoredAdsPromise) {
+            sponsoredAdsPromise.then(adsData => {
+                const mediaContainer = document.getElementById('media-sponsored-container');
+                if (mediaContainer && adsData) {
+                    mediaContainer.innerHTML = Tracking.renderMediaDisplayAds(adsData);
+                    Tracking.attachMediaTracking(mediaContainer);
+                }
+            }).catch(error => {
+                console.error('Failed to load media display ads:', error);
+            });
+        }
     }
 
     /**

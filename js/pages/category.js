@@ -55,19 +55,15 @@ class CategoryPage {
                 <div id="sponsored-container">
                     ${Tracking.renderEmptySponsoredSection()}
                 </div>
+
+                <div id="media-sponsored-container">
+                    ${Tracking.renderEmptyMediaSection()}
+                </div>
             </div>
         `;
 
-        // Update sponsored section when ads load
-        sponsoredAdsPromise.then(adsData => {
-            const container = document.getElementById('sponsored-container');
-            if (container && adsData) {
-                container.innerHTML = Tracking.renderSponsoredProducts(adsData);
-                Tracking.attachSponsoredTracking(container);
-            }
-        }).catch(error => {
-            console.error('Failed to load sponsored products:', error);
-        });
+        // Populate both sponsored product and media display containers when ads load
+        Tracking.populateAdsContainers(sponsoredAdsPromise);
     }
 
     /**

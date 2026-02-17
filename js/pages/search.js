@@ -49,7 +49,14 @@ class SearchPage {
                     ${query ? `<h1 class="page-title">Search Results for "${escapeHtml(query)}"</h1>` : '<h1 class="page-title">Search</h1>'}
                 </div>
 
-                ${query.length >= 3 ? `<div id="sponsored-container">${Tracking.renderEmptySponsoredSection()}</div>` : ''}
+                ${query.length >= 3 ? `
+                    <div id="sponsored-container">
+                        ${Tracking.renderEmptySponsoredSection()}
+                    </div>
+                    <div id="media-sponsored-container">
+                        ${Tracking.renderEmptyMediaSection()}
+                    </div>
+                ` : ''}
 
                 <div id="search-results">
                     ${SearchPage.renderSearchResults(query)}
@@ -57,18 +64,8 @@ class SearchPage {
             </div>
         `;
 
-        // Update sponsored section when ads load
-        if (sponsoredAdsPromise) {
-            sponsoredAdsPromise.then(adsData => {
-                const container = document.getElementById('sponsored-container');
-                if (container && adsData) {
-                    container.innerHTML = Tracking.renderSponsoredProducts(adsData);
-                    Tracking.attachSponsoredTracking(container);
-                }
-            }).catch(error => {
-                console.error('Failed to load sponsored products:', error);
-            });
-        }
+        // Populate both sponsored product and media display containers when ads load
+        Tracking.populateAdsContainers(sponsoredAdsPromise);
     }
 
     /**

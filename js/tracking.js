@@ -92,7 +92,8 @@ class Tracking {
 
   // CORS Proxy configuration for authenticated Ads API calls
   static CORS_PROXY_URL = "https://proxycors-8kgt.onrender.com/proxy";
-  static CORS_PROXY_HEALTH_ENDPOINT = "https://proxycors-8kgt.onrender.com/health";
+  static CORS_PROXY_HEALTH_ENDPOINT =
+    "https://proxycors-8kgt.onrender.com/health";
   static CORS_PROXY_TIMEOUT = 5000; // 5 seconds timeout for health check
 
   /**
@@ -568,49 +569,69 @@ class Tracking {
   }
 
   /**
-   * Render a single sponsored product
-   * @param {Object} sponsoredProduct - Sponsored product object
-   * @returns {string} HTML string
+   * Render a sponsored product card with tracking attributes
+   * @param {string} productId - Product ID to look up in catalog
+   * @param {string} adId - Ad tracking ID for impression/click events
+   * @param {string} trackingPrefix - Data attribute prefix ("ad" or "media")
+   * @param {Object} [options] - Additional rendering options
+   * @param {Object} [options.digitalServiceAct] - DSA compliance info (shown as footer)
+   * @param {boolean} [options.includeImpression] - Whether to add impression tracking to image
+   * @param {boolean} [options.skipIfMissing] - Return empty string if product not in catalog
+   * @returns {string} HTML string for the product card, or empty string if skipped
+   * @private
    */
-  static renderSponsoredProduct(sponsoredProduct) {
-    const { productId, adId, digitalServiceAct } = sponsoredProduct;
+  static #renderSponsoredProductCard(
+    productId,
+    adId,
+    trackingPrefix,
+    options = {},
+  ) {
     const product = CatalogManager.getProductById(productId);
 
-    // Product image with fallback
-    let imageUrl =
+    if (!product && options.skipIfMissing) {
+      return "";
+    }
+    const imageUrl =
       product?.content.imageUrl ||
       `https://placehold.co/250x250?text=${encodeURIComponent(productId)}`;
-
-    // Product name with fallback
     const productName = product?.content.name || productId;
-
-    // Get price if product exists
     const price = product ? CatalogManager.getProductPrice(product) : null;
     const brand = product ? CatalogManager.getProductBrand(product) : null;
-
-    // Generate badges with sponsored flag set to true
     const badges = product
       ? generateProductBadges(product, true)
       : '<div class="product-badges"><span class="product-badge product-badge-sponsored">Sponsored</span></div>';
     const description =
       product?.content.longDescription || product?.content.name || productId;
 
+    const escapedProductId = escapeHtml(productId);
+    const escapedAdId = escapeHtml(adId);
+    const clickAttr = `data-${trackingPrefix}-click`;
+    const impressionAttr = options.includeImpression
+      ? `data-${trackingPrefix}-impression="${escapedAdId}"`
+      : "";
+
+    const dsaFooter = options.digitalServiceAct
+      ? `<div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; font-family: var(--font-mono);">
+                        Sponsored ${options.digitalServiceAct.sponsor ? `by ${escapeHtml(options.digitalServiceAct.sponsor)}` : ""}
+                    </div>`
+      : "";
+
     return `
             <div class="product-card">
                 <div class="product-card-image-wrapper">
                     ${badges}
-                    <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}">
+                    <a href="#/product/${escapedProductId}" ${clickAttr}="${escapedAdId}">
                         <img
                             src="${escapeHtml(imageUrl)}"
                             alt="${escapeHtml(productName)}"
                             class="product-card-image"
-                            data-ad-impression="${escapeHtml(adId)}"
+                            ${impressionAttr}
                             onerror="this.src='https://placehold.co/250x250?text=${encodeURIComponent(productId)}'"
                         />
                     </a>
                     <div class="product-card-info-overlay">
                         <div class="product-card-overlay-description">${escapeHtml(description)}</div>
-                        <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}"
+                        <a href="#/product/${escapedProductId}" ${clickAttr}="${escapedAdId}"
                            class="product-card-overlay-cta">
                             View Details
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -621,7 +642,7 @@ class Tracking {
                 </div>
                 <div class="product-card-content">
                     ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ""}
-                    <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}">
+                    <a href="#/product/${escapedProductId}" ${clickAttr}="${escapedAdId}">
                         <div class="product-name">${escapeHtml(productName)}</div>
                     </a>
                     ${
@@ -634,12 +655,47 @@ class Tracking {
                     `
                         : ""
                     }
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; font-family: var(--font-mono);">
-                        Sponsored ${digitalServiceAct?.sponsor ? `by ${escapeHtml(digitalServiceAct.sponsor)}` : ""}
-                    </div>
+                    ${dsaFooter}
                 </div>
             </div>
         `;
+  }
+
+  /**
+   * Render a single sponsored product (from productAds response)
+   * @param {Object} sponsoredProduct - Sponsored product object with productId, adId, digitalServiceAct
+   * @returns {string} HTML string
+   */
+  static renderSponsoredProduct(sponsoredProduct) {
+    const { productId, adId, digitalServiceAct } = sponsoredProduct;
+    return this.#renderSponsoredProductCard(productId, adId, "ad", {
+      digitalServiceAct,
+      includeImpression: true,
+    });
+  }
+
+  /**
+   * Attach impression and click tracking listeners for a given data-attribute prefix.
+   * @param {HTMLElement} container - The container element holding ad HTML
+   * @param {string} prefix - Data attribute prefix ("ad" or "media")
+   * @private
+   */
+  static #attachTrackingByPrefix(container, prefix) {
+    if (!container) return;
+
+    // Attach impression tracking on image load
+    container.querySelectorAll(`[data-${prefix}-impression]`).forEach((img) => {
+      const adId = img.dataset[`${prefix}Impression`];
+      img.addEventListener("load", () =>
+        Tracking.trackSponsoredImpression(adId),
+      );
+    });
+
+    // Attach click tracking on ad links
+    container.querySelectorAll(`[data-${prefix}-click]`).forEach((link) => {
+      const adId = link.dataset[`${prefix}Click`];
+      link.addEventListener("click", () => Tracking.trackSponsoredClick(adId));
+    });
   }
 
   /**
@@ -648,21 +704,7 @@ class Tracking {
    * @param {HTMLElement} container - The container element holding sponsored product HTML
    */
   static attachSponsoredTracking(container) {
-    if (!container) return;
-
-    // Attach impression tracking on image load
-    container.querySelectorAll("[data-ad-impression]").forEach((img) => {
-      const adId = img.dataset.adImpression;
-      img.addEventListener("load", () =>
-        Tracking.trackSponsoredImpression(adId),
-      );
-    });
-
-    // Attach click tracking on ad links
-    container.querySelectorAll("[data-ad-click]").forEach((link) => {
-      const adId = link.dataset.adClick;
-      link.addEventListener("click", () => Tracking.trackSponsoredClick(adId));
-    });
+    this.#attachTrackingByPrefix(container, "ad");
   }
 
   /**
@@ -689,6 +731,352 @@ class Tracking {
                 </div>
             </div>
         `;
+  }
+
+  // ===================================
+  // Media Display Ads Rendering
+  // ===================================
+  //
+  // Media displays are sponsored advertising media assets returned in the Ads API response
+  // within the "display" array. There are three creative formats:
+  //
+  // 1. BANNER_IMAGE - Simple banner image ad
+  // 2. SPONSORED_BRAND_IMAGE - Banner image with associated product cards
+  // 3. NATIVE_BANNER - Generic format with custom attributes
+  //
+  // Each media display has:
+  // - adUnitId: The zone identifier where the ad should appear
+  // - adId: Tracking identifier for impression/click events
+  // - creativeSet: Contains the asset(s) to display (image URLs, dimensions)
+  // - redirectionUrl: URL to navigate to when clicked
+  // - creativeFormat: One of the three format types above
+  // - products: Array of product IDs (for SPONSORED_BRAND_IMAGE)
+  // - digitalServiceAct: DSA compliance information
+  //
+  // ===================================
+
+  /**
+   * Render all media display ads from the Ads API response
+   * @param {Object} adsData - Response from Ads API containing display array
+   * @returns {string} HTML string with all media display ads rendered, or placeholder if no ads
+   */
+  static renderMediaDisplayAds(adsData) {
+    if (!adsData || !adsData.display || adsData.display.length === 0) {
+      return this.renderEmptyMediaSection(); // Show placeholder when no media display ads
+    }
+
+    const displayAdsHtml = adsData.display
+      .map((displayAd) => this.renderMediaDisplayAd(displayAd))
+      .join("");
+
+    return `
+            <div class="sponsored-section">
+                <h2 class="sponsored-title">Sponsored Media</h2>
+                ${displayAdsHtml}
+            </div>
+        `;
+  }
+
+  /**
+   * Render a single media display ad based on its creative format
+   * @param {Object} displayAd - Display ad object from Ads API
+   * @returns {string} HTML string
+   */
+  static renderMediaDisplayAd(displayAd) {
+    const { creativeFormat } = displayAd;
+
+    switch (creativeFormat) {
+      case "BANNER_IMAGE":
+        return this.renderBannerImage(displayAd);
+      case "SPONSORED_BRAND_IMAGE":
+        return this.renderSponsoredBrandImage(displayAd);
+      case "NATIVE_BANNER":
+        return this.renderNativeBanner(displayAd);
+      default:
+        console.warn(
+          `⚠️ [MEDIA DISPLAY] Unknown format: ${creativeFormat}`,
+          displayAd,
+        );
+        return "";
+    }
+  }
+
+  // Default banner dimensions used when format parsing fails
+  static #DEFAULT_BANNER_DIMENSIONS = { width: 728, height: 90 };
+
+  /**
+   * Parse format dimensions string into width and height
+   * @param {string} format - Format string in "width:height" format (e.g., "728:90")
+   * @returns {{ width: number, height: number }} Parsed dimensions or defaults
+   * @private
+   */
+  static #parseFormatDimensions(format) {
+    if (!format || typeof format !== "string") {
+      return { ...this.#DEFAULT_BANNER_DIMENSIONS };
+    }
+
+    const parts = format.split(":");
+    if (parts.length !== 2) {
+      return { ...this.#DEFAULT_BANNER_DIMENSIONS };
+    }
+
+    const width = parseInt(parts[0], 10);
+    const height = parseInt(parts[1], 10);
+
+    if (isNaN(width) || isNaN(height)) {
+      return { ...this.#DEFAULT_BANNER_DIMENSIONS };
+    }
+
+    return { width, height };
+  }
+
+  /**
+   * Render the clickable banner image portion shared by BANNER_IMAGE and SPONSORED_BRAND_IMAGE
+   * @param {Object} params - Banner parameters
+   * @param {string} params.adId - Ad tracking ID
+   * @param {string} params.imageUrl - Banner image URL
+   * @param {string} params.redirectionUrl - Click destination URL
+   * @param {{ width: number, height: number }} params.dimensions - Image dimensions
+   * @param {string} params.altText - Alt text for the image
+   * @param {string} params.fallbackText - Placeholder text for onerror fallback
+   * @returns {string} HTML string
+   * @private
+   */
+  static #renderBannerImageHtml({
+    adId,
+    imageUrl,
+    redirectionUrl,
+    dimensions,
+    altText,
+    fallbackText,
+  }) {
+    const escapedAdId = escapeHtml(adId);
+    return `
+                <div class="media-display-banner" style="text-align: center;">
+                    <a href="${escapeHtml(redirectionUrl)}"
+                       data-media-click="${escapedAdId}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <img
+                            src="${escapeHtml(imageUrl)}"
+                            alt="${altText}"
+                            style="max-width: 100%; width: ${dimensions.width}px; height: ${dimensions.height}px; object-fit: cover; display: block; margin: 0 auto; border-radius: 8px;"
+                            data-media-impression="${escapedAdId}"
+                            onerror="this.src='https://placehold.co/${dimensions.width}x${dimensions.height}?text=${fallbackText}'"
+                        />
+                    </a>
+                </div>`;
+  }
+
+  /**
+   * Wrap media display ad content with the standard outer container, header, and footer
+   * @param {string} adUnitId - Ad unit identifier
+   * @param {string} formatName - Creative format label (e.g., "BANNER_IMAGE")
+   * @param {string} innerHtml - Main content HTML to place between header and footer
+   * @returns {string} HTML string
+   * @private
+   */
+  static #wrapMediaDisplayAd(adUnitId, formatName, innerHtml) {
+    return `
+            <div class="media-display-ad" style="margin-bottom: 24px;">
+                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; font-family: var(--font-mono);">
+                    Ad Unit: ${escapeHtml(adUnitId)} | Format: ${escapeHtml(formatName)}
+                </div>
+                ${innerHtml}
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; text-align: center;">
+                    Sponsored Media
+                </div>
+            </div>
+        `;
+  }
+
+  /**
+   * Extract banner image URL and parsed dimensions from a display ad's creativeSet
+   * @param {Object} creativeSet - Creative set from display ad
+   * @returns {{ imageUrl: string, dimensions: { width: number, height: number } }}
+   * @private
+   */
+  static #extractBannerAsset(creativeSet) {
+    const imageUrl = creativeSet?.asset?.url || "";
+    const format = creativeSet?.asset?.format || "728:90";
+    const dimensions = this.#parseFormatDimensions(format);
+    return { imageUrl, dimensions };
+  }
+
+  /**
+   * Render BANNER_IMAGE format - a simple clickable banner image ad
+   * @param {Object} displayAd - Display ad object
+   * @returns {string} HTML string
+   */
+  static renderBannerImage(displayAd) {
+    const { adUnitId, adId, creativeSet, redirectionUrl } = displayAd;
+    const { imageUrl, dimensions } = this.#extractBannerAsset(creativeSet);
+
+    const bannerHtml = this.#renderBannerImageHtml({
+      adId,
+      imageUrl,
+      redirectionUrl,
+      dimensions,
+      altText: "Sponsored Banner",
+      fallbackText: "Banner+Image",
+    });
+
+    return this.#wrapMediaDisplayAd(adUnitId, "BANNER_IMAGE", bannerHtml);
+  }
+
+  /**
+   * Render SPONSORED_BRAND_IMAGE format - banner image with associated product cards
+   * @param {Object} displayAd - Display ad object
+   * @returns {string} HTML string
+   */
+  static renderSponsoredBrandImage(displayAd) {
+    const { adUnitId, adId, creativeSet, redirectionUrl, products } = displayAd;
+    const { imageUrl, dimensions } = this.#extractBannerAsset(creativeSet);
+
+    const bannerHtml = this.#renderBannerImageHtml({
+      adId,
+      imageUrl,
+      redirectionUrl,
+      dimensions,
+      altText: "Sponsored Brand Banner",
+      fallbackText: "Brand+Banner",
+    });
+
+    // Render product cards using the shared helper, skipping missing catalog entries
+    let productsHtml = "";
+    if (products && products.length > 0) {
+      const productCards = products
+        .map((productItem) => {
+          const productAdId = productItem.adId || adId;
+          const card = this.#renderSponsoredProductCard(
+            productItem.productId,
+            productAdId,
+            "media",
+            { skipIfMissing: true },
+          );
+
+          if (!card) {
+            console.warn(
+              `⚠️ [MEDIA DISPLAY] Product not found: ${productItem.productId}`,
+            );
+          }
+
+          return card;
+        })
+        .filter(Boolean);
+
+      if (productCards.length > 0) {
+        productsHtml = `
+                <div class="sponsored-grid" style="margin-top: 16px;">
+                    ${productCards.join("")}
+                </div>`;
+      }
+    }
+
+    return this.#wrapMediaDisplayAd(
+      adUnitId,
+      "SPONSORED_BRAND_IMAGE",
+      bannerHtml + productsHtml,
+    );
+  }
+
+  /**
+   * Render NATIVE_BANNER format - generic format with custom attributes (simplified)
+   * @param {Object} displayAd - Display ad object
+   * @returns {string} HTML string
+   */
+  static renderNativeBanner(displayAd) {
+    const { adUnitId, adId, creativeSet, redirectionUrl } = displayAd;
+
+    const attributes = creativeSet?.attributes || {};
+    const attributeNames = Object.keys(attributes);
+    const attributesList =
+      attributeNames.length > 0 ? attributeNames.join(", ") : "No attributes";
+
+    const innerHtml = `
+                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">
+                    Attributes: ${escapeHtml(attributesList)}
+                </div>
+                <div class="media-display-banner" style="text-align: center;">
+                    <a href="${escapeHtml(redirectionUrl)}"
+                       data-media-click="${escapeHtml(adId)}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <img
+                            src="https://placehold.co/100x100?text=Native+Banner"
+                            alt="Native Banner"
+                            style="max-width: 100%; width: 100px; height: 100px; display: block; margin: 0 auto; border-radius: 8px;"
+                        />
+                    </a>
+                </div>`;
+
+    return this.#wrapMediaDisplayAd(adUnitId, "NATIVE_BANNER", innerHtml);
+  }
+
+  /**
+   * Render empty media display section with placeholder image
+   * @returns {string} HTML string
+   */
+  static renderEmptyMediaSection() {
+    return `
+            <div class="sponsored-section">
+                <h2 class="sponsored-title">Sponsored Media</h2>
+                <div style="display: flex; justify-content: center; align-items: center; padding: 20px 0;">
+                    <img
+                        src="https://placehold.co/600x100/FFFFFF/aaa/png?text=this empty space needs a media ads"
+                        alt="Display your media Ads here"
+                        style="max-width: 100%; height: auto; border-radius: 8px;"
+                    />
+                </div>
+            </div>
+        `;
+  }
+
+  /**
+   * Attach event listeners for media display impression and click tracking
+   * Call this after inserting media display HTML into the DOM.
+   * @param {HTMLElement} container - The container element holding media display HTML
+   */
+  static attachMediaTracking(container) {
+    this.#attachTrackingByPrefix(container, "media");
+  }
+
+  /**
+   * Populate sponsored product and media display containers from an ads promise.
+   * Handles rendering HTML and attaching tracking listeners for both container types.
+   * @param {Promise<Object|null>} adsPromise - Promise resolving to Ads API response
+   *
+   * Expects the DOM to contain:
+   * - #sponsored-container (for product ads)
+   * - #media-sponsored-container (for media display ads)
+   */
+  static populateAdsContainers(adsPromise) {
+    if (!adsPromise) return;
+
+    adsPromise
+      .then((adsData) => {
+        if (!adsData) return;
+
+        const sponsoredContainer = document.getElementById(
+          "sponsored-container",
+        );
+        if (sponsoredContainer) {
+          sponsoredContainer.innerHTML =
+            Tracking.renderSponsoredProducts(adsData);
+          Tracking.attachSponsoredTracking(sponsoredContainer);
+        }
+
+        const mediaContainer = document.getElementById(
+          "media-sponsored-container",
+        );
+        if (mediaContainer) {
+          mediaContainer.innerHTML = Tracking.renderMediaDisplayAds(adsData);
+          Tracking.attachMediaTracking(mediaContainer);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load ads:", error);
+      });
   }
 }
 
