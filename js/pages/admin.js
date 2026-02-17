@@ -286,6 +286,74 @@ class AdminPage {
 
                         <div id="tid-message"></div>
                     </div>
+
+                    <!-- Configuration Export -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">📤 Configuration Export</h2>
+
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; line-height: 1.5;">
+                            Generate a shareable URL with your current Ads/T2S configuration. This allows you to back up settings or share them with team members.
+                        </p>
+
+                        <!-- Security Warning (hidden by default) -->
+                        <div id="export-token-warning" style="display: none; background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="font-size: 18px;">🔐</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #dc2626; margin-bottom: 4px;">Security Warning</div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">
+                                        The generated URL includes your Ads Server Token. Only share this URL with trusted team members.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+                                <input
+                                    type="checkbox"
+                                    id="export-include-token"
+                                    checked
+                                    style="width: auto; margin: 0;"
+                                />
+                                <span>Include Ads Server Token in URL</span>
+                            </label>
+                            <small style="color: var(--text-secondary); font-size: 12px; margin-left: 24px;">
+                                Uncheck to exclude the token for safer sharing
+                            </small>
+                        </div>
+
+                        <div class="form-group" style="position: relative;">
+                            <label class="form-label">Generated URL</label>
+                            <textarea
+                                id="export-url"
+                                class="form-input"
+                                readonly
+                                rows="4"
+                                placeholder="Click 'Generate URL' to create a shareable configuration link"
+                                style="font-family: monospace; font-size: 13px; background: var(--bg-secondary); cursor: text; resize: vertical; padding-right: 80px;"
+                            ></textarea>
+                            <button
+                                id="copy-export-url-btn"
+                                onclick="AdminPage.copyExportUrl()"
+                                class="btn btn-primary"
+                                style="display: none; position: absolute; top: 34px; right: 8px; padding: 6px 12px; font-size: 13px; z-index: 10;"
+                            >
+                                Copy
+                            </button>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <button onclick="AdminPage.generateExportUrl()" class="btn btn-primary">
+                                Generate URL
+                            </button>
+                            <button id="clear-export-btn" onclick="AdminPage.clearExportUrl()" class="btn btn-secondary" style="display: none;">
+                                Clear
+                            </button>
+                        </div>
+
+                        <div id="export-message"></div>
+                    </div>
                 </div>
             </div>
         `;
@@ -303,6 +371,18 @@ class AdminPage {
         "Settings imported from URL parameters",
         "success",
       );
+    }
+
+    // Add event listener for export token checkbox (auto-regenerate URL on change)
+    const exportTokenCheckbox = getEl("export-include-token");
+    if (exportTokenCheckbox) {
+      exportTokenCheckbox.addEventListener("change", () => {
+        const exportUrlTextarea = getEl("export-url");
+        // Only regenerate if URL already exists
+        if (exportUrlTextarea && exportUrlTextarea.value.trim()) {
+          AdminPage.generateExportUrl();
+        }
+      });
     }
   }
 
@@ -1128,6 +1208,168 @@ class AdminPage {
       .catch((err) => {
         console.error("❌ [ADMIN] Failed to import Tracking module:", err);
       });
+  }
+
+  // ===================================
+  // Configuration Export
+  // ===================================
+
+  /**
+   * Generate export URL with current T2S configuration
+   * Builds a shareable URL with query parameters for all non-default settings
+   */
+  static generateExportUrl() {
+    const settings = Settings.get();
+    const includeToken = getEl("export-include-token").checked;
+
+    // Build URL parameters for non-default settings
+    const params = new URLSearchParams();
+
+    // Add customerId if not default
+    if (
+      settings.t2sCustomerId &&
+      settings.t2sCustomerId !== DEFAULT_T2S_CUSTOMER_ID
+    ) {
+      params.append("customerId", settings.t2sCustomerId);
+    }
+
+    // Add trackingUrl if not default
+    if (settings.trackingUrl && settings.trackingUrl !== DEFAULT_TRACKING_URL) {
+      params.append("trackingUrl", settings.trackingUrl);
+    }
+
+    // Add adsServerUrl if not default
+    if (
+      settings.adsServerUrl &&
+      settings.adsServerUrl !== DEFAULT_ADS_SERVER_URL
+    ) {
+      params.append("adsServerUrl", settings.adsServerUrl);
+    }
+
+    // Add adsToken if checkbox checked and token exists
+    if (includeToken && settings.adsServerToken) {
+      params.append("adsToken", settings.adsServerToken);
+    }
+
+    // Add orderPrefix if not default
+    if (settings.orderPrefix && settings.orderPrefix !== DEFAULT_ORDER_PREFIX) {
+      params.append("orderPrefix", settings.orderPrefix);
+    }
+
+    // Add useAdsProxy only if false (true is default)
+    if (settings.useAdsProxy === false) {
+      params.append("useAdsProxy", "false");
+    }
+
+    // Construct full URL
+    const baseUrl = `${window.location.origin}${window.location.pathname}#/admin`;
+    const queryString = params.toString();
+    const fullUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+    // Display URL in textarea
+    const urlTextarea = getEl("export-url");
+    if (urlTextarea) {
+      urlTextarea.value = fullUrl;
+    }
+
+    // Show copy button and clear button
+    const copyBtn = getEl("copy-export-url-btn");
+    const clearBtn = getEl("clear-export-btn");
+    if (copyBtn) copyBtn.style.display = "block";
+    if (clearBtn) clearBtn.style.display = "block";
+
+    // Show/hide security warning based on token inclusion
+    const tokenWarning = getEl("export-token-warning");
+    if (tokenWarning) {
+      tokenWarning.style.display =
+        includeToken && settings.adsServerToken ? "block" : "none";
+    }
+
+    console.log("📤 [ADMIN] Generated export URL:", fullUrl);
+  }
+
+  /**
+   * Copy export URL to clipboard
+   * Shows success feedback and handles fallback for unsupported browsers
+   */
+  static copyExportUrl() {
+    const urlTextarea = getEl("export-url");
+    const url = urlTextarea ? urlTextarea.value : "";
+
+    if (!url) {
+      AdminPage.showTemporaryMessage(
+        "export-message",
+        "No URL to copy. Generate a URL first.",
+        "error",
+      );
+      return;
+    }
+
+    // Try modern clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          // Success feedback
+          const copyBtn = getEl("copy-export-url-btn");
+          if (copyBtn) {
+            const originalText = copyBtn.textContent;
+            const originalBg = copyBtn.style.background;
+            copyBtn.textContent = "✓ Copied!";
+            copyBtn.style.background = "var(--success-color)";
+
+            // Reset button after 2 seconds
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+              copyBtn.style.background = originalBg;
+            }, 2000);
+          }
+
+          AdminPage.showTemporaryMessage(
+            "export-message",
+            "URL copied to clipboard!",
+            "success",
+          );
+          console.log("✅ [ADMIN] Export URL copied to clipboard");
+        })
+        .catch((err) => {
+          console.error("❌ [ADMIN] Failed to copy URL:", err);
+          AdminPage.showTemporaryMessage(
+            "export-message",
+            "Failed to copy URL. Please select and copy manually.",
+            "error",
+          );
+        });
+    } else {
+      // Fallback: select text for manual copy
+      urlTextarea.select();
+      urlTextarea.setSelectionRange(0, url.length);
+      AdminPage.showTemporaryMessage(
+        "export-message",
+        "URL selected. Press Cmd+C (Mac) or Ctrl+C (Windows) to copy.",
+        "success",
+      );
+      console.log("⚠️ [ADMIN] Clipboard API not supported, text selected");
+    }
+  }
+
+  /**
+   * Clear export URL textarea and reset UI
+   */
+  static clearExportUrl() {
+    const urlTextarea = getEl("export-url");
+    const copyBtn = getEl("copy-export-url-btn");
+    const clearBtn = getEl("clear-export-btn");
+    const tokenWarning = getEl("export-token-warning");
+    const messageDiv = getEl("export-message");
+
+    if (urlTextarea) urlTextarea.value = "";
+    if (copyBtn) copyBtn.style.display = "none";
+    if (clearBtn) clearBtn.style.display = "none";
+    if (tokenWarning) tokenWarning.style.display = "none";
+    if (messageDiv) messageDiv.innerHTML = "";
+
+    console.log("🧹 [ADMIN] Export URL cleared");
   }
 }
 
