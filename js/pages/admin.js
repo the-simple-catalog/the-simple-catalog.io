@@ -182,6 +182,21 @@ class AdminPage {
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+                                    <input
+                                        type="checkbox"
+                                        id="setting-use-ads-proxy"
+                                        ${settings.useAdsProxy !== false ? "checked" : ""}
+                                        style="width: auto; margin: 0;"
+                                    />
+                                    <span>Use CORS Proxy for Authenticated Ads API Calls</span>
+                                </label>
+                                <small style="color: var(--text-secondary); font-size: 12px; margin-left: 24px;">
+                                    When enabled, authenticated calls route through a proxy to bypass CORS restrictions
+                                </small>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">T2S Customer ID</label>
                                 <input
                                     type="text"
@@ -277,6 +292,9 @@ class AdminPage {
 
     // Initialize product capacity indicator
     AdminPage.updateProductCapacity();
+
+    // Ping CORS proxy health endpoint to wake it up preemptively
+    AdminPage.pingProxyHealth();
 
     // Show success notification if settings were imported from URL
     if (urlImported) {
@@ -737,6 +755,7 @@ class AdminPage {
     const trackingUrl = getEl("setting-tracking-url").value.trim();
     const adsServerUrl = getEl("setting-ads-url").value.trim();
     const adsServerToken = getEl("setting-ads-token").value.trim();
+    const useAdsProxy = getEl("setting-use-ads-proxy").checked;
     const customerId = getEl("setting-customer-id").value.trim();
     const pageIdsText = getEl("setting-page-ids").value.trim();
     const orderPrefix = getEl("setting-order-prefix").value.trim();
@@ -766,6 +785,7 @@ class AdminPage {
       trackingUrl,
       adsServerUrl,
       adsServerToken,
+      useAdsProxy,
       t2sCustomerId: customerId,
       t2sPageIds: pageIds,
       orderPrefix,
@@ -948,7 +968,7 @@ class AdminPage {
 
   /**
    * Load settings from URL parameters and save to localStorage
-   * Supported parameters: customerId, trackingUrl, adsServerUrl, adsToken, orderPrefix
+   * Supported parameters: customerId, trackingUrl, adsServerUrl, adsToken, orderPrefix, useAdsProxy
    * Empty parameters are ignored. Invalid parameters are skipped with console warnings.
    * @returns {boolean} True if at least one parameter was imported
    */
@@ -1016,6 +1036,23 @@ class AdminPage {
       importCount++;
     }
 
+    // useAdsProxy → useAdsProxy (boolean parameter)
+    const useAdsProxy = urlParams.get("useAdsProxy");
+    if (useAdsProxy !== null) {
+      const value = useAdsProxy.toLowerCase();
+      if (value === "true" || value === "1") {
+        importedSettings.useAdsProxy = true;
+        importCount++;
+      } else if (value === "false" || value === "0") {
+        importedSettings.useAdsProxy = false;
+        importCount++;
+      } else {
+        console.warn(
+          "⚠️ [ADMIN] Skipping invalid useAdsProxy parameter (must be true/false)",
+        );
+      }
+    }
+
     // Save imported settings if any were valid
     if (importCount > 0) {
       Settings.save(importedSettings);
@@ -1041,6 +1078,56 @@ class AdminPage {
     setTimeout(() => {
       messageDiv.innerHTML = "";
     }, 3000);
+  }
+
+  /**
+   * Ping CORS proxy health endpoint to wake it up
+   * Fire-and-forget async call with timeout
+   *
+   * @description The CORS proxy (Render.com free tier) goes to sleep after 15 minutes
+   * of inactivity and takes ~50 seconds to wake up. This preemptive ping ensures
+   * the proxy is ready when users need to make authenticated Ads API calls.
+   */
+  static pingProxyHealth() {
+    // Import Tracking class to access proxy constants
+    import("../tracking.js")
+      .then((module) => {
+        const Tracking = module.Tracking;
+        const healthUrl = Tracking.CORS_PROXY_HEALTH_ENDPOINT;
+        const timeout = Tracking.CORS_PROXY_TIMEOUT;
+
+        // Create abort controller for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        // Fire-and-forget fetch with timeout
+        fetch(healthUrl, {
+          method: "GET",
+          signal: controller.signal,
+        })
+          .then(() => {
+            console.log("✅ [ADMIN] CORS proxy health check succeeded");
+          })
+          .catch((error) => {
+            // Ignore errors - this is just a wake-up call
+            if (error.name === "AbortError") {
+              console.log(
+                "⏱️ [ADMIN] CORS proxy health check timed out (proxy may be starting)",
+              );
+            } else {
+              console.log(
+                "⚠️ [ADMIN] CORS proxy health check failed (proxy may be starting):",
+                error.message,
+              );
+            }
+          })
+          .finally(() => {
+            clearTimeout(timeoutId);
+          });
+      })
+      .catch((err) => {
+        console.error("❌ [ADMIN] Failed to import Tracking module:", err);
+      });
   }
 }
 

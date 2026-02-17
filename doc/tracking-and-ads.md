@@ -208,13 +208,34 @@ This logic is in `sendTrackingEvent()` (lines 98-108 of `js/tracking.js`).
 
 ## Mirakl Ads API
 
+### CORS Proxy for Authenticated Requests
+
+The Mirakl Ads API provides two endpoints:
+
+1. **Authenticated endpoint**: `POST {adsServerUrl}/ads/v1` (requires valid JWT token in `Authorization` header)
+2. **Public endpoint**: `POST {adsServerUrl}/ads/v1/public/rendered-content` (no authentication required)
+
+**The CORS Problem**: The authenticated endpoint enforces CORS (Cross-Origin Resource Sharing) restrictions that block direct browser requests from different origins. When the site attempts to call the authenticated endpoint with a JWT token, modern browsers reject the request due to missing CORS headers in the API response.
+
+**The Solution**: Authenticated requests are automatically routed through a CORS proxy at `https://proxycors-8kgt.onrender.com`. The proxy acts as an intermediary that:
+- Accepts the browser's request
+- Forwards it to the Mirakl Ads API with proper headers
+- Adds CORS headers to the response before returning it to the browser
+- Bypasses browser CORS restrictions
+
+**Public endpoint**: The public endpoint is designed for browser use and includes proper CORS headers, so it is called directly without the proxy.
+
+**Performance**: The proxy adds ~300-700ms latency to authenticated requests. The Admin page automatically pings the proxy health endpoint on load to warm it up and reduce cold-start delays (~50 seconds when idle for 15+ minutes).
+
+**Implementation**: The `Tracking` class automatically detects valid JWT tokens and routes requests accordingly. See `js/tracking.js` for implementation details.
+
 ### Requesting Sponsored Products
 
 | Property         | Value                                                         |
 | ---------------- | ------------------------------------------------------------- |
-| **URL**          | `POST {adsServerUrl}/ads/v1/public/rendered-content`           |
+| **URL**          | `POST {adsServerUrl}/ads/v1/public/rendered-content` (public) or `POST {adsServerUrl}/ads/v1` (authenticated via proxy) |
 | **Content-Type** | `application/json`                                            |
-| **Headers**      | `x-customer-id: {t2sCustomerId}`                              |
+| **Headers**      | `x-customer-id: {t2sCustomerId}`, `Authorization: Bearer {token}` (authenticated only) |
 | **Method**       | `async` / `await` (returns a Promise)                         |
 
 The base `adsServerUrl` comes from settings (default: `https://xxxxx.retailmedia.mirakl.net`).

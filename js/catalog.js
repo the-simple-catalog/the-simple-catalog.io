@@ -473,6 +473,7 @@ class Settings {
         trackingUrl: '',
         adsServerUrl: '',
         adsServerToken: '',
+        useAdsProxy: true, // Use CORS proxy for authenticated Ads API calls
         t2sCustomerId: '',
         t2sPageIds: {
             homepage: 1000,

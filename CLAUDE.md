@@ -122,6 +122,11 @@ Pages: `home.js`, `category.js`, `product.js`, `search.js`, `cart.js`, `checkout
 - Shows 4-slot grid with "Ad Slot" placeholders when no ads returned
 - Tracks impressions (on image load) and clicks (on product link click)
 
+**CORS Proxy for Authenticated Ads API**:
+- Authenticated calls (`/ads/v1` with JWT) route through `https://proxycors-8kgt.onrender.com` to bypass CORS
+- Public calls (`/ads/v1/public/rendered-content`) go direct (no proxy)
+- Admin page pings proxy health endpoint on load to warm it up (~50s cold start)
+
 ## Page Types & IDs
 
 Consistent page IDs used across tracking and ads:
