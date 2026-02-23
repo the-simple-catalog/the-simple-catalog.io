@@ -122,6 +122,12 @@ demo/
 
 Detailed developer documentation is available in the `doc/` directory. Start with your role:
 
+### Overview
+
+| Document | Purpose |
+|----------|---------|
+| [How It Works](doc/how-it-works.md) | How a static site works without a backend — architecture diagrams, settings mechanism, and security model |
+
 ### For Backend/API Developers
 
 | Document | Purpose |
