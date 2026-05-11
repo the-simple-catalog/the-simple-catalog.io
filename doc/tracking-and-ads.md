@@ -29,6 +29,7 @@ This document describes how the demo site integrates with the Mirakl T2S Trackin
 - [How to Add a New Tracking Event](#how-to-add-a-new-tracking-event)
 - [How to Modify Sponsored Products](#how-to-modify-sponsored-products)
 - [Debugging](#debugging)
+  - [Ads API mock mode](#ads-api-mock-mode)
 
 ---
 
@@ -559,6 +560,7 @@ Open Chrome DevTools (F12) and look for these log prefixes:
 | `[AD SERVING] Ads not configured` | Ads URL or customer ID is missing          |
 | `[AD SERVING] API error:` | Ads API returned a non-200 status code            |
 | `[AD SERVING] Exception:` | An unexpected error in ads code                   |
+| 🧪 `[AD SERVING] Ads API mock mode` | Ads API mock mode is on — see [Ads API mock mode](#ads-api-mock-mode) |
 
 ### Checking Tracking Payloads
 
@@ -599,3 +601,55 @@ To verify end-to-end tracking:
 5. Complete checkout -- expect one `trackPostPayment` event on the confirmation page.
 6. Check the Network tab for all outgoing requests.
 7. Check the Console tab for all log messages.
+
+### Ads API mock mode
+
+A toggle in **Admin > Developer** ("Ads API mock mode") lets you visually
+verify every front-end ad template against a realistic payload without
+configuring a real Mirakl Ads campaign. When the toggle is on,
+`Tracking.requestSponsoredProducts()` short-circuits the network call and
+returns the contents of `doc/examples/ads01.json` as the response — for
+every page that requests ads (category, search, product).
+
+| Concern                | Behavior in mock mode                                                              |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| Network request to API | Not sent. The `/ads/v1` (or `/public/rendered-content`) endpoint is never hit.     |
+| Page-type targeting    | Ignored. The same payload is returned for `category`, `search`, and `product`.     |
+| Response shape         | Same as the real API — `productAds[]` + `display[]` with `creativeFormat` strings. |
+| Console prefix         | All mock-mode log lines start with 🧪 instead of ✅/⚠️/❌.                          |
+| Failure mode           | If `ads01.json` is unreachable, the helper returns `null` (Ad Slot placeholders).  |
+| Tracking events        | Impression/click events still fire normally on render and click.                   |
+
+**How to enable:**
+
+1. Open `#/admin`, scroll to the **Developer** card.
+2. Tick "Ads API mock mode".
+3. Navigate to any ads-eligible page; expect 🧪 in the console.
+
+**What `ads01.json` covers:**
+
+| Section            | Format / count                                            |
+| ------------------ | --------------------------------------------------------- |
+| `productAds[0]`    | 6 sponsored products (`adId` prefix `ad-sp:`)             |
+| `display[0]`       | `BANNER_IMAGE` 300×250                                    |
+| `display[1]`       | `SPONSORED_BRAND_IMAGE` 480×320 with 2 attached products  |
+| `display[2]`       | `NATIVE_BANNER` 512×512 (image-only, no overlay text)     |
+
+This is one captured response (`pageId: 1200`) — the three creative formats
+listed are all the formats Mirakl Ads currently emits.
+
+**Editing the fixture:**
+
+`doc/examples/ads01.json` is plain JSON. To exercise a variant (e.g. swap
+the SBI's products, change a creative's `adId`, or test a missing image),
+edit the file and reload the page in the browser — no rebuild needed.
+
+**Implementation pointers:**
+
+- Setting: `settings.adsApiMockMode` (boolean, default `false`), defined in
+  `Settings.DEFAULT_SETTINGS` (`js/catalog.js`).
+- Admin UI: checkbox in `js/pages/admin.js` (Developer card), handler
+  `AdminPage.toggleAdsApiMockMode()`.
+- Injection: `Tracking.requestSponsoredProducts()` reads the flag and
+  delegates to `Tracking.#loadMockAdsResponse()`, which fetches
+  `doc/examples/ads01.json` (`js/tracking.js`).
