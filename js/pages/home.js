@@ -13,7 +13,7 @@
 // One Tracking.requestAds() call returns both productAds[] and display[].
 // Display creatives are dispatched to the 3 named slots by creativeFormat.
 
-import { getEl, escapeHtml, formatPrice } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager, Settings } from '../catalog.js';
 import { Tracking } from '../tracking.js';
 import { Debug } from '../debug.js';
@@ -127,7 +127,7 @@ class HomePage {
                 ${promoPct > 0 ? `<span class="promo-chip">-${promoPct}%</span>` : ''}
                 <div class="prod-thumb">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
-                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
                 </div>
                 <div class="prod-body">
                     ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}

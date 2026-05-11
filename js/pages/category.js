@@ -18,7 +18,7 @@
 // each routed to its own slot. One Tracking.requestAds() call returns both
 // productAds[] and display[].
 
-import { getEl, escapeHtml, formatPrice, showMessage } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, showMessage, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
 import { Cart } from '../cart.js';
 import { Tracking } from '../tracking.js';
@@ -328,7 +328,7 @@ class CategoryPage {
                 <div class="prod-thumb">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
                          data-ad-impression="${escapeHtml(adId || '')}"
-                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
                 </div>
                 <div class="prod-body">
                     ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}
@@ -373,7 +373,7 @@ class CategoryPage {
                 ${promoPct > 0 ? `<span class="promo-chip">-${promoPct}%</span>` : ''}
                 <div class="prod-thumb">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
-                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
                 </div>
                 <div class="prod-body">
                     ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}

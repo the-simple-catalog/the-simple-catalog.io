@@ -4,7 +4,7 @@
 //
 // Layout: 2-column (cart-list + sticky summary), classic dense marketplace.
 
-import { getEl, escapeHtml, formatPrice, getSeller } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, getSeller, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
 import { Cart } from '../cart.js';
 import { Tracking } from '../tracking.js';
@@ -84,6 +84,34 @@ class CartPage {
                 </div>
             </div>
         `;
+
+        CartPage.#wireActions();
+    }
+
+    /**
+     * Single delegated click handler on the cart list. Reads productId from
+     * data-cart-id (set at render time, properly escaped) instead of inlining
+     * it into an onclick="…" attribute — closes the XSS vector that existed
+     * when the catalog id contained quote characters.
+     */
+    static #wireActions() {
+        const list = document.querySelector('.cart-list');
+        if (!list) return;
+        list.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-cart-action]');
+            if (!btn) return;
+            const action = btn.dataset.cartAction;
+            const id = btn.dataset.cartId;
+            if (!id) return;
+            if (action === 'remove') {
+                CartPage.removeItem(id);
+                return;
+            }
+            const current = Cart.getItems().find(i => i.productId === id);
+            if (!current) return;
+            const next = current.quantity + (action === 'inc' ? 1 : -1);
+            CartPage.updateQuantity(id, next);
+        });
     }
 
     static #renderCartItem(item) {
@@ -98,7 +126,7 @@ class CartPage {
             <div class="cart-row">
                 <a class="cart-thumb" href="#/product/${escapeHtml(id)}">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
-                         onerror="this.onerror=null;this.src='https://placehold.co/200x200?text=${encodeURIComponent(id)}'" />
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
                 </a>
                 <div>
                     <a class="cart-name" href="#/product/${escapeHtml(id)}">${escapeHtml(name)}</a>
@@ -118,11 +146,11 @@ class CartPage {
                     ` : ''}
                     <div class="cart-actions">
                         <div class="cart-qty-stepper">
-                            <button type="button" onclick="CartPage.updateQuantity('${escapeHtml(id)}', ${item.quantity - 1})">−</button>
+                            <button type="button" data-cart-action="dec" data-cart-id="${escapeHtml(id)}">−</button>
                             <span class="qty">${item.quantity}</span>
-                            <button type="button" onclick="CartPage.updateQuantity('${escapeHtml(id)}', ${item.quantity + 1})">+</button>
+                            <button type="button" data-cart-action="inc" data-cart-id="${escapeHtml(id)}">+</button>
                         </div>
-                        <button type="button" onclick="CartPage.removeItem('${escapeHtml(id)}')">Remove</button>
+                        <button type="button" data-cart-action="remove" data-cart-id="${escapeHtml(id)}">Remove</button>
                     </div>
                 </div>
                 <div class="cart-row-price">${escapeHtml(formatPrice(item.subtotal))}</div>

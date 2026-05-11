@@ -14,7 +14,7 @@
 // Click + impression tracking is wired via data-ad-click and
 // data-ad-impression attributes — same convention as renderSponsoredProduct.
 
-import { escapeHtml, formatPrice } from './utils.js';
+import { escapeHtml, formatPrice, PLACEHOLDER_SVG } from './utils.js';
 import { CatalogManager } from './catalog.js';
 
 class SponsoredMedia {
@@ -296,7 +296,7 @@ class SponsoredMedia {
             <div class="sm-shop-prod">
                 <a href="#/product/${escapeHtml(id)}" data-ad-click="${escapeHtml(adId)}">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" data-ad-impression="${escapeHtml(adId)}"
-                         onerror="this.src='https://placehold.co/220x220?text=${encodeURIComponent(id)}'" />
+                         onerror="this.src='${PLACEHOLDER_SVG}'" />
                     <div class="sm-shop-info">
                         ${brand ? `<div class="sm-shop-brand">${escapeHtml(brand)}</div>` : ''}
                         <div class="sm-shop-name">${escapeHtml(name)}</div>

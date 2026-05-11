@@ -3,6 +3,13 @@
 // ===================================
 
 /**
+ * Inline data URI used as a safe fallback for broken product images.
+ * Kept as a constant (no interpolation) so it can be embedded in inline
+ * onerror handlers without exposing any user-controlled data.
+ */
+const PLACEHOLDER_SVG = `data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22600%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E`;
+
+/**
  * Format price with currency symbol
  * @param {string|number} price - Price value
  * @returns {string} Formatted price
@@ -60,15 +67,21 @@ function createElement(tag, attrs = {}, content = null) {
 }
 
 /**
- * Escape HTML to prevent XSS
+ * Escape HTML to prevent XSS in both text and attribute contexts.
+ * The previous textContent-based impl only escaped & < >, leaving " and '
+ * intact — unsafe inside attribute values (src="…", href="…", onclick="…").
+ * This version escapes the 5 OWASP-recommended characters explicitly.
  * @param {string} str - String to escape
  * @returns {string}
  */
 function escapeHtml(str) {
-    if (!str) return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    if (str == null) return '';
+    return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
 }
 
 /**
@@ -193,6 +206,7 @@ function generateProductBadges(product, isSponsored = false) {
 
 // Export utility functions
 export {
+    PLACEHOLDER_SVG,
     formatPrice,
     getEl,
     createElement,

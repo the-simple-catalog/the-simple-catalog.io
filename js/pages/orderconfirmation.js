@@ -2,7 +2,7 @@
 // Order Confirmation Page — Marketplace layout
 // ===================================
 
-import { getEl, escapeHtml, formatPrice } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
 import { Tracking } from '../tracking.js';
 import { Debug } from '../debug.js';
@@ -124,7 +124,7 @@ class OrderConfirmationPage {
             <div class="cart-row">
                 <div class="cart-thumb">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
-                         onerror="this.onerror=null;this.src='https://placehold.co/200x200?text=${encodeURIComponent(id)}'" />
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
                 </div>
                 <div>
                     ${brand ? `<div class="cart-meta">${escapeHtml(brand)}</div>` : ''}

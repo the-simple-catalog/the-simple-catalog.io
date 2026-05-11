@@ -14,13 +14,11 @@
 // display[] is split by creativeFormat into 3 buckets — same pattern as
 // CategoryPage / SearchPage.
 
-import { getEl, escapeHtml, formatPrice, showMessage, getSeller } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, showMessage, getSeller, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
 import { Cart } from '../cart.js';
 import { Tracking } from '../tracking.js';
 import { Debug } from '../debug.js';
-
-const PLACEHOLDER_SVG = `data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22600%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E`;
 
 class ProductPage {
     static render(params) {
@@ -198,13 +196,11 @@ class ProductPage {
                                     <button type="button" onclick="ProductPage.increaseQuantity()">+</button>
                                 </div>
                             </div>
-                            <button class="btn btn-primary btn-full"
-                                    onclick="ProductPage.addToCart('${escapeHtml(product.id)}')"
+                            <button id="pdp-add-btn" class="btn btn-primary btn-full"
                                     ${stockQty <= 0 ? 'disabled' : ''}>
                                 ${stockQty <= 0 ? 'Out of stock' : 'Add to Cart'}
                             </button>
-                            <button class="btn btn-outline btn-full"
-                                    onclick="ProductPage.buyNow('${escapeHtml(product.id)}')"
+                            <button id="pdp-buy-btn" class="btn btn-outline btn-full"
                                     ${stockQty <= 0 ? 'disabled' : ''}>
                                 Buy Now
                             </button>
@@ -233,6 +229,9 @@ class ProductPage {
                 </div>
             </div>
         `;
+
+        getEl('pdp-add-btn')?.addEventListener('click', () => ProductPage.addToCart(productId));
+        getEl('pdp-buy-btn')?.addEventListener('click', () => ProductPage.buyNow(productId));
 
         adsPromise.then(adsData => {
             if (!adsData) return;
@@ -355,7 +354,7 @@ class ProductPage {
                 <div class="prod-thumb">
                     <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
                          data-ad-impression="${escapeHtml(adId || '')}"
-                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
                 </div>
                 <div class="prod-body">
                     ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}
