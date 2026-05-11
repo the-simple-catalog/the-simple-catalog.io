@@ -4,6 +4,7 @@
 
 import { getEl, escapeHtml } from "../utils.js";
 import { CatalogManager, Settings } from "../catalog.js";
+import { Debug } from "../debug.js";
 
 // ===================================
 // Default Configuration Placeholders
@@ -30,15 +31,14 @@ class AdminPage {
     const stats = CatalogManager.getStats();
 
     app.innerHTML = `
-            <div class="container fade-in">
-                <div class="page-header">
-                    <div class="breadcrumb">
-                        <a href="#/">Home</a>
-                        <span class="breadcrumb-separator">/</span>
-                        <span>Admin</span>
-                    </div>
-                    <h1 class="page-title">Admin & Settings</h1>
+            <div class="page page-pad fade-in">
+            <div class="container">
+                <div class="crumbs">
+                    <a href="#/">Home</a>
+                    <span class="sep">/</span>
+                    <span>Admin</span>
                 </div>
+                <h1 class="section-title" style="font-size: 24px; margin-bottom: 16px;">Admin &amp; Settings</h1>
 
                 <div style="display: grid; gap: 24px; max-width: 800px;">
                     <!-- Catalog Import Section -->
@@ -140,6 +140,40 @@ class AdminPage {
                         </form>
 
                         <div id="settings-message"></div>
+                    </div>
+
+                    <!-- Developer Tools (theme + debug overlay) -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">🛠 Developer</h2>
+
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <div class="theme-switcher" id="theme-switcher">
+                                ${['slate', 'warm', 'modern'].map(name => `
+                                    <button type="button"
+                                            class="theme-chip ${settings.theme === name ? 'is-active' : ''}"
+                                            data-theme="${name}"
+                                            onclick="AdminPage.setTheme('${name}')">
+                                        ${name.charAt(0).toUpperCase() + name.slice(1)}
+                                    </button>
+                                `).join('')}
+                            </div>
+                            <small style="color: var(--text-secondary); font-size: 12px;">
+                                Switches the visual theme across all pages instantly.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                <input type="checkbox" id="setting-debug-mode" ${settings.debugMode ? 'checked' : ''}
+                                       onchange="AdminPage.toggleDebug(this.checked)" />
+                                <span>Debug overlay</span>
+                            </label>
+                            <small style="color: var(--text-secondary); font-size: 12px;">
+                                Shows a fixed sidebar listing the current page's ad units, plus a dashed outline
+                                and corner badge on every ad zone (kind · adUnitId · creativeFormat · size).
+                            </small>
+                        </div>
                     </div>
 
                     <!-- T2S Configuration -->
@@ -272,6 +306,7 @@ class AdminPage {
                         <div id="tid-message"></div>
                     </div>
                 </div>
+            </div>
             </div>
         `;
 
@@ -471,6 +506,30 @@ class AdminPage {
         "error",
       );
     }
+  }
+
+  /**
+   * Set the active theme (Slate / Warm / Modern).
+   * Settings.save applies the side effect on documentElement.
+   */
+  static setTheme(name) {
+    if (!['slate', 'warm', 'modern'].includes(name)) return;
+    Settings.save({ theme: name });
+
+    // Update chip active state without re-rendering the whole page
+    const switcher = getEl('theme-switcher');
+    if (switcher) {
+      switcher.querySelectorAll('.theme-chip').forEach(chip => {
+        chip.classList.toggle('is-active', chip.dataset.theme === name);
+      });
+    }
+  }
+
+  /**
+   * Toggle the debug overlay (sidebar + ad-zone outlines).
+   */
+  static toggleDebug(checked) {
+    Debug.setEnabled(!!checked);
   }
 
   /**
@@ -1047,10 +1106,43 @@ class AdminPage {
 // Add CSS for admin section and import animations
 const adminStyles = `
     .admin-section {
-        background: var(--bg-primary);
+        background: var(--surface);
         padding: 24px;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+    }
+
+    /* Theme switcher chips (Developer card) */
+    .theme-switcher {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    .theme-chip {
+        padding: 8px 16px;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-family: var(--font-heading);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .theme-chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .theme-chip.is-active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #FFFFFF;
     }
 
     /* ===================================

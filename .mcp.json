@@ -1,9 +1,17 @@
 {
   "mcpServers": {
-    "chrome-devtools": {
+    "chrome-devtools-npx": {
+      "type": "stdio",
       "command": "npx",
-      
-      "args": ["-y", "chrome-devtools-mcp@latest", "--browserUrl", "http://127.0.0.1:9222"]
+      "args": [
+        "chrome-devtools-mcp@latest",
+        "--chromeArg=--no-first-run",
+        "--chromeArg=--no-default-browser-check",
+        "--chromeArg=--disable-search-engine-choice-screen",
+        "--no-usage-statistics",
+        "--isolated"
+      ],
+      "env": {}
     }
   }
 }

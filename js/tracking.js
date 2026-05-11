@@ -74,6 +74,8 @@
 
 import { Settings, CatalogManager } from './catalog.js';
 import { escapeHtml, formatPrice, generateProductBadges } from './utils.js';
+import { SponsoredMedia } from './sponsoredMedia.js';
+import { Debug } from './debug.js';
 
 class Tracking {
     // JWT format: three base64url segments separated by dots, 50-2000 characters total
@@ -460,168 +462,219 @@ class Tracking {
     }
 
     /**
-     * Render sponsored products section
-     * @param {Object} adsData - Response from Ads API
-     * @returns {string} HTML string
+     * Alias used by new page code — same shape as requestSponsoredProducts
+     * but the response may include both productAds[] and display[].
      */
-    static renderSponsoredProducts(adsData) {
-        if (!adsData || !adsData.productAds || adsData.productAds.length === 0) {
-            return this.renderEmptySponsoredSection();
-        }
-
-        const adUnitsHtml = adsData.productAds.map(adUnit => this.renderAdUnit(adUnit)).join('');
-
-        return `
-            <div class="sponsored-section">
-                <h2 class="sponsored-title">Sponsored Products</h2>
-                ${adUnitsHtml}
-            </div>
-        `;
+    static async requestAds(pageId, pageType, context = {}) {
+        return this.requestSponsoredProducts(pageId, pageType, context);
     }
 
     /**
-     * Render a single ad unit
-     * @param {Object} adUnit - Ad unit object with adUnitId, adUnitSize, and products array
-     * @returns {string} HTML string
+     * Render the unified Sponsored Products band (Shoppable carousel).
+     *
+     * Inserts a static "Shop now" CTA card as the first item, followed by one
+     * `.sm-shop-prod` per sponsored product. Each ad unit is registered with
+     * Debug and wrapped with the dashed-outline + corner badge.
+     *
+     * @param {Object} adsData          response from /ads/v1
+     * @param {HTMLElement} container   element to render into (replaces innerHTML)
+     * @param {number|string} pageId    current page id (used for badge ids)
      */
-    static renderAdUnit(adUnit) {
-        const { adUnitId, adUnitSize, products } = adUnit;
-        const slots = [];
+    static renderSponsoredBand(adsData, container, pageId) {
+        if (!container) return;
 
-        // Render actual sponsored products
-        for (let i = 0; i < Math.min(products.length, adUnitSize); i++) {
-            slots.push(this.renderSponsoredProduct(products[i]));
+        const productAds = adsData?.productAds || [];
+        if (productAds.length === 0) {
+            container.innerHTML = '';
+            return;
         }
 
-        // Fill remaining slots with placeholders
-        for (let i = products.length; i < adUnitSize; i++) {
-            slots.push(this.renderEmptySlot());
-        }
+        // Each ad unit in productAds becomes its own band — usually there's just one.
+        const bandsHtml = productAds.map((adUnit, idx) => {
+            // resolveProduct (not getProductById) — Mirakl Ads IDs use a different
+            // middle segment than the catalog (e.g. "...-0-master" vs "...-1000-master"),
+            // so exact lookup misses; SKU-prefix fallback recovers the catalog product.
+            const products = (adUnit.products || []).map(sp => {
+                const p = CatalogManager.resolveProduct(sp.productId);
+                return p ? { product: p, adId: sp.adId, sponsor: sp.digitalServiceAct?.sponsor } : null;
+            }).filter(Boolean);
 
-        return `
-            <div class="sponsored-ad-unit" style="margin-bottom: 8px;">
-                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">
-                    Ad Unit: ${escapeHtml(adUnitId)}
-                </div>
-                <div class="sponsored-grid">
-                    ${slots.join('')}
-                </div>
-            </div>
-        `;
-    }
+            const cardsHtml = products.map(({ product, adId }) =>
+                this.#bandCard(product, adId)
+            ).join('');
 
-    /**
-     * Render a single sponsored product
-     * @param {Object} sponsoredProduct - Sponsored product object
-     * @returns {string} HTML string
-     */
-    static renderSponsoredProduct(sponsoredProduct) {
-        const { productId, adId, digitalServiceAct } = sponsoredProduct;
-        const product = CatalogManager.getProductById(productId);
-
-        // Product image with fallback
-        let imageUrl = product?.content.imageUrl ||
-            `https://placehold.co/250x250?text=${encodeURIComponent(productId)}`;
-
-        // Product name with fallback
-        const productName = product?.content.name || productId;
-
-        // Get price if product exists
-        const price = product ? CatalogManager.getProductPrice(product) : null;
-        const brand = product ? CatalogManager.getProductBrand(product) : null;
-
-        // Generate badges with sponsored flag set to true
-        const badges = product ? generateProductBadges(product, true) : '<div class="product-badges"><span class="product-badge product-badge-sponsored">Sponsored</span></div>';
-        const description = product?.content.longDescription || product?.content.name || productId;
-
-        return `
-            <div class="product-card">
-                <div class="product-card-image-wrapper">
-                    ${badges}
-                    <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}">
-                        <img
-                            src="${escapeHtml(imageUrl)}"
-                            alt="${escapeHtml(productName)}"
-                            class="product-card-image"
-                            data-ad-impression="${escapeHtml(adId)}"
-                            onerror="this.src='https://placehold.co/250x250?text=${encodeURIComponent(productId)}'"
-                        />
-                    </a>
-                    <div class="product-card-info-overlay">
-                        <div class="product-card-overlay-description">${escapeHtml(description)}</div>
-                        <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}"
-                           class="product-card-overlay-cta">
-                            View Details
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-                <div class="product-card-content">
-                    ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
-                    <a href="#/product/${escapeHtml(productId)}" data-ad-click="${escapeHtml(adId)}">
-                        <div class="product-name">${escapeHtml(productName)}</div>
-                    </a>
-                    ${price ? `
-                        <div class="product-price ${price.hasPromo ? 'product-price-promo' : ''}">
-                            ${price.hasPromo ? `<span class="product-price-regular">${formatPrice(price.regular)}</span>` : ''}
-                            ${formatPrice(price.hasPromo ? price.promo : price.regular)}
+            const unitId = `${pageId}-product-${idx}`;
+            return `
+                <div class="ad-zone" data-unit-id="${escapeHtml(unitId)}">
+                    <div class="sm-shoppable sponso-band">
+                        <div class="sm-shop-head">
+                            <div class="sm-shop-title">Sponsored Products</div>
+                            <div class="sm-shop-tag">Sponsored</div>
                         </div>
-                    ` : ''}
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; font-family: var(--font-mono);">
-                        Sponsored ${digitalServiceAct?.sponsor ? `by ${escapeHtml(digitalServiceAct.sponsor)}` : ''}
+                        <div class="sm-shop-body">
+                            <button class="sm-shop-prev" type="button" aria-label="Previous" hidden>‹</button>
+                            <div class="sm-shop-scroller">
+                                <a class="sponso-shop-now" href="#/search">
+                                    <h3>Shop now.</h3>
+                                    <p>Hand-picked sponsored products tailored to this page.</p>
+                                    <span class="sponso-cta">
+                                        Browse all
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <polyline points="12 5 19 12 12 19"></polyline>
+                                        </svg>
+                                    </span>
+                                </a>
+                                ${cardsHtml}
+                            </div>
+                            <button class="sm-shop-next" type="button" aria-label="Next" hidden>›</button>
+                        </div>
                     </div>
                 </div>
+            `;
+        }).join('');
+
+        container.innerHTML = bandsHtml;
+
+        // Register + wrap each unit for the debug overlay.
+        productAds.forEach((adUnit, idx) => {
+            const unitId = `${pageId}-product-${idx}`;
+            const slotEl = container.querySelector(`.ad-zone[data-unit-id="${CSS.escape(unitId)}"]`);
+            const productIds = (adUnit.products || []).map(sp => sp.productId);
+            Debug.register({
+                kind: 'PRODUCT',
+                id: unitId,
+                creativeFormat: 'PRODUCT_ADS',
+                adUnitSize: adUnit.adUnitSize,
+                productsCount: adUnit.adUnitSize,
+                productIds,
+                served: productIds.length
+            });
+            if (slotEl) {
+                Debug.wrap(slotEl, {
+                    kind: 'PRODUCT',
+                    id: unitId,
+                    creativeFormat: 'PRODUCT_ADS',
+                    adUnitSize: adUnit.adUnitSize
+                });
+            }
+        });
+
+        // Wire scroller arrows + impression/click handlers.
+        SponsoredMedia.activateShoppableScrollers(container);
+        this.attachSponsoredTracking(container);
+    }
+
+    /**
+     * Render display creatives returned in adsData.display[].
+     * One ad-zone per creative; rendering is delegated to SponsoredMedia.
+     * @param {Array} displayAds
+     * @param {HTMLElement} container
+     * @param {number|string} pageId
+     */
+    static renderDisplayAds(displayAds, container, pageId) {
+        if (!container) return;
+        const list = displayAds || [];
+        if (list.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = list.map(c => SponsoredMedia.render(c)).join('');
+
+        // Register + wrap each creative for the debug overlay.
+        list.forEach((creative, idx) => {
+            const unitId = `${pageId}-display-${idx}`;
+            const zones = container.querySelectorAll('.ad-zone');
+            const slotEl = zones[idx];
+            // assetFormat: dimensions string from creativeSet.asset.format (e.g. "300:250")
+            // — surfaced on the badge so users can see the served asset's exact size.
+            const assetFormat = creative?.creativeSet?.asset?.format;
+            Debug.register({
+                kind: 'DISPLAY',
+                id: unitId,
+                creativeFormat: creative.creativeFormat,
+                formatCode: creative.formatCode,
+                adUnitSize: creative.adUnitSize,
+                assetFormat
+            });
+            if (slotEl) {
+                Debug.wrap(slotEl, {
+                    kind: 'DISPLAY',
+                    id: unitId,
+                    creativeFormat: creative.creativeFormat,
+                    assetFormat
+                });
+            }
+        });
+
+        SponsoredMedia.activateShoppableScrollers(container);
+        this.attachSponsoredTracking(container);
+    }
+
+    /**
+     * Sponsored-band card markup (used inside .sm-shop-scroller).
+     * @param {Object} product - full product object from catalog
+     * @param {string} adId
+     * @returns {string} HTML
+     */
+    static #bandCard(product, adId) {
+        const id = product.id;
+        const name = product.content.name || id;
+        const brand = CatalogManager.getProductBrand(product);
+        const price = CatalogManager.getProductPrice(product);
+        const image = product.content.imageUrl || `https://placehold.co/220x220?text=${encodeURIComponent(id)}`;
+        return `
+            <div class="sm-shop-prod">
+                <a href="#/product/${escapeHtml(id)}" data-ad-click="${escapeHtml(adId || '')}">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}"
+                         data-ad-impression="${escapeHtml(adId || '')}"
+                         onerror="this.src='https://placehold.co/220x220?text=${encodeURIComponent(id)}'" />
+                    <div class="sm-shop-info">
+                        ${brand ? `<div class="sm-shop-brand">${escapeHtml(brand)}</div>` : ''}
+                        <div class="sm-shop-name">${escapeHtml(name)}</div>
+                        <div class="sm-shop-line"></div>
+                        <div class="sm-shop-prices">
+                            ${price.hasPromo ? `<span class="sm-shop-strike">${escapeHtml(formatPrice(price.regular))}</span>` : ''}
+                            <span class="sm-shop-price ${price.hasPromo ? 'has-promo' : ''}">
+                                ${escapeHtml(formatPrice(price.hasPromo ? price.promo : price.regular))}
+                            </span>
+                        </div>
+                    </div>
+                </a>
             </div>
         `;
     }
 
     /**
-     * Attach event listeners for sponsored product impression and click tracking
-     * Call this after inserting sponsored product HTML into the DOM.
-     * @param {HTMLElement} container - The container element holding sponsored product HTML
+     * Attach impression + click handlers to any element with
+     * data-ad-impression / data-ad-click attributes inside the container.
+     * Idempotent — uses dataset flags so the same element is never bound twice.
+     * @param {HTMLElement} container
      */
     static attachSponsoredTracking(container) {
         if (!container) return;
 
-        // Attach impression tracking on image load
         container.querySelectorAll('[data-ad-impression]').forEach(img => {
+            if (img.dataset.impressionWired === '1') return;
+            img.dataset.impressionWired = '1';
             const adId = img.dataset.adImpression;
-            img.addEventListener('load', () => Tracking.trackSponsoredImpression(adId));
+            if (!adId) return;
+            // Image already loaded? fire immediately, otherwise on load.
+            if (img.tagName === 'IMG' && img.complete && img.naturalWidth > 0) {
+                Tracking.trackSponsoredImpression(adId);
+            } else {
+                img.addEventListener('load', () => Tracking.trackSponsoredImpression(adId), { once: true });
+            }
         });
 
-        // Attach click tracking on ad links
         container.querySelectorAll('[data-ad-click]').forEach(link => {
+            if (link.dataset.clickWired === '1') return;
+            link.dataset.clickWired = '1';
             const adId = link.dataset.adClick;
+            if (!adId) return;
             link.addEventListener('click', () => Tracking.trackSponsoredClick(adId));
         });
-    }
-
-    /**
-     * Render an empty ad slot placeholder
-     * @returns {string} HTML string
-     */
-    static renderEmptySlot() {
-        return '<div class="sponsored-placeholder">Ad Slot</div>';
-    }
-
-    /**
-     * Render empty sponsored section with placeholders
-     * @returns {string} HTML string
-     */
-    static renderEmptySponsoredSection() {
-        return `
-            <div class="sponsored-section">
-                <h2 class="sponsored-title">Sponsored Products</h2>
-                <div class="sponsored-grid">
-                    ${this.renderEmptySlot()}
-                    ${this.renderEmptySlot()}
-                    ${this.renderEmptySlot()}
-                    ${this.renderEmptySlot()}
-                </div>
-            </div>
-        `;
     }
 }
 

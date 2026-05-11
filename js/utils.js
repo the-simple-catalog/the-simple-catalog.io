@@ -152,7 +152,18 @@ function generateUUID() {
 }
 
 /**
- * Generate product badges based on product data and sponsorship status
+ * Determine seller type from a product.
+ * Defaults to '1P' when partyTypes is missing.
+ * @param {Object} product
+ * @returns {'1P'|'3P'}
+ */
+function getSeller(product) {
+    return product?.content?.partyTypes === '3P' ? '3P' : '1P';
+}
+
+/**
+ * Generate product badges based on product data and sponsorship status.
+ * 3P products render the new .mp-chip pill instead of the legacy badge.
  * @param {Object} product - Product object from catalog
  * @param {boolean} isSponsored - Whether this is a sponsored product
  * @returns {string} HTML string with badge elements
@@ -170,9 +181,9 @@ function generateProductBadges(product, isSponsored = false) {
         badges.push('<span class="product-badge product-badge-sponsored">Sponsored</span>');
     }
 
-    // MARKETPLACE badge - 3P (third-party) product
-    if (product?.content?.partyTypes === '3P') {
-        badges.push('<span class="product-badge product-badge-marketplace">Marketplace</span>');
+    // MARKETPLACE chip - 3P (third-party) product
+    if (getSeller(product) === '3P') {
+        badges.push('<span class="mp-chip mp-chip-sm">Marketplace</span>');
     }
 
     return badges.length > 0
@@ -192,5 +203,6 @@ export {
     parseRoute,
     navigateTo,
     generateUUID,
-    generateProductBadges
+    generateProductBadges,
+    getSeller
 };

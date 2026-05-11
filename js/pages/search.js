@@ -1,220 +1,187 @@
 // ===================================
-// Search Page - Product search functionality
+// Search Page — Marketplace layout
 // ===================================
+//
+// Layout (mirrors the design bundle's SearchPage):
+//   1. Breadcrumb
+//   2. Sponsored Media leaderboard (BANNER preferred)
+//   3. Toolbar: results count + sort
+//   4. Sponsored Products band  (ABOVE results, per design)
+//   5. Product grid (cols-5)
 
-import { getEl, escapeHtml, formatPrice, showMessage, generateProductBadges } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, showMessage } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
 import { Cart } from '../cart.js';
 import { Tracking } from '../tracking.js';
+import { Debug } from '../debug.js';
 
 class SearchPage {
-    /**
-     * Render search page
-     * This page displays search results only. The search input is in the header.
-     * Tracks all search queries for analytics purposes.
-     */
     static render(params) {
-        const query = params.q || '';
+        const query = (params.q || '').trim();
         const pageType = Tracking.PAGE_TYPES.SEARCH;
+        const pageId = Tracking.getPageId(pageType);
 
-        // Track page view
-        Tracking.trackPageView(Tracking.getPageId(pageType), pageType, {
-            searchQuery: query
-        });
+        Debug.setPage({ type: 'search', id: pageId, path: location.hash, searchKeyword: query });
+        Tracking.trackPageView(pageId, pageType, { searchQuery: query });
 
-        // Log search query for analytics if query exists
-        if (query) {
-            SearchPage.logSearchQuery(query);
-        }
+        if (query) SearchPage.#logSearchQuery(query);
 
-        // Request sponsored products if there's a search query
-        const sponsoredAdsPromise = query.length >= 3
-            ? Tracking.requestSponsoredProducts(Tracking.getPageId(pageType), pageType, {
-                searchQuery: query
-            })
+        // Min 3 chars before hitting the ads API + searching — avoids noisy
+        // single-letter queries and matches CatalogManager.searchProducts default.
+        const adsPromise = query.length >= 3
+            ? Tracking.requestAds(pageId, pageType, { searchQuery: query })
             : null;
 
+        const products = query.length >= 3 ? CatalogManager.searchProducts(query) : [];
+
         const app = getEl('app');
-
-        // Render results only - no search input on this page
-        // Users search from the header search bar
         app.innerHTML = `
-            <div class="container fade-in">
-                <div class="page-header">
-                    <div class="breadcrumb">
+            <div class="page page-pad fade-in">
+                <div class="container">
+                    <div class="crumbs">
                         <a href="#/">Home</a>
-                        <span class="breadcrumb-separator">/</span>
-                        <span>Search Results</span>
+                        <span class="sep">/</span>
+                        <span>Search results</span>
                     </div>
-                    ${query ? `<h1 class="page-title">Search Results for "${escapeHtml(query)}"</h1>` : '<h1 class="page-title">Search</h1>'}
-                </div>
 
-                ${query.length >= 3 ? `<div id="sponsored-container">${Tracking.renderEmptySponsoredSection()}</div>` : ''}
+                    ${query.length >= 3 ? `<div class="ad-zone-slot" id="search-display"></div>` : ''}
 
-                <div id="search-results">
-                    ${SearchPage.renderSearchResults(query)}
+                    <div class="toolbar">
+                        <div class="toolbar-info">
+                            ${query.length === 0
+                                ? `<span>Type a query above to start searching.</span>`
+                                : query.length < 3
+                                    ? `<span>Please enter at least 3 characters.</span>`
+                                    : `<strong>${products.length}</strong> results for <strong>"${escapeHtml(query)}"</strong>`
+                            }
+                        </div>
+                        <div class="toolbar-controls">
+                            <select id="search-sort">
+                                <option value="relevance">Sort: Relevance</option>
+                                <option value="price-asc">Price: low to high</option>
+                                <option value="price-desc">Price: high to low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    ${query.length >= 3 ? `<div class="ad-zone-slot" id="search-sponsored-band"></div>` : ''}
+
+                    <div id="search-results">
+                        ${SearchPage.#renderResults(products, query, 'relevance')}
+                    </div>
                 </div>
             </div>
         `;
 
-        // Update sponsored section when ads load
-        if (sponsoredAdsPromise) {
-            sponsoredAdsPromise.then(adsData => {
-                const container = document.getElementById('sponsored-container');
-                if (container && adsData) {
-                    container.innerHTML = Tracking.renderSponsoredProducts(adsData);
-                    Tracking.attachSponsoredTracking(container);
-                }
-            }).catch(error => {
-                console.error('Failed to load sponsored products:', error);
+        const sortSel = getEl('search-sort');
+        if (sortSel) {
+            sortSel.addEventListener('change', () => {
+                const wrap = getEl('search-results');
+                if (wrap) wrap.innerHTML = SearchPage.#renderResults(products, query, sortSel.value);
             });
         }
+
+        if (adsPromise) {
+            adsPromise.then(adsData => {
+                if (!adsData) return;
+                // Render ALL display creatives — see CategoryPage for the why.
+                const slot = getEl('search-display');
+                if (slot) Tracking.renderDisplayAds(adsData.display, slot, pageId);
+                const bandEl = getEl('search-sponsored-band');
+                if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+            }).catch(err => console.warn('[SEARCH] requestAds failed', err));
+        }
     }
 
-    /**
-     * Log search query for analytics
-     * Stores search history in localStorage with timestamp and result count
-     */
-    static logSearchQuery(query) {
-        // Get search results count
+    /* ---------- helpers ---------- */
+
+    static #logSearchQuery(query) {
         const products = CatalogManager.searchProducts(query);
-        const resultCount = products.length;
-
-        // Extract product IDs for tracking
         const productIds = products.map(p => p.id);
-
-        // Track search view
         Tracking.trackSearchView(query, productIds);
 
-        // Create search log entry
-        const searchEntry = {
-            timestamp: new Date().toISOString(),
-            query: query,
-            resultCount: resultCount
-        };
-
-        // Log to console
-        console.log('[Search Tracking]', searchEntry);
-
-        // Store in localStorage
         try {
-            const searchHistory = JSON.parse(localStorage.getItem('search_history') || '[]');
-            searchHistory.push(searchEntry);
-
-            // Keep only last 100 searches
-            if (searchHistory.length > 100) {
-                searchHistory.shift();
-            }
-
-            localStorage.setItem('search_history', JSON.stringify(searchHistory));
+            const history = JSON.parse(localStorage.getItem('search_history') || '[]');
+            history.push({ timestamp: new Date().toISOString(), query, resultCount: products.length });
+            if (history.length > 100) history.shift();
+            localStorage.setItem('search_history', JSON.stringify(history));
         } catch (e) {
-            console.error('Failed to store search history:', e);
+            console.warn('[SEARCH] Failed to store history', e);
         }
     }
 
-    /**
-     * Render search results
-     */
-    static renderSearchResults(query) {
-        if (!query) {
-            return `
-                <div class="message message-info">
-                    Use the search bar in the header to find products
-                </div>
-            `;
+    static #renderResults(products, query, sort) {
+        if (query.length === 0) {
+            return `<div class="empty"><h3>Search anything</h3><p>Try a brand, product, or category name.</p></div>`;
         }
-
         if (query.length < 3) {
-            return `
-                <div class="message message-info">
-                    Please enter at least 3 characters to search
-                </div>
-            `;
+            return `<div class="empty"><h3>Type a longer query</h3><p>Search needs at least 3 characters.</p></div>`;
         }
-
-        const products = CatalogManager.searchProducts(query);
-
         if (products.length === 0) {
-            return `
-                <div class="message message-info">
-                    No products found for "${escapeHtml(query)}"
-                </div>
-            `;
+            return `<div class="empty"><h3>No results for "${escapeHtml(query)}"</h3><p>Try different keywords or browse departments.</p></div>`;
         }
 
+        const sorted = SearchPage.#sortProducts(products, sort).slice(0, 20);
         return `
-            <div>
-                <h2 style="font-size: 20px; margin-bottom: 16px;">
-                    Found ${products.length} product${products.length !== 1 ? 's' : ''} for "${escapeHtml(query)}"
-                </h2>
-                <div class="product-grid">
-                    ${products.map(product => SearchPage.renderProductCard(product)).join('')}
-                </div>
+            <div class="prod-grid cols-5">
+                ${sorted.map(p => SearchPage.#renderProductCard(p)).join('')}
             </div>
         `;
     }
 
-    /**
-     * Render a single product card
-     */
-    static renderProductCard(product) {
+    static #sortProducts(products, sort) {
+        if (sort === 'relevance') return products;
+        const arr = [...products];
+        const priceOf = (p) => {
+            const pp = CatalogManager.getProductPrice(p);
+            return pp.hasPromo ? pp.promo : pp.regular || 0;
+        };
+        if (sort === 'price-asc') arr.sort((a, b) => priceOf(a) - priceOf(b));
+        if (sort === 'price-desc') arr.sort((a, b) => priceOf(b) - priceOf(a));
+        return arr;
+    }
+
+    static #renderProductCard(product) {
+        const id = product.id;
+        const name = product.content?.name || id;
         const brand = CatalogManager.getProductBrand(product);
         const price = CatalogManager.getProductPrice(product);
-        const badges = generateProductBadges(product, false);
-        const description = product.content.longDescription || product.content.name;
-
+        const image = product.content?.imageUrl
+            || `https://placehold.co/300x300?text=${encodeURIComponent(id)}`;
+        const promoPct = (price.hasPromo && price.regular)
+            ? Math.round((1 - price.promo / price.regular) * 100)
+            : 0;
+        const finalPrice = price.hasPromo ? price.promo : price.regular;
         return `
-            <div class="product-card">
-                <div class="product-card-image-wrapper">
-                    ${badges}
-                    <a href="#/product/${product.id}">
-                        <img
-                            src="${escapeHtml(product.content.imageUrl || '')}"
-                            alt="${escapeHtml(product.content.name)}"
-                            class="product-card-image"
-                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22250%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22250%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2216%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'"
-                        />
-                    </a>
-                    <div class="product-card-info-overlay">
-                        <div class="product-card-overlay-description">${escapeHtml(description)}</div>
-                        <a href="#/product/${product.id}" class="product-card-overlay-cta">
-                            View Details
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
-                    </div>
+            <a class="prod-card" href="#/product/${escapeHtml(id)}">
+                ${promoPct > 0 ? `<span class="promo-chip">-${promoPct}%</span>` : ''}
+                <div class="prod-thumb">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
+                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
                 </div>
-                <div class="product-card-content">
-                    ${brand ? `<div class="product-brand">${escapeHtml(brand)}</div>` : ''}
-                    <a href="#/product/${product.id}">
-                        <div class="product-name">${escapeHtml(product.content.name)}</div>
-                    </a>
-                    <div class="product-price ${price.hasPromo ? 'product-price-promo' : ''}">
-                        ${price.hasPromo ? `<span class="product-price-regular">${formatPrice(price.regular)}</span>` : ''}
-                        ${formatPrice(price.hasPromo ? price.promo : price.regular)}
+                <div class="prod-body">
+                    ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}
+                    <div class="prod-name">${escapeHtml(name)}</div>
+                    <div class="prod-price-row">
+                        ${finalPrice != null ? `<span class="prod-price">${escapeHtml(formatPrice(finalPrice))}</span>` : ''}
+                        ${price.hasPromo && price.regular
+                            ? `<span class="prod-price-strike">${escapeHtml(formatPrice(price.regular))}</span>`
+                            : ''}
                     </div>
-                    <button
-                        class="btn btn-primary btn-full"
-                        onclick="SearchPage.addToCart('${product.id}')"
-                    >
-                        Add to Cart
-                    </button>
+                    <div class="prod-ship">FREE Delivery</div>
                 </div>
-            </div>
+            </a>
         `;
     }
 
     /**
-     * Add product to cart
+     * Kept for backwards compatibility (no inline buttons in the new layout).
      */
     static addToCart(productId) {
         const success = Cart.addItem(productId, 1);
-        if (success) {
-            showMessage('Product added to cart!', 'success');
-        } else {
-            showMessage('Error adding product to cart', 'error');
-        }
+        showMessage(success ? 'Product added to cart!' : 'Error adding product to cart',
+                    success ? 'success' : 'error');
     }
 }
+
 export { SearchPage };
