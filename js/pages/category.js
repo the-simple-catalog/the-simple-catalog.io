@@ -9,9 +9,9 @@
 //      - Main column — vertical stack:
 //          a. Title + toolbar
 //          b. BANNER_IMAGE display creatives        (#cat-banner)
-//          c. SPONSORED_BRAND_IMAGE creative        (#cat-sbi, its own mini-grid)
-//          d. Sponsored Products band               (#cat-sponsored-band)
-//          e. Category products grid (cols-4)       (#cat-grid)
+//          c. Sponsored Products band               (#cat-sponsored-band)
+//          d. SPONSORED_BRAND_IMAGE creative        (#cat-sbi, its own cols-6 mini-grid)
+//          e. Category products grid (cols-6)       (#cat-grid)
 //          f. NATIVE_BANNER display creatives       (#cat-native)
 //
 // display[] is split by creativeFormat into 3 buckets — banner / sbi / native —
@@ -111,9 +111,9 @@ class CategoryPage {
 
                             <div class="ad-zone-slot" id="cat-banner"></div>
 
-                            <div id="cat-sbi"></div>
-
                             <div class="ad-zone-slot" id="cat-sponsored-band"></div>
+
+                            <div id="cat-sbi"></div>
 
                             <div id="cat-grid">${CategoryPage.#renderGrid(products, 'featured')}</div>
 
@@ -209,7 +209,7 @@ class CategoryPage {
         }
         const sorted = CategoryPage.#sortProducts(products, sort).slice(0, 24);
         return `
-            <div class="prod-grid cols-4">
+            <div class="prod-grid cols-6">
                 ${sorted.map(p => CategoryPage.#renderProductCard(p)).join('')}
             </div>
         `;
@@ -228,7 +228,7 @@ class CategoryPage {
     static #renderSbiBlock(sbi, slot, pageId) {
         if (!sbi || !slot) return;
         slot.innerHTML = `
-            <div class="prod-grid cols-4">
+            <div class="prod-grid cols-6">
                 ${CategoryPage.#renderSponsoredBrandZone(sbi)}
             </div>
         `;

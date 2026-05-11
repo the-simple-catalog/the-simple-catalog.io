@@ -5,7 +5,14 @@
 // Layout (mirrors the design bundle's ProductPage):
 //   - 4-col grid at ≥1280px: thumbs (80px) · main image (1fr) · info-mid (320px) · sticky buybox (360px)
 //   - Row 2 spans full width: "About this item" with editorial lead + facts grid
-//   - Below the grid: leaderboard ad + related products + sponsored band
+//   - Below the grid, vertical stack:
+//       a. BANNER_IMAGE display creatives   (#pdp-banner)
+//       b. Sponsored Products band          (#pdp-sponsored-band)
+//       c. SPONSORED_BRAND_IMAGE creative   (#pdp-sbi, own cols-5 mini-grid)
+//       d. NATIVE_BANNER display creatives  (#pdp-native)
+//
+// display[] is split by creativeFormat into 3 buckets — same pattern as
+// CategoryPage / SearchPage.
 
 import { getEl, escapeHtml, formatPrice, showMessage, getSeller } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
@@ -219,23 +226,150 @@ class ProductPage {
                         </div>
                     </div>
 
-                    <div style="margin-top: 24px;" class="ad-zone-slot" id="pdp-display"></div>
-
+                    <div style="margin-top: 24px;" class="ad-zone-slot" id="pdp-banner"></div>
                     <div class="ad-zone-slot" id="pdp-sponsored-band"></div>
+                    <div id="pdp-sbi"></div>
+                    <div class="ad-zone-slot" id="pdp-native"></div>
                 </div>
             </div>
         `;
 
         adsPromise.then(adsData => {
             if (!adsData) return;
-            // Render ALL display creatives — Mirakl Ads can return multiple
-            // (e.g. leaderboard + reserved deals strip). Stacking surfaces every
-            // adUnitId both on the page and in the debug sidebar.
-            const slot = getEl('pdp-display');
-            if (slot) Tracking.renderDisplayAds(adsData.display, slot, pageId);
+
+            const display = Array.isArray(adsData.display) ? adsData.display : [];
+            const isBanner = (c) => c.creativeFormat === 'BANNER_IMAGE' || c.creativeFormat === 'BANNER';
+            const isSbi    = (c) => c.creativeFormat === 'SPONSORED_BRAND_IMAGE' || c.creativeFormat === 'SHOPPABLE';
+            const isNative = (c) => c.creativeFormat === 'NATIVE_BANNER' || c.creativeFormat === 'NATIVE_IMAGE';
+
+            const banners = display.filter(isBanner);
+            const sbis    = display.filter(isSbi);
+            const natives = display.filter(isNative);
+
+            const bannerSlot = getEl('pdp-banner');
+            if (bannerSlot) Tracking.renderDisplayAds(banners, bannerSlot, pageId);
+
             const bandEl = getEl('pdp-sponsored-band');
             if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+
+            const sbiSlot = getEl('pdp-sbi');
+            if (sbiSlot) ProductPage.#renderSbiBlock(sbis[0], sbiSlot, pageId);
+
+            const nativeSlot = getEl('pdp-native');
+            if (nativeSlot) Tracking.renderDisplayAds(natives, nativeSlot, pageId);
         }).catch(err => console.warn('[PDP] requestAds failed', err));
+    }
+
+    /**
+     * Render the SPONSORED_BRAND_IMAGE creative as its own standalone block.
+     * Mirrors CategoryPage.#renderSbiBlock — uses cols-5 since the PDP isn't
+     * constrained by a parent products grid.
+     */
+    static #renderSbiBlock(sbi, slot, pageId) {
+        if (!sbi || !slot) return;
+        slot.innerHTML = `
+            <div class="prod-grid cols-5">
+                ${ProductPage.#renderSponsoredBrandZone(sbi)}
+            </div>
+        `;
+        const unitId = `${pageId}-display-sponsored-brand-image`;
+        const assetFormat = sbi?.creativeSet?.asset?.format;
+        const unit = {
+            kind: 'DISPLAY',
+            id: unitId,
+            creativeFormat: sbi.creativeFormat,
+            formatCode: sbi.formatCode,
+            adUnitSize: sbi.adUnitSize,
+            assetFormat
+        };
+        Debug.register(unit);
+        const zone = slot.querySelector('.sponsored-brand-zone');
+        if (zone) Debug.wrap(zone, unit);
+        Tracking.attachSponsoredTracking(slot);
+    }
+
+    /** Brand card + up to 2 attached products. Same shape as Category/Search. */
+    static #renderSponsoredBrandZone(sbi) {
+        if (!sbi) return '';
+        const adId = sbi.adId || '';
+        const brandImage = sbi.creativeSet?.asset?.url || '';
+        const brandLabel = sbi.digitalServiceAct?.behalf || sbi.brand || sbi.brandName || 'Featured Brand';
+        const brandLink = sbi.redirectionUrl || sbi.clickUrl || '#';
+        const isExternal = !brandLink.startsWith('#');
+
+        const attached = (sbi.products || []).slice(0, 2).map(p => {
+            const pid = typeof p === 'string' ? p : p.productId;
+            const product = CatalogManager.resolveProduct(pid);
+            return product ? { product, adId: (typeof p === 'object' && p.adId) || adId } : null;
+        }).filter(Boolean);
+
+        const brandCard = `
+            <a class="prod-card prod-card-sponsored-brand"
+               href="${escapeHtml(brandLink)}"
+               data-ad-click="${escapeHtml(adId)}"
+               target="${isExternal ? '_blank' : '_self'}"
+               rel="noopener">
+                <span class="sp-chip">Sponsored</span>
+                <div class="prod-thumb prod-thumb-brand">
+                    ${brandImage
+                        ? `<img class="prod-brand-img" src="${escapeHtml(brandImage)}" alt="${escapeHtml(brandLabel)}" data-ad-impression="${escapeHtml(adId)}" />`
+                        : `<div class="prod-brand-ph">${escapeHtml(brandLabel)}</div>`}
+                </div>
+                <div class="prod-body">
+                    <div class="prod-brand">${escapeHtml(brandLabel)}</div>
+                    <div class="prod-name">Discover the brand</div>
+                    <div class="prod-ship">Visit store</div>
+                </div>
+            </a>
+        `;
+
+        const productCards = attached.map(({ product, adId: pAdId }) =>
+            ProductPage.#renderSponsoredProductCard(product, pAdId)
+        ).join('');
+
+        const span = 1 + attached.length;
+        return `
+            <div class="ad-zone sponsored-brand-zone" style="grid-column: span ${span};">
+                ${brandCard}
+                ${productCards}
+            </div>
+        `;
+    }
+
+    static #renderSponsoredProductCard(product, adId) {
+        const id = product.id;
+        const name = product.content?.name || id;
+        const brand = CatalogManager.getProductBrand(product);
+        const price = CatalogManager.getProductPrice(product);
+        const image = product.content?.imageUrl
+            || `https://placehold.co/300x300?text=${encodeURIComponent(id)}`;
+        const promoPct = (price.hasPromo && price.regular)
+            ? Math.round((1 - price.promo / price.regular) * 100)
+            : 0;
+        const finalPrice = price.hasPromo ? price.promo : price.regular;
+        return `
+            <a class="prod-card prod-card-sponsored" href="#/product/${escapeHtml(id)}"
+               data-ad-click="${escapeHtml(adId || '')}">
+                <span class="sp-chip">Sponsored</span>
+                ${promoPct > 0 ? `<span class="promo-chip">-${promoPct}%</span>` : ''}
+                <div class="prod-thumb">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
+                         data-ad-impression="${escapeHtml(adId || '')}"
+                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
+                </div>
+                <div class="prod-body">
+                    ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}
+                    <div class="prod-name">${escapeHtml(name)}</div>
+                    <div class="prod-price-row">
+                        ${finalPrice != null ? `<span class="prod-price">${escapeHtml(formatPrice(finalPrice))}</span>` : ''}
+                        ${price.hasPromo && price.regular
+                            ? `<span class="prod-price-strike">${escapeHtml(formatPrice(price.regular))}</span>`
+                            : ''}
+                    </div>
+                    <div class="prod-ship">FREE Delivery</div>
+                </div>
+            </a>
+        `;
     }
 
     /* ---------- helpers ---------- */

@@ -6,8 +6,8 @@
 //   1. Breadcrumb
 //   2. Toolbar: results count + sort
 //   3. BANNER_IMAGE display creatives           (#search-banner)
-//   4. SPONSORED_BRAND_IMAGE creative           (#search-sbi, own mini-grid)
-//   5. Sponsored Products band                  (#search-sponsored-band)
+//   4. Sponsored Products band                  (#search-sponsored-band)
+//   5. SPONSORED_BRAND_IMAGE creative           (#search-sbi, own mini-grid)
 //   6. Search results grid (cols-5)             (#search-results)
 //   7. NATIVE_BANNER display creatives          (#search-native)
 //
@@ -69,8 +69,8 @@ class SearchPage {
                     </div>
 
                     ${hasQuery ? `<div class="ad-zone-slot" id="search-banner"></div>` : ''}
-                    ${hasQuery ? `<div id="search-sbi"></div>` : ''}
                     ${hasQuery ? `<div class="ad-zone-slot" id="search-sponsored-band"></div>` : ''}
+                    ${hasQuery ? `<div id="search-sbi"></div>` : ''}
 
                     <div id="search-results">
                         ${SearchPage.#renderResults(products, query, 'relevance')}
