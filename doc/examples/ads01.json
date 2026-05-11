@@ -1,0 +1,225 @@
+{
+  "pageId": 1200,
+  "productAds": [
+    {
+      "adUnitId": "1200-sponso-2",
+      "index": 0,
+      "adUnitSize": 4,
+      "products": [
+        {
+          "id": "3573",
+          "type": "OFFER",
+          "adId": "ad-sp:01krc4w838z7dkeeabnvg6t6tw-d17bc74a3eb6a4a8906a6a63a2a7f4663fc6907f",
+          "productId": "4123018533688-1000",
+          "digitalServiceAct": {
+            "behalf": "Demo Shop",
+            "paid": "Demo Shop",
+            "transparency": [
+              {
+                "domain": "https://example.com",
+                "dsaparams": [2]
+              }
+            ],
+            "adrender": 0
+          }
+        },
+        {
+          "id": "3051",
+          "type": "OFFER",
+          "adId": "ad-sp:01krc4w838z7dkeeabnvg6t6tx-b079572007131d924a5c04f4e8c4c06cd246ff2c",
+          "productId": "4123018567411-1000",
+          "digitalServiceAct": {
+            "behalf": "Demo Shop",
+            "paid": "Demo Shop",
+            "transparency": [
+              {
+                "domain": "https://example.com",
+                "dsaparams": [2]
+              }
+            ],
+            "adrender": 0
+          }
+        },
+        {
+          "id": "2569",
+          "type": "OFFER",
+          "adId": "ad-sp:01krc4w838z7dkeeabnvg6t6ty-533d41a65002d4490b55edcb7a7eeba72f9fcf2e",
+          "productId": "4123018523611-1000",
+          "digitalServiceAct": {
+            "behalf": "Demo Shop",
+            "paid": "Demo Shop",
+            "transparency": [
+              {
+                "domain": "https://example.com",
+                "dsaparams": [2]
+              }
+            ],
+            "adrender": 0
+          }
+        },
+        {
+          "id": "2623",
+          "type": "OFFER",
+          "adId": "ad-sp:01krc4w838z7dkeeabnvg6t6tz-99837f0566c7905ac676b17b1f90f7dd37752029",
+          "productId": "4123018566733-1000",
+          "digitalServiceAct": {
+            "behalf": "Demo Shop",
+            "paid": "Demo Shop",
+            "transparency": [
+              {
+                "domain": "https://example.com",
+                "dsaparams": [2]
+              }
+            ],
+            "adrender": 0
+          }
+        },
+        {
+          "id": "2362",
+          "type": "OFFER",
+          "adId": "ad-sp:01krc4w838z7dkeeabnvg6t6v0-58cebd731a4cde1d8edbb0f0dc6396d327d6d1b9",
+          "productId": "4123018575333-1000",
+          "digitalServiceAct": {
+            "behalf": "Demo Shop",
+            "paid": "Demo Shop",
+            "transparency": [
+              {
+                "domain": "https://example.com",
+                "dsaparams": [2]
+              }
+            ],
+            "adrender": 0
+          }
+        },
+        {
+          "id": "2827",
+          "type": "OFFER",
+          "adId": "ad-sp:01krc4w838z7dkeeabnvg6t6v1-b00a5ef073c9b20513c7bdc0eedbfe4b54fddc4f",
+          "productId": "4123018539555-1000",
+          "digitalServiceAct": {
+            "behalf": "Demo Shop",
+            "paid": "Demo Shop",
+            "transparency": [
+              {
+                "domain": "https://example.com",
+                "dsaparams": [2]
+              }
+            ],
+            "adrender": 0
+          }
+        }
+      ]
+    }
+  ],
+  "display": [
+    {
+      "adUnitId": "1400-display-6",
+      "adId": "ad-dis:01krc58j07jk219mbe71ay2jxd-ca36db56ca7c273a18f36999c39ad791e2dbe7ce",
+      "creativeSet": {
+        "asset": {
+          "format": "300:250",
+          "url": "https://placehold.co/300x250"
+        }
+      },
+      "redirectionUrl": "https://example.com/",
+      "products": [],
+      "creativeFormat": "BANNER_IMAGE",
+      "digitalServiceAct": {
+        "behalf": "Demo Advertiser",
+        "paid": "Demo Advertiser",
+        "transparency": [
+          {
+            "domain": "https://example.com",
+            "dsaparams": [2]
+          }
+        ],
+        "adrender": 0
+      },
+      "renderedContent": "",
+      "renderingDetails": {
+        "type": "Error",
+        "code": "RENDERING_TEMPLATE_NOT_CONFIGURED",
+        "message": "No rendering template configured for adUnit 1400-display-6"
+      }
+    },
+    {
+      "adUnitId": "1400-reserved-display-8",
+      "adId": "ad-sh:01krc58j0hrehtmw1325fp29xa-605ecf92d754266c9d49a9595d3d494d6b5f54a0",
+      "creativeSet": {
+        "asset": {
+          "format": "480:320",
+          "url": "https://placehold.co/480x320"
+        }
+      },
+      "redirectionUrl": "https://example.com/",
+      "products": [
+        {
+          "id": "4123018514566-0",
+          "adId": "ad-shp:01krc58j0hrehtmw1325fp29xb-8b804bea073df42ba1eed3b3a78b178b8e0632a0",
+          "type": "PRODUCT",
+          "productId": "4123018514566-0",
+          "position": 1
+        },
+        {
+          "id": "4123018514944-0",
+          "adId": "ad-shp:01krc58j0hrehtmw1325fp29xc-fe0499e7ae8019abbfb55990b03416df8f774370",
+          "type": "PRODUCT",
+          "productId": "4123018514944-0",
+          "position": 2
+        }
+      ],
+      "creativeFormat": "SPONSORED_BRAND_IMAGE",
+      "formatCode": "SPONSORED-BRAND-2",
+      "digitalServiceAct": {
+        "behalf": "Demo Brand",
+        "paid": "Demo Brand",
+        "transparency": [
+          {
+            "domain": "https://example.com",
+            "dsaparams": [2]
+          }
+        ],
+        "adrender": 0
+      },
+      "renderedContent": "",
+      "renderingDetails": {
+        "type": "Error",
+        "code": "RENDERING_TEMPLATE_NOT_CONFIGURED",
+        "message": "No rendering template configured for adUnit 1400-reserved-display-8"
+      }
+    },
+    {
+      "adUnitId": "1400-display-9",
+      "adId": "ad-nat:01krc58j07jk219mbe71ay2jxe-05229ecb41d85c21f7b1ef12b188e4c6b506b586",
+      "creativeSet": {
+        "attributes": {
+          "image1": {
+            "format": "512:512",
+            "url": "https://placehold.co/512x512"
+          }
+        }
+      },
+      "redirectionUrl": "https://example.com/",
+      "products": [],
+      "creativeFormat": "NATIVE_BANNER",
+      "formatCode": "NATIVE-1",
+      "digitalServiceAct": {
+        "behalf": "Demo Advertiser",
+        "paid": "Demo Advertiser",
+        "transparency": [
+          {
+            "domain": "https://example.com",
+            "dsaparams": [2]
+          }
+        ],
+        "adrender": 0
+      },
+      "renderedContent": "",
+      "renderingDetails": {
+        "type": "Error",
+        "code": "RENDERING_TEMPLATE_NOT_CONFIGURED",
+        "message": "No rendering template configured for adUnit 1400-display-9"
+      }
+    }
+  ]
+}
