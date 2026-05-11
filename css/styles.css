@@ -2014,12 +2014,18 @@ img {
 /* Grid layout for the band — opt-in via Tracking.renderSponsoredBand({mode:'grid'}).
    Used on category + search where the band sits next to a regular products
    grid and horizontal scrolling forces the user to swipe. Cards flow into
-   a responsive grid (min 180px) and the prev/next arrows are not rendered. */
+   a responsive grid (auto-fit so empty tracks collapse, denser min size)
+   and the prev/next arrows are not rendered. Card image is capped so the
+   sponsored card stays meaningfully smaller than the catalog product cards. */
+.sm-shoppable.is-grid {
+    padding: var(--spacing-md);
+}
 .sm-shoppable.is-grid .sm-shop-scroller {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-sm);
     overflow-x: visible;
-    padding: 4px 0;
+    padding: 0;
 }
 .sm-shoppable.is-grid .sm-shop-prod,
 .sm-shoppable.is-grid .sponso-shop-now {
@@ -2028,8 +2034,24 @@ img {
     min-width: 0;
 }
 .sm-shoppable.is-grid .sm-shop-prod img {
-    height: auto;
-    aspect-ratio: 1 / 1;
+    height: 120px;
+    aspect-ratio: auto;
+}
+.sm-shoppable.is-grid .sm-shop-prod .sm-shop-info {
+    padding: var(--spacing-sm);
+    gap: 2px;
+}
+.sm-shoppable.is-grid .sm-shop-prod .sm-shop-name {
+    font-size: 12px;
+}
+.sm-shoppable.is-grid .sponso-shop-now {
+    padding: var(--spacing-md);
+}
+.sm-shoppable.is-grid .sponso-shop-now h3 {
+    font-size: 18px;
+}
+.sm-shoppable.is-grid .sponso-shop-now p {
+    font-size: 12px;
 }
 
 .sponso-shop-now {
