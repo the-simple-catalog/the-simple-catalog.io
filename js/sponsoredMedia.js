@@ -94,6 +94,28 @@ class SponsoredMedia {
     }
 
     /**
+     * Pick the "W:H" format string that matches the image returned by
+     * detectImageField. Mirrors that fallback chain (asset → attributes →
+     * top-level fields) so callers can size a creative to its native asset.
+     * @param {Object} payload
+     * @returns {string|null}
+     */
+    static detectImageFormat(payload) {
+        if (!payload) return null;
+        const fromAsset = payload.creativeSet?.asset?.format;
+        if (fromAsset) return fromAsset;
+        const attrs = payload.creativeSet?.attributes;
+        if (attrs && typeof attrs === 'object') {
+            for (const v of Object.values(attrs)) {
+                if (v && typeof v === 'object' && typeof v.format === 'string') {
+                    return v.format;
+                }
+            }
+        }
+        return payload.formatCode || null;
+    }
+
+    /**
      * Pick the first field that looks like a CTA label.
      * @param {Object} payload
      * @returns {string|null}
@@ -163,6 +185,16 @@ class SponsoredMedia {
         const subtitle = c.subtitle || c.description || '';
         const cta = this.detectCtaField(c) || '';
         const hasOverlayText = !!(title || subtitle || cta);
+
+        // Size the container to the asset's native dimensions when known
+        // (mirrors what renderBanner does for BANNER_IMAGE). Falls back to
+        // sm-billboard's 1980/420 aspect-ratio when no format is available.
+        const dims = this.#parseDimensions(this.detectImageFormat(c));
+        const styleAttr = dims
+            ? `style="aspect-ratio: ${dims.w} / ${dims.h}; max-width: ${dims.w}px;"`
+            : '';
+        const sizeClass = dims ? 'sm-sized' : 'sm-billboard';
+
         const overlayHtml = hasOverlayText ? `
                     <div class="sm-overlay">
                         <div class="sm-overlay-text">
@@ -174,7 +206,8 @@ class SponsoredMedia {
         ` : '';
         return `
             <div class="ad-zone" data-creative-format="NATIVE_BANNER">
-                <a class="sm-banner sm-billboard sm-fmt-native"
+                <a class="sm-banner ${sizeClass} sm-fmt-native"
+                   ${styleAttr}
                    href="${escapeHtml(link)}"
                    data-ad-click="${escapeHtml(adId)}"
                    target="${link.startsWith('#') ? '_self' : '_blank'}"
