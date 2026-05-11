@@ -256,3 +256,7 @@ window.SearchPage = SearchPage;
 window.AdminPage = AdminPage;
 window.CartPage = CartPage;
 window.CheckoutPage = CheckoutPage;
+
+// Expose data managers for console / MCP-driven testing.
+window.CatalogManager = CatalogManager;
+window.Settings = Settings;

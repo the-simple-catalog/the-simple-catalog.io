@@ -81,6 +81,10 @@ class Tracking {
     // JWT format: three base64url segments separated by dots, 50-2000 characters total
     static #JWT_PATTERN = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
 
+    // Static fixture served when settings.adsApiMockMode is on (Admin → Developer).
+    // Path is relative to the site root, served alongside the static assets.
+    static #ADS_MOCK_URL = 'doc/examples/ads01.json';
+
     // Page type constants - values match the keys used in Settings.DEFAULT_SETTINGS.t2sPageIds
     static PAGE_TYPES = {
         HOMEPAGE: 'homepage',
@@ -370,6 +374,15 @@ class Tracking {
     static async requestSponsoredProducts(pageId, pageType, context = {}) {
         try {
             const settings = Settings.get();
+
+            // Ads API mock mode — bypass the real backend and serve the
+            // captured ads01.json fixture. The setting is toggled from the
+            // Admin Developer card. Console lines use the 🧪 prefix so it's
+            // obvious the response did not come from the live API.
+            if (settings.adsApiMockMode) {
+                return await this.#loadMockAdsResponse();
+            }
+
             const adsUrl = settings.adsServerUrl;
             const customerId = settings.t2sCustomerId;
             const userId = Settings.getTID();
@@ -467,6 +480,27 @@ class Tracking {
      */
     static async requestAds(pageId, pageType, context = {}) {
         return this.requestSponsoredProducts(pageId, pageType, context);
+    }
+
+    /**
+     * Fetch the static ads01.json fixture used by Ads API mock mode.
+     * Returns the parsed JSON, or null if the file can't be reached.
+     * @returns {Promise<Object|null>}
+     */
+    static async #loadMockAdsResponse() {
+        try {
+            const response = await fetch(this.#ADS_MOCK_URL);
+            if (!response.ok) {
+                console.error('🧪 [AD SERVING] Mock fetch failed:', response.status);
+                return null;
+            }
+            const data = await response.json();
+            console.log('🧪 [AD SERVING] Ads API mock mode — using ads01.json', data);
+            return data;
+        } catch (error) {
+            console.error('🧪 [AD SERVING] Mock exception:', error);
+            return null;
+        }
     }
 
     /**

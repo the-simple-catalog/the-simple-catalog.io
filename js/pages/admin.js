@@ -174,6 +174,19 @@ class AdminPage {
                                 and corner badge on every ad zone (kind · adUnitId · creativeFormat · size).
                             </small>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                <input type="checkbox" id="setting-ads-api-mock-mode" ${settings.adsApiMockMode ? 'checked' : ''}
+                                       onchange="AdminPage.toggleAdsApiMockMode(this.checked)" />
+                                <span>Ads API mock mode</span>
+                            </label>
+                            <small style="color: var(--text-secondary); font-size: 12px;">
+                                When on, the Ads API call is short-circuited and the front-end receives
+                                <code>doc/examples/ads01.json</code> as the response — useful for testing every
+                                template visually without backend setup. Console logs are prefixed with 🧪.
+                            </small>
+                        </div>
                     </div>
 
                     <!-- T2S Configuration -->
@@ -530,6 +543,13 @@ class AdminPage {
    */
   static toggleDebug(checked) {
     Debug.setEnabled(!!checked);
+  }
+
+  /**
+   * Toggle Ads API mock mode (short-circuits requestSponsoredProducts to serve ads01.json).
+   */
+  static toggleAdsApiMockMode(checked) {
+    Settings.save({ adsApiMockMode: !!checked });
   }
 
   /**

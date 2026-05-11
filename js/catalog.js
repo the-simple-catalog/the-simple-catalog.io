@@ -519,7 +519,8 @@ class Settings {
         },
         orderPrefix: 'ORDER_',
         theme: 'slate',
-        debugMode: false
+        debugMode: false,
+        adsApiMockMode: false
     };
 
     /**
