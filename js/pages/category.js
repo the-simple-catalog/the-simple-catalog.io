@@ -151,7 +151,7 @@ class CategoryPage {
             if (sbiSlot) CategoryPage.#renderSbiBlock(sbis[0], sbiSlot, pageId);
 
             const bandEl = getEl('cat-sponsored-band');
-            if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+            if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId, { mode: 'grid' });
 
             const nativeSlot = getEl('cat-native');
             if (nativeSlot) Tracking.renderDisplayAds(natives, nativeSlot, pageId);

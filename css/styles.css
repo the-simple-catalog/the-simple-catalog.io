@@ -2011,6 +2011,27 @@ img {
     /* Identical layout to .sm-shoppable; semantic alias */
 }
 
+/* Grid layout for the band — opt-in via Tracking.renderSponsoredBand({mode:'grid'}).
+   Used on category + search where the band sits next to a regular products
+   grid and horizontal scrolling forces the user to swipe. Cards flow into
+   a responsive grid (min 180px) and the prev/next arrows are not rendered. */
+.sm-shoppable.is-grid .sm-shop-scroller {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    overflow-x: visible;
+    padding: 4px 0;
+}
+.sm-shoppable.is-grid .sm-shop-prod,
+.sm-shoppable.is-grid .sponso-shop-now {
+    flex: initial;
+    width: auto;
+    min-width: 0;
+}
+.sm-shoppable.is-grid .sm-shop-prod img {
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
 .sponso-shop-now {
     flex: 0 0 220px;
     border-radius: var(--radius-lg);

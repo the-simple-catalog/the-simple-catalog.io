@@ -504,17 +504,27 @@ class Tracking {
     }
 
     /**
-     * Render the unified Sponsored Products band (Shoppable carousel).
+     * Render the unified Sponsored Products band.
      *
      * Inserts a static "Shop now" CTA card as the first item, followed by one
      * `.sm-shop-prod` per sponsored product. Each ad unit is registered with
      * Debug and wrapped with the dashed-outline + corner badge.
      *
+     * Two layouts:
+     *   - mode 'scroller' (default) — horizontal scroller with prev/next arrows
+     *     (used on home + product pages where the band sits in a wide area).
+     *   - mode 'grid' — CSS grid (auto-fill, no overflow, no arrows) so every
+     *     card is visible at once. Used on category + search where the band
+     *     lives alongside a regular products grid and horizontal scrolling
+     *     would force the user to swipe to see all sponsored items.
+     *
      * @param {Object} adsData          response from /ads/v1
      * @param {HTMLElement} container   element to render into (replaces innerHTML)
      * @param {number|string} pageId    current page id (used for badge ids)
+     * @param {Object} [options]
+     * @param {'scroller'|'grid'} [options.mode='scroller']
      */
-    static renderSponsoredBand(adsData, container, pageId) {
+    static renderSponsoredBand(adsData, container, pageId, options = {}) {
         if (!container) return;
 
         const productAds = adsData?.productAds || [];
@@ -522,6 +532,13 @@ class Tracking {
             container.innerHTML = '';
             return;
         }
+
+        const mode = options.mode === 'grid' ? 'grid' : 'scroller';
+        const layoutClass = mode === 'grid' ? 'sm-shoppable sponso-band is-grid' : 'sm-shoppable sponso-band';
+        const arrows = mode === 'grid' ? '' : `
+                            <button class="sm-shop-prev" type="button" aria-label="Previous" hidden>‹</button>`;
+        const arrowsNext = mode === 'grid' ? '' : `
+                            <button class="sm-shop-next" type="button" aria-label="Next" hidden>›</button>`;
 
         // Each ad unit in productAds becomes its own band — usually there's just one.
         const bandsHtml = productAds.map((adUnit, idx) => {
@@ -540,13 +557,12 @@ class Tracking {
             const unitId = `${pageId}-product-${idx}`;
             return `
                 <div class="ad-zone" data-unit-id="${escapeHtml(unitId)}">
-                    <div class="sm-shoppable sponso-band">
+                    <div class="${layoutClass}">
                         <div class="sm-shop-head">
                             <div class="sm-shop-title">Sponsored Products</div>
                             <div class="sm-shop-tag">Sponsored</div>
                         </div>
-                        <div class="sm-shop-body">
-                            <button class="sm-shop-prev" type="button" aria-label="Previous" hidden>‹</button>
+                        <div class="sm-shop-body">${arrows}
                             <div class="sm-shop-scroller">
                                 <a class="sponso-shop-now" href="#/search">
                                     <h3>Shop now.</h3>
@@ -560,8 +576,7 @@ class Tracking {
                                     </span>
                                 </a>
                                 ${cardsHtml}
-                            </div>
-                            <button class="sm-shop-next" type="button" aria-label="Next" hidden>›</button>
+                            </div>${arrowsNext}
                         </div>
                     </div>
                 </div>
@@ -595,7 +610,11 @@ class Tracking {
         });
 
         // Wire scroller arrows + impression/click handlers.
-        SponsoredMedia.activateShoppableScrollers(container);
+        // In grid mode there's no overflow to scroll, so the prev/next wiring
+        // can be skipped (the buttons aren't rendered either).
+        if (mode !== 'grid') {
+            SponsoredMedia.activateShoppableScrollers(container);
+        }
         this.attachSponsoredTracking(container);
     }
 

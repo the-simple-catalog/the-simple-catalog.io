@@ -109,7 +109,7 @@ class SearchPage {
                 if (sbiSlot) SearchPage.#renderSbiBlock(sbis[0], sbiSlot, pageId);
 
                 const bandEl = getEl('search-sponsored-band');
-                if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+                if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId, { mode: 'grid' });
 
                 const nativeSlot = getEl('search-native');
                 if (nativeSlot) Tracking.renderDisplayAds(natives, nativeSlot, pageId);
