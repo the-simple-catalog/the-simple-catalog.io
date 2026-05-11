@@ -100,7 +100,7 @@ class Debug {
      * @param {'PRODUCT'|'DISPLAY'} unit.kind
      * @param {string} unit.id
      * @param {string} [unit.format]            adUnitSize, e.g. "4"
-     * @param {string} [unit.creativeFormat]    e.g. "BANNER", "DISPLAY_BANNER"
+     * @param {string} [unit.creativeFormat]    e.g. "BANNER", "NATIVE_BANNER"
      * @param {string} [unit.formatCode]
      * @param {string} [unit.adUnitSize]
      * @param {number} [unit.productsCount]

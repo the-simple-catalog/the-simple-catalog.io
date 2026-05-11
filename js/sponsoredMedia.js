@@ -8,7 +8,6 @@
 //
 // Formats:
 //   - BANNER                full-bleed image
-//   - DISPLAY_BANNER        split content (text + CTA) / art (image)
 //   - SPONSORED_BRAND_IMAGE shoppable carousel (re-uses .sm-shoppable band)
 //   - NATIVE_BANNER         image with overlay text and auto-CTA
 //
@@ -25,8 +24,6 @@ class SponsoredMedia {
     static FORMAT_ALIASES = {
         BANNER: 'BANNER',
         BANNER_IMAGE: 'BANNER',
-        DISPLAY_BANNER: 'DISPLAY_BANNER',
-        DISPLAY_BANNER_IMAGE: 'DISPLAY_BANNER',
         NATIVE_BANNER: 'NATIVE_BANNER',
         NATIVE_IMAGE: 'NATIVE_BANNER',
         SPONSORED_BRAND_IMAGE: 'SPONSORED_BRAND_IMAGE',
@@ -56,8 +53,6 @@ class SponsoredMedia {
         switch (fmt) {
             case 'BANNER':
                 return this.renderBanner(creative);
-            case 'DISPLAY_BANNER':
-                return this.renderDisplayBanner(creative);
             case 'SPONSORED_BRAND_IMAGE':
                 return this.renderShoppable(creative);
             case 'NATIVE_BANNER':
@@ -79,6 +74,15 @@ class SponsoredMedia {
         // Mirakl Ads SBI: creativeSet.asset.url is the brand asset.
         const fromCreativeSet = payload.creativeSet?.asset?.url;
         if (fromCreativeSet) return fromCreativeSet;
+        // Mirakl Ads NATIVE_BANNER: image lives under creativeSet.attributes.image*.url
+        const attrs = payload.creativeSet?.attributes;
+        if (attrs && typeof attrs === 'object') {
+            for (const v of Object.values(attrs)) {
+                if (v && typeof v === 'object' && typeof v.url === 'string') {
+                    return v.url;
+                }
+            }
+        }
         const direct = payload.imageUrl || payload.image || payload.url;
         if (direct) return direct;
         for (const k of Object.keys(payload)) {
@@ -148,47 +152,26 @@ class SponsoredMedia {
         return { w, h };
     }
 
-    static renderDisplayBanner(c) {
-        const adId = c.adId || '';
-        const link = c.clickUrl || '#';
-        const image = this.detectImageField(c) || '';
-        const cta = this.detectCtaField(c) || 'Shop now';
-        const title = c.title || c.headline || 'Sponsored';
-        const subtitle = c.subtitle || c.description || '';
-        return `
-            <div class="ad-zone" data-creative-format="DISPLAY_BANNER">
-                <div class="sm-banner sm-fmt-display">
-                    <span class="sm-tag">Sponsored</span>
-                    <div class="sm-content">
-                        <h3>${escapeHtml(title)}</h3>
-                        ${subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
-                        <a class="sm-cta"
-                           href="${escapeHtml(link)}"
-                           data-ad-click="${escapeHtml(adId)}"
-                           target="${link.startsWith('#') ? '_self' : '_blank'}"
-                           rel="noopener">
-                            ${escapeHtml(cta)}
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                        </a>
-                    </div>
-                    <div class="sm-art">
-                        ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" data-ad-impression="${escapeHtml(adId)}" />` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
     static renderNativeBanner(c) {
         const adId = c.adId || '';
-        const link = c.clickUrl || '#';
+        const link = c.redirectionUrl || c.clickUrl || '#';
         const image = this.detectImageField(c) || '';
-        const cta = this.detectCtaField(c) || 'Discover';
-        const title = c.title || c.headline || 'Sponsored';
+        // The real Mirakl Ads NATIVE_BANNER payload often ships image-only
+        // (no title/subtitle/CTA). When that's the case we render the image
+        // alone with the Sponsored badge — no fake fallback labels.
+        const title = c.title || c.headline || '';
         const subtitle = c.subtitle || c.description || '';
+        const cta = this.detectCtaField(c) || '';
+        const hasOverlayText = !!(title || subtitle || cta);
+        const overlayHtml = hasOverlayText ? `
+                    <div class="sm-overlay">
+                        <div class="sm-overlay-text">
+                            ${title ? `<h3>${escapeHtml(title)}</h3>` : ''}
+                            ${subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
+                            ${cta ? `<span class="sm-cta">${escapeHtml(cta)}</span>` : ''}
+                        </div>
+                    </div>
+        ` : '';
         return `
             <div class="ad-zone" data-creative-format="NATIVE_BANNER">
                 <a class="sm-banner sm-billboard sm-fmt-native"
@@ -197,14 +180,8 @@ class SponsoredMedia {
                    target="${link.startsWith('#') ? '_self' : '_blank'}"
                    rel="noopener">
                     <span class="sm-tag">Sponsored</span>
-                    ${image ? `<img class="sm-fullimg" src="${escapeHtml(image)}" alt="${escapeHtml(title)}" data-ad-impression="${escapeHtml(adId)}" />` : ''}
-                    <div class="sm-overlay">
-                        <div class="sm-overlay-text">
-                            <h3>${escapeHtml(title)}</h3>
-                            ${subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
-                            <span class="sm-cta">${escapeHtml(cta)}</span>
-                        </div>
-                    </div>
+                    ${image ? `<img class="sm-fullimg" src="${escapeHtml(image)}" alt="${escapeHtml(title || 'Sponsored')}" data-ad-impression="${escapeHtml(adId)}" />` : ''}
+                    ${overlayHtml}
                 </a>
             </div>
         `;

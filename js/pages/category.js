@@ -4,7 +4,7 @@
 //
 // Layout (mirrors the design bundle's CategoryPage):
 //   1. Breadcrumb (Home > parents > current)
-//   2. Sponsored Media leaderboard (BANNER / NATIVE_BANNER / DISPLAY_BANNER)
+//   2. Sponsored Media leaderboard (BANNER / NATIVE_BANNER)
 //   3. Two-column body:
 //      - Sidebar: Categories tree (parents → current → subcats), Brand facet (visual only)
 //      - Main: title + toolbar + product grid (cols-4) + sponsored band
