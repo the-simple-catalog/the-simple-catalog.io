@@ -18,10 +18,16 @@ import { CatalogManager, Settings } from '../catalog.js';
 import { Tracking } from '../tracking.js';
 import { Debug } from '../debug.js';
 
-// Display formats placed on the homepage, in render order.
+// Display formats placed on the homepage, in render order. Each entry pairs
+// a slot id with a predicate that matches every creativeFormat string Mirakl
+// Ads may emit for that family (e.g. BANNER_IMAGE is the prod alias of BANNER).
 // Mirakl Ads returns ALL display creatives in one array; we pick the first
-// match per format. Slots whose format isn't returned stay empty (no fallback).
-const HOME_DISPLAY_FORMATS = ['BANNER', 'SPONSORED_BRAND_IMAGE', 'NATIVE_BANNER'];
+// match per family. Slots whose format isn't returned stay empty (no fallback).
+const HOME_DISPLAY_SLOTS = [
+    { slotId: 'home-display-banner',    match: (c) => c.creativeFormat === 'BANNER_IMAGE' || c.creativeFormat === 'BANNER' },
+    { slotId: 'home-display-sponsored', match: (c) => c.creativeFormat === 'SPONSORED_BRAND_IMAGE' || c.creativeFormat === 'SHOPPABLE' },
+    { slotId: 'home-display-native',    match: (c) => c.creativeFormat === 'NATIVE_BANNER' || c.creativeFormat === 'NATIVE_IMAGE' }
+];
 
 class HomePage {
     /**
@@ -177,18 +183,12 @@ class HomePage {
 
         const display = adsData.display || [];
 
-        const slots = {
-            BANNER: getEl('home-display-banner'),
-            SPONSORED_BRAND_IMAGE: getEl('home-display-sponsored'),
-            NATIVE_BANNER: getEl('home-display-native')
-        };
-
-        for (const fmt of HOME_DISPLAY_FORMATS) {
-            const el = slots[fmt];
+        for (const { slotId, match } of HOME_DISPLAY_SLOTS) {
+            const el = getEl(slotId);
             if (!el) continue;
-            const match = display.find(c => c?.creativeFormat === fmt);
-            if (match) {
-                Tracking.renderDisplayAds([match], el, pageId);
+            const creative = display.find(c => c && match(c));
+            if (creative) {
+                Tracking.renderDisplayAds([creative], el, pageId);
             } else {
                 el.innerHTML = '';
             }
