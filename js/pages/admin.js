@@ -16,6 +16,7 @@ export const DEFAULT_TRACKING_URL = "https://xxxxx.retail.mirakl.net";
 export const DEFAULT_ADS_SERVER_URL = "https://xxxxx.retailmedia.mirakl.net";
 export const DEFAULT_ORDER_PREFIX = "ORDER_";
 
+
 class AdminPage {
   /**
    * Render admin page
@@ -24,7 +25,9 @@ class AdminPage {
   static render() {
     const app = getEl("app");
 
-    // Import settings from URL parameters before rendering form
+    // Import settings from URL parameters before rendering form.
+    // `urlImported` is { count, catalogKeys: Set<string> } so we can auto-fetch
+    // only the catalog URLs that came from the URL this navigation.
     const urlImported = AdminPage.loadSettingsFromUrl();
 
     const settings = Settings.get();
@@ -41,27 +44,77 @@ class AdminPage {
                 <h1 class="section-title" style="font-size: 24px; margin-bottom: 16px;">Admin &amp; Settings</h1>
 
                 <div style="display: grid; gap: 24px; max-width: 800px;">
-                    <!-- Catalog Import Section -->
+                    <!-- Import from URL (primary flow) -->
                     <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">📦 Import Catalog</h2>
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">🌐 Import catalog from URL</h2>
 
-                        <div class="form-group">
-                            <label class="form-label">Categories JSON File</label>
-                            <input type="file" id="categories-file" accept=".json" class="form-input" />
-                            <button onclick="AdminPage.importCategories()" class="btn btn-primary" style="margin-top: 8px;">
-                                Import Categories
-                            </button>
-                            <div id="categories-messages" style="margin-top: 16px;"></div>
+                        <!-- Import Mode (shared via name="import-mode") -->
+                        <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
+                            <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Import Mode:</div>
+                            <label style="display: flex; align-items: start; margin-bottom: 8px; cursor: pointer;">
+                                <input type="radio" name="import-mode" value="replace" checked style="margin-right: 8px; margin-top: 3px;" />
+                                <div>
+                                    <strong>Replace all products</strong>
+                                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                                        Clears existing products and imports new catalog
+                                    </div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: start; cursor: pointer;">
+                                <input type="radio" name="import-mode" value="append" style="margin-right: 8px; margin-top: 3px;" />
+                                <div>
+                                    <strong>Append to existing products</strong>
+                                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                                        Adds new products to existing catalog (duplicates by ID will be updated)
+                                    </div>
+                                </div>
+                            </label>
                         </div>
 
-                        <!-- Product Capacity Indicator (shown only when >= 90% or at limit) -->
-                        <div id="product-capacity" style="display: none; margin-bottom: 16px; padding: 14px 16px; border-radius: var(--radius-lg); transition: all var(--transition-base);"></div>
+                        <div class="form-group">
+                            <label class="form-label">Categories URL</label>
+                            <input type="text" id="categories-url" class="form-input"
+                                   placeholder="https://example.com/categories.json"
+                                   value="${escapeHtml(settings.categoriesUrl || "")}" />
+                            <button onclick="AdminPage.importCategoriesFromUrl()" class="btn btn-primary" style="margin-top: 8px;">
+                                Import Categories from URL
+                            </button>
+                        </div>
 
                         <div class="form-group">
-                            <label class="form-label">Products JSON File</label>
+                            <label class="form-label">Product URL 1</label>
+                            <input type="text" id="products-url" class="form-input"
+                                   placeholder="https://example.com/products_1P.json"
+                                   value="${escapeHtml(settings.productsUrl || "")}" />
 
-                            <!-- Import Mode Selection -->
-                            <div style="margin-bottom: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
+                            <label class="form-label" style="margin-top: 12px;">Product URL 2 (Optional)</label>
+                            <input type="text" id="products-url2" class="form-input"
+                                   placeholder="https://example.com/products_3P.json"
+                                   value="${escapeHtml(settings.productsUrl2 || "")}" />
+                            <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">
+                                Second URL will be auto-appended if provided
+                            </small>
+
+                            <button onclick="AdminPage.importProductsFromUrl()" class="btn btn-primary" style="margin-top: 8px;">
+                                Import Products from URL
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Shared progress / result messages for both URL and File flows -->
+                    <div id="categories-messages"></div>
+                    <div id="products-messages"></div>
+
+                    <!-- Import from File (rare fallback — collapsed by default) -->
+                    <details class="admin-section admin-section--collapsible">
+                        <summary style="cursor: pointer; font-size: 16px; font-weight: 600; color: var(--text-secondary); list-style: none; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px;">▸</span>
+                            <span>📁 Import from File <small style="font-weight: 400; color: var(--text-secondary);">(rare — fallback when URL is not available)</small></span>
+                        </summary>
+
+                        <div style="margin-top: 16px;">
+                            <!-- Import Mode (shared name="import-mode" — flips both sections in sync) -->
+                            <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
                                 <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Import Mode:</div>
                                 <label style="display: flex; align-items: start; margin-bottom: 8px; cursor: pointer;">
                                     <input type="radio" name="import-mode" value="replace" checked style="margin-right: 8px; margin-top: 3px;" />
@@ -83,18 +136,32 @@ class AdminPage {
                                 </label>
                             </div>
 
-                            <input type="file" id="products-file" accept=".json" class="form-input" />
-                            <button onclick="AdminPage.importProducts()" class="btn btn-primary" style="margin-top: 8px;">
-                                Import Products
-                            </button>
-                            <div id="products-messages" style="margin-top: 16px;"></div>
-                        </div>
+                            <div class="form-group">
+                                <label class="form-label">Categories JSON File</label>
+                                <input type="file" id="categories-file" accept=".json" class="form-input" />
+                                <button onclick="AdminPage.importCategories()" class="btn btn-secondary" style="margin-top: 8px;">
+                                    Import Categories from File
+                                </button>
+                            </div>
 
-                        <div class="form-group">
-                            <button onclick="AdminPage.clearCatalog()" class="btn btn-secondary">
-                                Clear All Catalog Data
-                            </button>
+                            <!-- Product Capacity Indicator (shown only when >= 90% or at limit) -->
+                            <div id="product-capacity" style="display: none; margin-bottom: 16px; padding: 14px 16px; border-radius: var(--radius-lg); transition: all var(--transition-base);"></div>
+
+                            <div class="form-group">
+                                <label class="form-label">Products JSON File</label>
+                                <input type="file" id="products-file" accept=".json" class="form-input" />
+                                <button onclick="AdminPage.importProducts()" class="btn btn-secondary" style="margin-top: 8px;">
+                                    Import Products from File
+                                </button>
+                            </div>
                         </div>
+                    </details>
+
+                    <!-- Catalog actions -->
+                    <div class="admin-section" style="padding: 16px;">
+                        <button onclick="AdminPage.clearCatalog()" class="btn btn-secondary">
+                            Clear All Catalog Data
+                        </button>
                     </div>
 
                     <!-- Catalog Statistics -->
@@ -318,6 +385,60 @@ class AdminPage {
 
                         <div id="tid-message"></div>
                     </div>
+
+                    <!-- Configuration Export -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">📤 Configuration Export</h2>
+
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; line-height: 1.5;">
+                            Generate a shareable URL containing the current configuration (T2S, Ads, catalog URLs).
+                            Open the link on another machine to import everything in one shot.
+                        </p>
+
+                        <div id="export-token-warning" style="display: none; background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="font-size: 18px;">🔐</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #dc2626; margin-bottom: 4px;">Security Warning</div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">
+                                        The generated URL includes your Ads Server Token. Only share with trusted recipients.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="export-include-token" checked style="width: auto; margin: 0;" />
+                                <span>Include Ads Server Token in URL</span>
+                            </label>
+                            <small style="color: var(--text-secondary); font-size: 12px; margin-left: 24px;">
+                                Uncheck to exclude the token for safer sharing.
+                            </small>
+                        </div>
+
+                        <div class="form-group" style="position: relative;">
+                            <label class="form-label">Generated URL</label>
+                            <textarea id="export-url" class="form-input" readonly rows="4"
+                                      placeholder="Click 'Generate URL' to create a shareable configuration link"
+                                      style="font-family: monospace; font-size: 13px; background: var(--bg-secondary); cursor: text; resize: vertical; padding-right: 80px;"></textarea>
+                            <button id="copy-export-url-btn" onclick="AdminPage.copyExportUrl()" class="btn btn-primary"
+                                    style="display: none; position: absolute; top: 34px; right: 8px; padding: 6px 12px; font-size: 13px; z-index: 10;">
+                                Copy
+                            </button>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <button onclick="AdminPage.generateExportUrl()" class="btn btn-primary">
+                                Generate URL
+                            </button>
+                            <button id="clear-export-btn" onclick="AdminPage.clearExportUrl()" class="btn btn-secondary" style="display: none;">
+                                Clear
+                            </button>
+                        </div>
+
+                        <div id="export-message"></div>
+                    </div>
                 </div>
             </div>
             </div>
@@ -327,12 +448,38 @@ class AdminPage {
     AdminPage.updateProductCapacity();
 
     // Show success notification if settings were imported from URL
-    if (urlImported) {
+    if (urlImported && urlImported.count > 0) {
       AdminPage.showTemporaryMessage(
         "t2s-settings-message",
         "Settings imported from URL parameters",
         "success",
       );
+    }
+
+    // Auto-fetch catalogs when the URL provided them on THIS navigation.
+    // We only trigger on URL-param presence, not on previously-stored settings,
+    // so refreshing a clean /admin URL never re-fetches.
+    if (urlImported && urlImported.catalogKeys?.size > 0) {
+      if (urlImported.catalogKeys.has("categoriesUrl")) {
+        AdminPage.importCategoriesFromUrl();
+      }
+      if (
+        urlImported.catalogKeys.has("productsUrl") ||
+        urlImported.catalogKeys.has("productsUrl2")
+      ) {
+        AdminPage.importProductsFromUrl();
+      }
+    }
+
+    // Re-generate the export URL whenever the token checkbox flips.
+    const exportTokenCheckbox = getEl("export-include-token");
+    if (exportTokenCheckbox) {
+      exportTokenCheckbox.addEventListener("change", () => {
+        const exportUrlTextarea = getEl("export-url");
+        if (exportUrlTextarea && exportUrlTextarea.value.trim()) {
+          AdminPage.generateExportUrl();
+        }
+      });
     }
   }
 
@@ -448,6 +595,190 @@ class AdminPage {
       AdminPage.hideProgressBar(messagesDivId);
       AdminPage.showImportMessage(
         `Error importing products: ${e.message}`,
+        "error",
+        messagesDivId,
+      );
+    }
+  }
+
+  /**
+   * Fetch + parse JSON from a remote URL. Validates the URL first.
+   */
+  static async #fetchJsonFromUrl(url, label = "URL") {
+    if (!AdminPage.validateUrl(url)) {
+      throw new Error(`Invalid URL format for ${label}. URL must start with http:// or https://`);
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${label}: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  }
+
+  static #updateProgressStatus(messagesDivId, text) {
+    const messagesDiv = getEl(messagesDivId);
+    if (!messagesDiv) return;
+    const statusEl = messagesDiv.querySelector(".progress-status");
+    if (statusEl) statusEl.textContent = text;
+  }
+
+  static #formatImportError(error, type) {
+    const isNetworkError =
+      error.name === "TypeError" ||
+      error.message.includes("fetch") ||
+      error.message.includes("Failed to fetch");
+    if (isNetworkError) {
+      return `Network error: ${error.message}. Check URL and CORS settings.`;
+    }
+    return `Error importing ${type}: ${error.message}`;
+  }
+
+  /**
+   * Import categories from URL
+   */
+  static async importCategoriesFromUrl() {
+    const urlInput = getEl("categories-url");
+    const messagesDivId = "categories-messages";
+
+    if (!urlInput || !urlInput.value.trim()) {
+      AdminPage.showImportMessage("Please enter a categories URL", "error", messagesDivId);
+      return;
+    }
+
+    const url = urlInput.value.trim();
+    if (!AdminPage.validateUrl(url)) {
+      AdminPage.showImportMessage(
+        "Invalid URL format. URL must start with http:// or https://",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    try {
+      AdminPage.showProgressBar(0, "categories", messagesDivId);
+      AdminPage.#updateProgressStatus(messagesDivId, "Fetching from URL...");
+
+      const data = await AdminPage.#fetchJsonFromUrl(url);
+
+      AdminPage.showProgressBar(data.length, "categories", messagesDivId);
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      const result = CatalogManager.importCategories(data);
+
+      if (result.success) {
+        AdminPage.showSuccessBanner(result, "categories", messagesDivId);
+        AdminPage.updateStats();
+        Settings.save({ categoriesUrl: url });
+        if (window.populateCategoriesDropdown) window.populateCategoriesDropdown();
+      } else {
+        AdminPage.hideProgressBar(messagesDivId);
+        AdminPage.showImportMessage(result.error, "error", messagesDivId);
+      }
+    } catch (e) {
+      AdminPage.hideProgressBar(messagesDivId);
+      AdminPage.showImportMessage(
+        AdminPage.#formatImportError(e, "categories"),
+        "error",
+        messagesDivId,
+      );
+    }
+  }
+
+  /**
+   * Import products from URL(s). Two URLs supported — second always appends.
+   * Honors the Replace / Append radio for the first URL.
+   */
+  static async importProductsFromUrl() {
+    const urlInput1 = getEl("products-url");
+    const urlInput2 = getEl("products-url2");
+    const messagesDivId = "products-messages";
+
+    if (!urlInput1 || !urlInput1.value.trim()) {
+      AdminPage.showImportMessage("Please enter at least one product URL", "error", messagesDivId);
+      return;
+    }
+
+    const url1 = urlInput1.value.trim();
+    const url2 = urlInput2 ? urlInput2.value.trim() : "";
+
+    if (!AdminPage.validateUrl(url1)) {
+      AdminPage.showImportMessage(
+        "Invalid URL format for Product URL 1. URL must start with http:// or https://",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    if (url2 && !AdminPage.validateUrl(url2)) {
+      AdminPage.showImportMessage(
+        "Invalid URL format for Product URL 2. URL must start with http:// or https://",
+        "error",
+        messagesDivId,
+      );
+      return;
+    }
+
+    const checkedRadio = document.querySelector('input[name="import-mode"]:checked');
+    const appendMode = checkedRadio?.value === "append";
+
+    if (!appendMode) {
+      const stats = CatalogManager.getStats();
+      if (stats.productCount > 0) {
+        const confirmMessage = `⚠️ This will DELETE all ${stats.productCount} existing products and replace them with the imported catalog.`;
+        if (!confirm(confirmMessage)) return;
+      }
+    }
+
+    try {
+      // === URL 1 ===
+      AdminPage.showProgressBar(0, "products", messagesDivId);
+      AdminPage.#updateProgressStatus(messagesDivId, "Fetching from URL 1...");
+
+      const data1 = await AdminPage.#fetchJsonFromUrl(url1, "URL 1");
+
+      AdminPage.showProgressBar(data1.length, "products", messagesDivId);
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      const result1 = CatalogManager.importProducts(data1, appendMode);
+      if (!result1.success) {
+        AdminPage.hideProgressBar(messagesDivId);
+        AdminPage.showImportMessage(result1.error, "error", messagesDivId);
+        return;
+      }
+
+      // === URL 2 (always append) ===
+      let result2 = null;
+      if (url2) {
+        AdminPage.#updateProgressStatus(messagesDivId, "Fetching from URL 2...");
+        const data2 = await AdminPage.#fetchJsonFromUrl(url2, "URL 2");
+
+        AdminPage.showProgressBar(data2.length, "products", messagesDivId);
+        await new Promise((resolve) => setTimeout(resolve, 1600));
+
+        result2 = CatalogManager.importProducts(data2, true);
+        if (!result2.success) {
+          AdminPage.hideProgressBar(messagesDivId);
+          AdminPage.showImportMessage(
+            `URL 1 imported successfully, but URL 2 failed: ${result2.error}`,
+            "error",
+            messagesDivId,
+          );
+          return;
+        }
+      }
+
+      const finalResult = url2 && result2 ? result2 : result1;
+      AdminPage.showSuccessBanner(finalResult, "products", messagesDivId);
+      AdminPage.updateStats();
+      AdminPage.updateProductCapacity();
+
+      Settings.save({ productsUrl: url1, productsUrl2: url2 });
+    } catch (e) {
+      AdminPage.hideProgressBar(messagesDivId);
+      AdminPage.showImportMessage(
+        AdminPage.#formatImportError(e, "products"),
         "error",
         messagesDivId,
       );
@@ -949,23 +1280,41 @@ class AdminPage {
     if (!url || typeof url !== "string") return false;
     const trimmed = url.trim();
 
+    // Length cap — defense against query-string stuffing and oversized input.
+    if (trimmed.length > 2048) {
+      console.warn("⚠️ [ADMIN] URL too long (max 2048):", trimmed.length);
+      return false;
+    }
+
     // Must start with http:// or https://
     if (!/^https?:\/\//i.test(trimmed)) {
       console.warn("⚠️ [ADMIN] Invalid URL scheme:", trimmed);
       return false;
     }
 
-    // Reject dangerous schemes embedded in the URL
-    if (/javascript:/i.test(trimmed) || /data:/i.test(trimmed)) {
-      console.warn("⚠️ [ADMIN] Rejected malicious URL pattern:", trimmed);
+    // Reject dangerous schemes embedded in the URL (defense in depth — the
+    // scheme regex above already catches this, but the literal check stops
+    // bypasses like "https://...?next=javascript:..." being mis-flagged).
+    if (/^\s*(javascript|data|file|vbscript):/i.test(trimmed)) {
+      console.warn("⚠️ [ADMIN] Rejected dangerous URL scheme:", trimmed);
       return false;
     }
 
-    // Basic domain validation: must have at least one dot after the scheme
     try {
       const parsed = new URL(trimmed);
-      if (!parsed.hostname || !parsed.hostname.includes(".")) {
+      if (!parsed.hostname) {
+        console.warn("⚠️ [ADMIN] Missing hostname in URL:", trimmed);
+        return false;
+      }
+      // Hostname must be a dotted name (foo.bar) OR localhost / 127.0.0.1.
+      const isLocal = parsed.hostname === "localhost" || /^127(\.\d+){3}$/.test(parsed.hostname);
+      if (!isLocal && !parsed.hostname.includes(".")) {
         console.warn("⚠️ [ADMIN] Invalid domain in URL:", trimmed);
+        return false;
+      }
+      // Block credentials in the URL (https://user:pass@host) — common phishing vector.
+      if (parsed.username || parsed.password) {
+        console.warn("⚠️ [ADMIN] URL credentials not allowed:", trimmed);
         return false;
       }
     } catch {
@@ -1026,22 +1375,27 @@ class AdminPage {
   }
 
   /**
-   * Load settings from URL parameters and save to localStorage
-   * Supported parameters: customerId, trackingUrl, adsServerUrl, adsToken, orderPrefix
-   * Empty parameters are ignored. Invalid parameters are skipped with console warnings.
-   * @returns {boolean} True if at least one parameter was imported
+   * Load settings from URL parameters and save to localStorage.
+   * Supported: customerId, trackingUrl, adsServerUrl, adsToken, orderPrefix,
+   * categoriesUrl, productsUrl, productsUrl2.
+   * Empty params are ignored. Invalid params are skipped with console warnings.
+   * @returns {{count: number, catalogKeys: Set<string>}}
+   *   - count: how many settings were imported
+   *   - catalogKeys: subset that triggers auto-fetch (categoriesUrl/productsUrl/productsUrl2)
    */
   static loadSettingsFromUrl() {
+    const empty = { count: 0, catalogKeys: new Set() };
     // Parse query string from hash-based URL (e.g., #/admin?customerId=...)
     const hash = window.location.hash || "";
     const queryIndex = hash.indexOf("?");
-    if (queryIndex === -1) return false;
+    if (queryIndex === -1) return empty;
 
     const queryString = hash.substring(queryIndex + 1);
     const urlParams = new URLSearchParams(queryString);
 
     // Track which settings were imported
     const importedSettings = {};
+    const catalogKeys = new Set();
     let importCount = 0;
 
     // customerId → t2sCustomerId
@@ -1095,6 +1449,35 @@ class AdminPage {
       importCount++;
     }
 
+    // categoriesUrl / productsUrl / productsUrl2 → persisted so the form
+    // re-renders with the URLs pre-filled. Auto-fetch is triggered after render.
+    const categoriesUrl = urlParams.get("categoriesUrl");
+    if (categoriesUrl && categoriesUrl.trim() && AdminPage.validateUrl(categoriesUrl)) {
+      importedSettings.categoriesUrl = categoriesUrl.trim();
+      catalogKeys.add("categoriesUrl");
+      importCount++;
+    } else if (categoriesUrl) {
+      console.warn("⚠️ [ADMIN] Skipping invalid categoriesUrl parameter");
+    }
+
+    const productsUrl = urlParams.get("productsUrl");
+    if (productsUrl && productsUrl.trim() && AdminPage.validateUrl(productsUrl)) {
+      importedSettings.productsUrl = productsUrl.trim();
+      catalogKeys.add("productsUrl");
+      importCount++;
+    } else if (productsUrl) {
+      console.warn("⚠️ [ADMIN] Skipping invalid productsUrl parameter");
+    }
+
+    const productsUrl2 = urlParams.get("productsUrl2");
+    if (productsUrl2 && productsUrl2.trim() && AdminPage.validateUrl(productsUrl2)) {
+      importedSettings.productsUrl2 = productsUrl2.trim();
+      catalogKeys.add("productsUrl2");
+      importCount++;
+    } else if (productsUrl2) {
+      console.warn("⚠️ [ADMIN] Skipping invalid productsUrl2 parameter");
+    }
+
     // Save imported settings if any were valid
     if (importCount > 0) {
       Settings.save(importedSettings);
@@ -1102,10 +1485,10 @@ class AdminPage {
         `✅ [ADMIN] Imported ${importCount} setting(s) from URL:`,
         Object.keys(importedSettings),
       );
-      return true;
+      return { count: importCount, catalogKeys };
     }
 
-    return false;
+    return empty;
   }
 
   /**
@@ -1121,6 +1504,130 @@ class AdminPage {
       messageDiv.innerHTML = "";
     }, 3000);
   }
+
+  // ===================================
+  // Configuration Export
+  // ===================================
+
+  /**
+   * Build a shareable /admin URL with the current configuration encoded as
+   * query parameters. Only non-default values are included to keep the URL short.
+   */
+  static generateExportUrl() {
+    const settings = Settings.get();
+    const includeToken = getEl("export-include-token")?.checked ?? true;
+    const params = new URLSearchParams();
+
+    if (settings.t2sCustomerId && settings.t2sCustomerId !== DEFAULT_T2S_CUSTOMER_ID) {
+      params.append("customerId", settings.t2sCustomerId);
+    }
+    if (settings.trackingUrl && settings.trackingUrl !== DEFAULT_TRACKING_URL) {
+      params.append("trackingUrl", settings.trackingUrl);
+    }
+    if (settings.adsServerUrl && settings.adsServerUrl !== DEFAULT_ADS_SERVER_URL) {
+      params.append("adsServerUrl", settings.adsServerUrl);
+    }
+    if (includeToken && settings.adsServerToken) {
+      params.append("adsToken", settings.adsServerToken);
+    }
+    if (settings.orderPrefix && settings.orderPrefix !== DEFAULT_ORDER_PREFIX) {
+      params.append("orderPrefix", settings.orderPrefix);
+    }
+    // Catalog URLs: read live from the inputs so the exported URL reflects
+    // whatever the user currently sees in the form (including the defaults
+    // we pre-filled), not just previously-saved Settings.
+    const categoriesUrlInput = getEl("categories-url")?.value.trim() || settings.categoriesUrl;
+    const productsUrlInput = getEl("products-url")?.value.trim() || settings.productsUrl;
+    const productsUrl2Input = getEl("products-url2")?.value.trim() || settings.productsUrl2;
+    if (categoriesUrlInput) params.append("categoriesUrl", categoriesUrlInput);
+    if (productsUrlInput) params.append("productsUrl", productsUrlInput);
+    if (productsUrl2Input) params.append("productsUrl2", productsUrl2Input);
+
+    const baseUrl = `${window.location.origin}${window.location.pathname}#/admin`;
+    const queryString = params.toString();
+    const fullUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+    const urlTextarea = getEl("export-url");
+    if (urlTextarea) urlTextarea.value = fullUrl;
+
+    const copyBtn = getEl("copy-export-url-btn");
+    const clearBtn = getEl("clear-export-btn");
+    if (copyBtn) copyBtn.style.display = "block";
+    if (clearBtn) clearBtn.style.display = "block";
+
+    const tokenWarning = getEl("export-token-warning");
+    if (tokenWarning) {
+      tokenWarning.style.display = includeToken && settings.adsServerToken ? "block" : "none";
+    }
+
+    console.log("📤 [ADMIN] Generated export URL:", fullUrl);
+  }
+
+  /**
+   * Copy the generated export URL to the clipboard.
+   */
+  static copyExportUrl() {
+    const urlTextarea = getEl("export-url");
+    const url = urlTextarea ? urlTextarea.value : "";
+
+    if (!url) {
+      AdminPage.showTemporaryMessage(
+        "export-message",
+        "No URL to copy. Generate a URL first.",
+        "error",
+      );
+      return;
+    }
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          const copyBtn = getEl("copy-export-url-btn");
+          if (copyBtn) {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "✓ Copied!";
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+            }, 2000);
+          }
+          AdminPage.showTemporaryMessage("export-message", "URL copied to clipboard!", "success");
+        })
+        .catch((err) => {
+          console.error("❌ [ADMIN] Failed to copy URL:", err);
+          AdminPage.showTemporaryMessage(
+            "export-message",
+            "Failed to copy URL. Please select and copy manually.",
+            "error",
+          );
+        });
+    } else {
+      urlTextarea.select();
+      urlTextarea.setSelectionRange(0, url.length);
+      AdminPage.showTemporaryMessage(
+        "export-message",
+        "URL selected. Press Cmd+C (Mac) or Ctrl+C (Windows) to copy.",
+        "success",
+      );
+    }
+  }
+
+  /**
+   * Clear the export URL textarea and reset the export UI.
+   */
+  static clearExportUrl() {
+    const urlTextarea = getEl("export-url");
+    const copyBtn = getEl("copy-export-url-btn");
+    const clearBtn = getEl("clear-export-btn");
+    const tokenWarning = getEl("export-token-warning");
+    const messageDiv = getEl("export-message");
+
+    if (urlTextarea) urlTextarea.value = "";
+    if (copyBtn) copyBtn.style.display = "none";
+    if (clearBtn) clearBtn.style.display = "none";
+    if (tokenWarning) tokenWarning.style.display = "none";
+    if (messageDiv) messageDiv.innerHTML = "";
+  }
 }
 
 // Add CSS for admin section and import animations
@@ -1131,6 +1638,21 @@ const adminStyles = `
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
         border: 1px solid var(--border);
+    }
+
+    /* Collapsible card (e.g. File import — kept secondary) */
+    details.admin-section--collapsible {
+        padding: 14px 20px;
+    }
+    details.admin-section--collapsible summary::-webkit-details-marker {
+        display: none;
+    }
+    details.admin-section--collapsible > summary > span:first-child {
+        display: inline-block;
+        transition: transform 0.18s ease;
+    }
+    details.admin-section--collapsible[open] > summary > span:first-child {
+        transform: rotate(90deg);
     }
 
     /* Theme switcher chips (Developer card) */
