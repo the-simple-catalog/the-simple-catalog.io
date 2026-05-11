@@ -2,18 +2,21 @@
 // Category Page — Marketplace layout
 // ===================================
 //
-// Layout (mirrors the design bundle's CategoryPage):
+// Layout:
 //   1. Breadcrumb (Home > parents > current)
-//   2. Sponsored Media leaderboard (BANNER / NATIVE_BANNER)
-//   3. Two-column body:
+//   2. Two-column body:
 //      - Sidebar: Categories tree (parents → current → subcats), Brand facet (visual only)
-//      - Main: title + toolbar + product grid (cols-4) + sponsored band
-//        SPONSORED_BRAND_IMAGE creatives are split off from display[] and
-//        injected at the top of the grid as a brand-image hero + ≤2 sponsored
-//        product cards (its attached products), so they read as the first
-//        results of the listing.
+//      - Main column — vertical stack:
+//          a. Title + toolbar
+//          b. BANNER_IMAGE display creatives        (#cat-banner)
+//          c. SPONSORED_BRAND_IMAGE creative        (#cat-sbi, its own mini-grid)
+//          d. Sponsored Products band               (#cat-sponsored-band)
+//          e. Category products grid (cols-4)       (#cat-grid)
+//          f. NATIVE_BANNER display creatives       (#cat-native)
 //
-// One Tracking.requestAds() call returns both productAds[] and display[].
+// display[] is split by creativeFormat into 3 buckets — banner / sbi / native —
+// each routed to its own slot. One Tracking.requestAds() call returns both
+// productAds[] and display[].
 
 import { getEl, escapeHtml, formatPrice, showMessage } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
@@ -53,8 +56,6 @@ class CategoryPage {
             <div class="page page-pad fade-in">
                 <div class="container">
                     ${CategoryPage.#renderCrumbs(ancestors, category)}
-
-                    <div class="ad-zone-slot" id="cat-display"></div>
 
                     <div class="layout-with-side">
                         <aside class="side">
@@ -108,52 +109,52 @@ class CategoryPage {
                                 </div>
                             </div>
 
-                            <div id="cat-grid">${CategoryPage.#renderGrid(products, 'featured', null)}</div>
+                            <div class="ad-zone-slot" id="cat-banner"></div>
 
-                            <div style="height: 28px;"></div>
+                            <div id="cat-sbi"></div>
 
                             <div class="ad-zone-slot" id="cat-sponsored-band"></div>
+
+                            <div id="cat-grid">${CategoryPage.#renderGrid(products, 'featured')}</div>
+
+                            <div class="ad-zone-slot" id="cat-native"></div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
 
-        // Holds the SBI creative once ads resolve so re-sorts can re-inject it.
-        let sbiCreative = null;
-
         const sortSel = getEl('cat-sort');
         if (sortSel) {
             sortSel.addEventListener('change', () => {
-                getEl('cat-grid').innerHTML = CategoryPage.#renderGrid(products, sortSel.value, sbiCreative);
-                CategoryPage.#wireSponsoredBrandTracking(pageId);
+                getEl('cat-grid').innerHTML = CategoryPage.#renderGrid(products, sortSel.value);
             });
         }
 
         adsPromise.then(adsData => {
             if (!adsData) return;
 
-            // SPONSORED_BRAND_IMAGE creatives are pulled out of display[] and
-            // re-injected at the top of the product grid (brand image + its
-            // attached products). Anything else (BANNER, NATIVE_BANNER, …)
-            // stays in the leaderboard slot.
+            // Split display[] by creativeFormat → 3 vertical slots in the main column.
             const display = Array.isArray(adsData.display) ? adsData.display : [];
-            const sbi = display.find(c =>
-                c.creativeFormat === 'SPONSORED_BRAND_IMAGE' || c.creativeFormat === 'SHOPPABLE'
-            );
-            const otherDisplay = display.filter(c => c !== sbi);
+            const isBanner = (c) => c.creativeFormat === 'BANNER_IMAGE' || c.creativeFormat === 'BANNER';
+            const isSbi    = (c) => c.creativeFormat === 'SPONSORED_BRAND_IMAGE' || c.creativeFormat === 'SHOPPABLE';
+            const isNative = (c) => c.creativeFormat === 'NATIVE_BANNER' || c.creativeFormat === 'NATIVE_IMAGE';
 
-            const slot = getEl('cat-display');
-            if (slot) Tracking.renderDisplayAds(otherDisplay, slot, pageId);
+            const banners  = display.filter(isBanner);
+            const sbis     = display.filter(isSbi);
+            const natives  = display.filter(isNative);
 
-            if (sbi) {
-                sbiCreative = sbi;
-                getEl('cat-grid').innerHTML = CategoryPage.#renderGrid(products, sortSel?.value || 'featured', sbi);
-                CategoryPage.#wireSponsoredBrandTracking(pageId, sbi);
-            }
+            const bannerSlot = getEl('cat-banner');
+            if (bannerSlot) Tracking.renderDisplayAds(banners, bannerSlot, pageId);
+
+            const sbiSlot = getEl('cat-sbi');
+            if (sbiSlot) CategoryPage.#renderSbiBlock(sbis[0], sbiSlot, pageId);
 
             const bandEl = getEl('cat-sponsored-band');
             if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+
+            const nativeSlot = getEl('cat-native');
+            if (nativeSlot) Tracking.renderDisplayAds(natives, nativeSlot, pageId);
         }).catch(err => console.warn('[CATEGORY] requestAds failed', err));
     }
 
@@ -197,11 +198,8 @@ class CategoryPage {
         return `<div class="crumbs">${parts.join('')}</div>`;
     }
 
-    static #renderGrid(products, sort, sbi) {
-        const sbiCards = sbi ? CategoryPage.#renderSponsoredBrandZone(sbi) : '';
-        const hasSbi = sbiCards.length > 0;
-
-        if (products.length === 0 && !hasSbi) {
+    static #renderGrid(products, sort) {
+        if (products.length === 0) {
             return `
                 <div class="empty">
                     <h3>No products yet</h3>
@@ -212,10 +210,42 @@ class CategoryPage {
         const sorted = CategoryPage.#sortProducts(products, sort).slice(0, 24);
         return `
             <div class="prod-grid cols-4">
-                ${sbiCards}
                 ${sorted.map(p => CategoryPage.#renderProductCard(p)).join('')}
             </div>
         `;
+    }
+
+    /**
+     * Render the SPONSORED_BRAND_IMAGE creative as its own standalone block
+     * (its own .prod-grid wrapper) — so it sits between the BANNER slot and
+     * the Sponsored Products band, not inside the regular products grid.
+     * The inner .sponsored-brand-zone keeps its subgrid + span behavior so
+     * the brand card + attached products stay pixel-aligned within the row.
+     * @param {Object|undefined} sbi
+     * @param {HTMLElement} slot
+     * @param {number|string} pageId
+     */
+    static #renderSbiBlock(sbi, slot, pageId) {
+        if (!sbi || !slot) return;
+        slot.innerHTML = `
+            <div class="prod-grid cols-4">
+                ${CategoryPage.#renderSponsoredBrandZone(sbi)}
+            </div>
+        `;
+        const unitId = `${pageId}-display-sponsored-brand-image`;
+        const assetFormat = sbi?.creativeSet?.asset?.format;
+        const unit = {
+            kind: 'DISPLAY',
+            id: unitId,
+            creativeFormat: sbi.creativeFormat,
+            formatCode: sbi.formatCode,
+            adUnitSize: sbi.adUnitSize,
+            assetFormat
+        };
+        Debug.register(unit);
+        const zone = slot.querySelector('.sponsored-brand-zone');
+        if (zone) Debug.wrap(zone, unit);
+        Tracking.attachSponsoredTracking(slot);
     }
 
     /**
@@ -313,34 +343,6 @@ class CategoryPage {
                 </div>
             </a>
         `;
-    }
-
-    /**
-     * Wire impression/click tracking on the sponsored-brand-zone just inserted
-     * into #cat-grid. Idempotent — Tracking.attachSponsoredTracking guards via
-     * dataset flags. Also registers an entry in the debug sidebar and wraps
-     * the zone wrapper (not each inner card) so the dashed outline + corner
-     * badge appear once around the whole creative.
-     */
-    static #wireSponsoredBrandTracking(pageId, sbi) {
-        const grid = getEl('cat-grid');
-        if (!grid) return;
-        if (sbi) {
-            const unitId = `${pageId}-display-sponsored-brand-image`;
-            const assetFormat = sbi?.creativeSet?.asset?.format;
-            const unit = {
-                kind: 'DISPLAY',
-                id: unitId,
-                creativeFormat: sbi.creativeFormat,
-                formatCode: sbi.formatCode,
-                adUnitSize: sbi.adUnitSize,
-                assetFormat
-            };
-            Debug.register(unit);
-            const zone = grid.querySelector(':scope > .prod-grid > .sponsored-brand-zone');
-            if (zone) Debug.wrap(zone, unit);
-        }
-        Tracking.attachSponsoredTracking(grid);
     }
 
     static #sortProducts(products, sort) {
