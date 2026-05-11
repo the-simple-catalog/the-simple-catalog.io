@@ -1249,6 +1249,12 @@ img {
     border-color: var(--accent-color);
 }
 
+.message-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #B45309;
+    border-color: #F59E0B;
+}
+
 /* ===================================
    Marketplace chip (3P seller indicator)
    =================================== */

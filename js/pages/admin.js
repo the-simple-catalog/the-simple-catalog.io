@@ -312,9 +312,9 @@ class AdminPage {
                                     id="setting-page-ids"
                                     class="form-input"
                                     rows="6"
-                                    placeholder='${JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2)}'
+                                    placeholder='${escapeHtml(JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}'
                                     style="font-family: monospace; font-size: 13px;"
-                                >${JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2)}</textarea>
+                                >${escapeHtml(JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}</textarea>
                                 <small style="color: var(--text-secondary); font-size: 12px;">
                                     JSON object with page type to page ID mappings
                                 </small>
@@ -1579,6 +1579,16 @@ class AdminPage {
       return;
     }
 
+    // Decide the post-copy message: warn if the token is actually present.
+    // We check both that the checkbox is on AND that a non-empty token exists.
+    const includeToken = getEl("export-include-token")?.checked ?? true;
+    const hasToken = !!Settings.get().adsServerToken;
+    const tokenInClipboard = includeToken && hasToken;
+    const successMessage = tokenInClipboard
+      ? "⚠️ URL copied — contains your Ads Server Token. Share only with trusted recipients."
+      : "URL copied to clipboard!";
+    const successType = tokenInClipboard ? "warning" : "success";
+
     if (navigator.clipboard?.writeText) {
       navigator.clipboard
         .writeText(url)
@@ -1591,7 +1601,7 @@ class AdminPage {
               copyBtn.textContent = originalText;
             }, 2000);
           }
-          AdminPage.showTemporaryMessage("export-message", "URL copied to clipboard!", "success");
+          AdminPage.showTemporaryMessage("export-message", successMessage, successType);
         })
         .catch((err) => {
           console.error("❌ [ADMIN] Failed to copy URL:", err);
@@ -1606,8 +1616,10 @@ class AdminPage {
       urlTextarea.setSelectionRange(0, url.length);
       AdminPage.showTemporaryMessage(
         "export-message",
-        "URL selected. Press Cmd+C (Mac) or Ctrl+C (Windows) to copy.",
-        "success",
+        tokenInClipboard
+          ? "⚠️ URL selected — contains your Ads Server Token. Press Cmd+C / Ctrl+C to copy."
+          : "URL selected. Press Cmd+C (Mac) or Ctrl+C (Windows) to copy.",
+        successType,
       );
     }
   }
