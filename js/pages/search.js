@@ -2,12 +2,17 @@
 // Search Page — Marketplace layout
 // ===================================
 //
-// Layout (mirrors the design bundle's SearchPage):
+// Layout:
 //   1. Breadcrumb
-//   2. Sponsored Media leaderboard (BANNER preferred)
-//   3. Toolbar: results count + sort
-//   4. Sponsored Products band  (ABOVE results, per design)
-//   5. Product grid (cols-5)
+//   2. Toolbar: results count + sort
+//   3. BANNER_IMAGE display creatives           (#search-banner)
+//   4. SPONSORED_BRAND_IMAGE creative           (#search-sbi, own mini-grid)
+//   5. Sponsored Products band                  (#search-sponsored-band)
+//   6. Search results grid (cols-5)             (#search-results)
+//   7. NATIVE_BANNER display creatives          (#search-native)
+//
+// display[] is split by creativeFormat into 3 buckets — banner / sbi / native —
+// each routed to its own slot. Same order as CategoryPage.
 
 import { getEl, escapeHtml, formatPrice, showMessage } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
@@ -35,6 +40,7 @@ class SearchPage {
         const products = query.length >= 3 ? CatalogManager.searchProducts(query) : [];
 
         const app = getEl('app');
+        const hasQuery = query.length >= 3;
         app.innerHTML = `
             <div class="page page-pad fade-in">
                 <div class="container">
@@ -43,8 +49,6 @@ class SearchPage {
                         <span class="sep">/</span>
                         <span>Search results</span>
                     </div>
-
-                    ${query.length >= 3 ? `<div class="ad-zone-slot" id="search-display"></div>` : ''}
 
                     <div class="toolbar">
                         <div class="toolbar-info">
@@ -64,11 +68,15 @@ class SearchPage {
                         </div>
                     </div>
 
-                    ${query.length >= 3 ? `<div class="ad-zone-slot" id="search-sponsored-band"></div>` : ''}
+                    ${hasQuery ? `<div class="ad-zone-slot" id="search-banner"></div>` : ''}
+                    ${hasQuery ? `<div id="search-sbi"></div>` : ''}
+                    ${hasQuery ? `<div class="ad-zone-slot" id="search-sponsored-band"></div>` : ''}
 
                     <div id="search-results">
                         ${SearchPage.#renderResults(products, query, 'relevance')}
                     </div>
+
+                    ${hasQuery ? `<div class="ad-zone-slot" id="search-native"></div>` : ''}
                 </div>
             </div>
         `;
@@ -84,11 +92,27 @@ class SearchPage {
         if (adsPromise) {
             adsPromise.then(adsData => {
                 if (!adsData) return;
-                // Render ALL display creatives — see CategoryPage for the why.
-                const slot = getEl('search-display');
-                if (slot) Tracking.renderDisplayAds(adsData.display, slot, pageId);
+
+                const display = Array.isArray(adsData.display) ? adsData.display : [];
+                const isBanner = (c) => c.creativeFormat === 'BANNER_IMAGE' || c.creativeFormat === 'BANNER';
+                const isSbi    = (c) => c.creativeFormat === 'SPONSORED_BRAND_IMAGE' || c.creativeFormat === 'SHOPPABLE';
+                const isNative = (c) => c.creativeFormat === 'NATIVE_BANNER' || c.creativeFormat === 'NATIVE_IMAGE';
+
+                const banners  = display.filter(isBanner);
+                const sbis     = display.filter(isSbi);
+                const natives  = display.filter(isNative);
+
+                const bannerSlot = getEl('search-banner');
+                if (bannerSlot) Tracking.renderDisplayAds(banners, bannerSlot, pageId);
+
+                const sbiSlot = getEl('search-sbi');
+                if (sbiSlot) SearchPage.#renderSbiBlock(sbis[0], sbiSlot, pageId);
+
                 const bandEl = getEl('search-sponsored-band');
                 if (bandEl) Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+
+                const nativeSlot = getEl('search-native');
+                if (nativeSlot) Tracking.renderDisplayAds(natives, nativeSlot, pageId);
             }).catch(err => console.warn('[SEARCH] requestAds failed', err));
         }
     }
@@ -108,6 +132,122 @@ class SearchPage {
         } catch (e) {
             console.warn('[SEARCH] Failed to store history', e);
         }
+    }
+
+    /**
+     * Render the SPONSORED_BRAND_IMAGE creative as its own standalone block.
+     * Mirrors CategoryPage.#renderSbiBlock — same visuals, same tracking.
+     * The mini-grid uses .prod-grid.cols-5 to match the search results grid.
+     */
+    static #renderSbiBlock(sbi, slot, pageId) {
+        if (!sbi || !slot) return;
+        slot.innerHTML = `
+            <div class="prod-grid cols-5">
+                ${SearchPage.#renderSponsoredBrandZone(sbi)}
+            </div>
+        `;
+        const unitId = `${pageId}-display-sponsored-brand-image`;
+        const assetFormat = sbi?.creativeSet?.asset?.format;
+        const unit = {
+            kind: 'DISPLAY',
+            id: unitId,
+            creativeFormat: sbi.creativeFormat,
+            formatCode: sbi.formatCode,
+            adUnitSize: sbi.adUnitSize,
+            assetFormat
+        };
+        Debug.register(unit);
+        const zone = slot.querySelector('.sponsored-brand-zone');
+        if (zone) Debug.wrap(zone, unit);
+        Tracking.attachSponsoredTracking(slot);
+    }
+
+    /**
+     * Build the leading sponsored-brand-zone for a SPONSORED_BRAND_IMAGE
+     * creative — brand card + up to 2 attached products. Same shape as
+     * CategoryPage.#renderSponsoredBrandZone.
+     */
+    static #renderSponsoredBrandZone(sbi) {
+        if (!sbi) return '';
+        const adId = sbi.adId || '';
+        const brandImage = sbi.creativeSet?.asset?.url || '';
+        const brandLabel = sbi.digitalServiceAct?.behalf || sbi.brand || sbi.brandName || 'Featured Brand';
+        const brandLink = sbi.redirectionUrl || sbi.clickUrl || '#';
+        const isExternal = !brandLink.startsWith('#');
+
+        const attached = (sbi.products || []).slice(0, 2).map(p => {
+            const pid = typeof p === 'string' ? p : p.productId;
+            const product = CatalogManager.resolveProduct(pid);
+            return product ? { product, adId: (typeof p === 'object' && p.adId) || adId } : null;
+        }).filter(Boolean);
+
+        const brandCard = `
+            <a class="prod-card prod-card-sponsored-brand"
+               href="${escapeHtml(brandLink)}"
+               data-ad-click="${escapeHtml(adId)}"
+               target="${isExternal ? '_blank' : '_self'}"
+               rel="noopener">
+                <span class="sp-chip">Sponsored</span>
+                <div class="prod-thumb prod-thumb-brand">
+                    ${brandImage
+                        ? `<img class="prod-brand-img" src="${escapeHtml(brandImage)}" alt="${escapeHtml(brandLabel)}" data-ad-impression="${escapeHtml(adId)}" />`
+                        : `<div class="prod-brand-ph">${escapeHtml(brandLabel)}</div>`}
+                </div>
+                <div class="prod-body">
+                    <div class="prod-brand">${escapeHtml(brandLabel)}</div>
+                    <div class="prod-name">Discover the brand</div>
+                    <div class="prod-ship">Visit store</div>
+                </div>
+            </a>
+        `;
+
+        const productCards = attached.map(({ product, adId: pAdId }) =>
+            SearchPage.#renderSponsoredProductCard(product, pAdId)
+        ).join('');
+
+        const span = 1 + attached.length;
+        return `
+            <div class="ad-zone sponsored-brand-zone" style="grid-column: span ${span};">
+                ${brandCard}
+                ${productCards}
+            </div>
+        `;
+    }
+
+    static #renderSponsoredProductCard(product, adId) {
+        const id = product.id;
+        const name = product.content?.name || id;
+        const brand = CatalogManager.getProductBrand(product);
+        const price = CatalogManager.getProductPrice(product);
+        const image = product.content?.imageUrl
+            || `https://placehold.co/300x300?text=${encodeURIComponent(id)}`;
+        const promoPct = (price.hasPromo && price.regular)
+            ? Math.round((1 - price.promo / price.regular) * 100)
+            : 0;
+        const finalPrice = price.hasPromo ? price.promo : price.regular;
+        return `
+            <a class="prod-card prod-card-sponsored" href="#/product/${escapeHtml(id)}"
+               data-ad-click="${escapeHtml(adId || '')}">
+                <span class="sp-chip">Sponsored</span>
+                ${promoPct > 0 ? `<span class="promo-chip">-${promoPct}%</span>` : ''}
+                <div class="prod-thumb">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
+                         data-ad-impression="${escapeHtml(adId || '')}"
+                         onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=${encodeURIComponent(id)}'" />
+                </div>
+                <div class="prod-body">
+                    ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}
+                    <div class="prod-name">${escapeHtml(name)}</div>
+                    <div class="prod-price-row">
+                        ${finalPrice != null ? `<span class="prod-price">${escapeHtml(formatPrice(finalPrice))}</span>` : ''}
+                        ${price.hasPromo && price.regular
+                            ? `<span class="prod-price-strike">${escapeHtml(formatPrice(price.regular))}</span>`
+                            : ''}
+                    </div>
+                    <div class="prod-ship">FREE Delivery</div>
+                </div>
+            </a>
+        `;
     }
 
     static #renderResults(products, query, sort) {
