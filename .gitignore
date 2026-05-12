@@ -67,3 +67,6 @@ coverage/
 
 # Claude Code local settings (not committed)
 .claude/
+
+# Local design/spec notes (not committed)
+docs/superpowers/
