@@ -520,7 +520,8 @@ class Settings {
         orderPrefix: 'ORDER_',
         theme: 'slate',
         debugMode: false,
-        adsApiMockMode: false
+        adsApiMockMode: false,
+        useAdsProxy: true
     };
 
     /**
