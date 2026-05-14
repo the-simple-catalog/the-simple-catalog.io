@@ -29,6 +29,8 @@
 | 🛒 **Shopping Cart** | Persistent cart with add, remove, and quantity management |
 | 💳 **Checkout Flow** | Complete purchase flow from cart to order confirmation (simulated payments) |
 | 📱 **Responsive Design** | Mobile, tablet, and desktop layouts with modern CSS Grid and Flexbox |
+| 🎨 **CSS Themes** | Three built-in themes (Slate, Warm, Modern) switchable instantly from the Admin page |
+| 🔍 **Debug Overlay** | Visualize ad zones with labeled outlines; toggle in Admin → Developer section |
 | ⚡ **Zero Dependencies** | No npm, no build step — open `index.html` and go |
 
 ---
@@ -94,6 +96,8 @@ demo/
 │   ├── catalog.js              # CatalogManager & Settings classes
 │   ├── cart.js                 # Shopping cart logic
 │   ├── tracking.js             # T2S Tracking & Ads API integration
+│   ├── sponsoredMedia.js       # Display creative renderer (BANNER, NATIVE, SPONSORED_BRAND)
+│   ├── debug.js                # Debug overlay for ad zones (toggled via Admin)
 │   └── pages/
 │       ├── home.js             # Homepage (Page ID: 1000)
 │       ├── category.js         # Category page (Page ID: 1400)
@@ -250,6 +254,14 @@ All settings are managed through the **Admin** page (`#/admin`). Settings are pe
 | Setting | Description | Example |
 |---------|-------------|---------|
 | **Site Name** | Displayed in the page header | `My E-Commerce Store` |
+| **Theme** | Visual theme applied to the entire site | `slate` (default), `warm`, `modern` |
+
+### Developer Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Debug Mode** | Activates the ad zone debug overlay (labels each ad slot on-page) | Off |
+| **Use Ads Proxy** | Routes authenticated Ads API calls through the CORS proxy | On |
 
 ### T2S Tracking Configuration
 

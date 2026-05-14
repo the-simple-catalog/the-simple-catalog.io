@@ -90,6 +90,9 @@ Pages: `home.js`, `category.js`, `product.js`, `search.js`, `cart.js`, `checkout
 **Settings** (`js/utils.js` and localStorage):
 - Site configuration (name, T2S URLs, customer ID)
 - User tracking ID (TID) - generated UUID stored in localStorage
+- `theme` — active CSS theme (`slate` | `warm` | `modern`), applied as `data-theme` on `<html>`
+- `debugMode` — when `true`, activates `js/debug.js` debug overlay that labels ad zones on-page
+- `useAdsProxy` — when `true` (default), authenticated ads route through the CORS proxy
 - Managed via Admin page
 
 ### Tracking & Ads Integration (`js/tracking.js`)
@@ -126,6 +129,17 @@ Pages: `home.js`, `category.js`, `product.js`, `search.js`, `cart.js`, `checkout
 - Authenticated calls (`/ads/v1` with JWT) route through `https://proxycors-8kgt.onrender.com` to bypass CORS
 - Public calls (`/ads/v1/public/rendered-content`) go direct (no proxy)
 - Admin page pings proxy health endpoint on load to warm it up (~50s cold start)
+- Controlled by `useAdsProxy` setting (toggle in Admin page)
+
+**Sponsored Media Rendering** (`js/sponsoredMedia.js`):
+- Dedicated module for rendering display creatives decoupled from `tracking.js`
+- Supports three creative formats: `BANNER_IMAGE`, `NATIVE_BANNER`, `SPONSORED_BRAND_IMAGE`
+- Called by `Tracking.renderSponsoredProducts()` — do not call directly
+
+**Debug Overlay** (`js/debug.js`):
+- Highlights every ad zone with a labeled dashed border showing slot ID and format
+- Activated by `Settings.debugMode = true` (toggle in Admin → Developer section)
+- Inert in production — no visual impact when disabled
 
 ## Page Types & IDs
 
@@ -345,11 +359,13 @@ Sponsored products appear on category, search, and product pages:
 - `js/app.js` - Application entry point, route registration, header initialization
 - `js/router.js` - Hash-based SPA routing system
 - `js/tracking.js` - T2S Tracking & Ads API integration (most complex file)
+- `js/sponsoredMedia.js` - Display creative renderer (BANNER_IMAGE, NATIVE_BANNER, SPONSORED_BRAND_IMAGE)
+- `js/debug.js` - Debug overlay for ad zones, gated by `Settings.debugMode`
 - `js/catalog.js` - Product/category data management
 - `js/cart.js` - Shopping cart operations
 - `js/utils.js` - Shared utility functions
 - `js/pages/*.js` - Individual page render logic
-- `css/styles.css` - All styles with CSS variables for theming
+- `css/styles.css` - All styles; includes three themes (Slate/Warm/Modern) via `[data-theme]` on `<html>`
 - `catalog/*.json` - Example catalog data for import
 
 ## Browser Console Debugging

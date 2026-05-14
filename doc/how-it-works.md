@@ -14,6 +14,7 @@ This document explains the "magic" behind The Simple Catalog: a fully static e-c
 - [Data Flow — From LocalStorage to Screen](#data-flow--from-localstorage-to-screen)
 - [Tracking & Ads Integration](#tracking--ads-integration)
 - [The CORS Proxy — Why and How](#the-cors-proxy--why-and-how)
+- [CSS Theme System](#css-theme-system)
 - [Settings Mechanism — Zero Secrets in Code](#settings-mechanism--zero-secrets-in-code)
 - [Why It Works Without a Backend](#why-it-works-without-a-backend)
 
@@ -224,6 +225,39 @@ graph LR
 ```
 
 > **Cold start**: The proxy (Render.com free tier) sleeps after 15 minutes of inactivity and takes ~50s to wake up. The Admin page pings the proxy's health endpoint on load to warm it up preemptively.
+
+---
+
+## CSS Theme System
+
+`css/styles.css` ships three visual themes — **Slate** (default, blue-grey), **Warm** (earth tones), and **Modern** (black & white). Switching themes is instant: a single attribute change on `<html>` re-scopes all CSS variables.
+
+```mermaid
+graph LR
+    Admin["Admin Page<br/>Theme chip clicked"] -->|"AdminPage.setTheme('warm')"| HTML["<html data-theme='warm'>"]
+    HTML -->|"CSS cascade"| Vars["--color-primary<br/>--color-bg-primary<br/>..."]
+    Vars -->|"Applied to all elements"| UI["Full site re-themed"]
+```
+
+### How It Works
+
+`css/styles.css` defines CSS variables three times — once per theme — using an attribute selector:
+
+```css
+:root, [data-theme="slate"] { --color-primary: #3b5bdb; --color-bg-primary: #f1f3f9; ... }
+[data-theme="warm"]         { --color-primary: #c0392b; --color-bg-primary: #fdf6ec; ... }
+[data-theme="modern"]       { --color-primary: #111111; --color-bg-primary: #ffffff; ... }
+```
+
+`AdminPage.setTheme(name)` does two things:
+1. Sets `document.documentElement.setAttribute('data-theme', name)`
+2. Calls `Settings.save({ theme: name })` to persist the choice in LocalStorage
+
+On app load, `app.js` reads the saved theme from `Settings` and applies it before any page renders, so the correct theme is active from the first paint.
+
+### The Debug Overlay
+
+A companion feature lives in `js/debug.js`. When **Debug Mode** is enabled in Admin → Developer section, every ad zone on the page gets a dashed colored border and a label showing its slot ID and format (e.g., `1400-display-0 · BANNER_IMAGE · 300:250`). This makes it easy to verify ad placement without opening DevTools.
 
 ---
 
