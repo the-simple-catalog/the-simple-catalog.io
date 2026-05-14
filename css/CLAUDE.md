@@ -4,192 +4,153 @@ This file provides guidance to Claude Code when working with the stylesheet in t
 
 ## Overview
 
-All styles live in a single file: `styles.css` (~1500 lines). There is no CSS preprocessor, no build step, and no CSS framework. Everything is vanilla CSS using modern features (CSS variables, Grid, Flexbox).
+All styles live in a single file: `styles.css`. There is no CSS preprocessor, no build step, and no CSS framework. Everything is vanilla CSS using modern features (CSS variables, Grid, Flexbox, `color-mix()`, `aspect-ratio`).
 
 ## Design System
 
-### Theme: Light & Professional (Teal + Orange)
+### Themes
 
-The site uses a light, professional theme. Do NOT introduce dark backgrounds, glow effects, vibrant/electric colors, or animated gradients.
+The site supports three switchable themes selected via `data-theme` on `<html>`:
 
-### Color Palette (CSS Variables)
+| Theme    | Selector                       | Vibe                                |
+|----------|--------------------------------|-------------------------------------|
+| Slate    | (default — no attribute)       | Cool blue accent on warm-grey base  |
+| Warm     | `<html data-theme="warm">`     | Terracotta accent on cream base     |
+| Modern   | `<html data-theme="modern">`   | Electric green accent, pure neutral |
 
-Always use CSS variables for colors. Never use hardcoded hex values inline.
+The theme is configured in Admin → Developer card. `Settings.save({ theme })` syncs `documentElement.dataset.theme` so all token-driven components recolor instantly.
 
-```
-Primary:    --primary-color (#0D9488 teal)     --primary-light (#5EEAD4)   --primary-dark (#0F766E)
-Secondary:  --secondary-color (#F97316 orange)  --secondary-light (#FDBA74)  --secondary-dark (#EA580C)
-Accent:     --accent-color (#06B6D4 cyan)       --accent-soft (#E0F2FE light cyan bg)
-Background: --bg-primary (#FFFFFF)  --bg-secondary (#F9FAFB)  --bg-card (#FFFFFF)  --bg-hover (#F3F4F6)
-Text:       --text-primary (#1F2937)  --text-secondary (#6B7280)
-Border:     --border-color (#E5E7EB)
-Semantic:   --success-color (#10B981)  --error-color (#EF4444)  --sale-color (#DC2626)
-```
+Do NOT introduce dark backgrounds, glow effects, or animated gradients **anywhere except** the dev-only `#dbg-sidebar` and `.dbg-badge` (see Debug overlay).
 
-### When to Use Each Color
+### Token map (CSS variables)
 
-- **Primary (teal)**: Buttons, links, active states, brand elements, cart badge
-- **Secondary (orange)**: CTA buttons (hero), accent highlights, secondary actions
-- **Accent (cyan)**: Info messages, badges, focus rings (`--accent-soft` for light bg tints)
-- **Semantic**: Success messages (green), errors (red), sale badges/prices (red)
-
-### Typography (Do Not Change)
+The themes redefine the same token set. Always read tokens — never hardcode hex.
 
 ```
---font-heading: 'Space Grotesk'  (headings, buttons, labels)
---font-body: 'Sora'              (body text, descriptions)
---font-mono: 'DM Mono'           (badges, SKU codes, technical text)
+Core
+  --accent          primary action color
+  --accent-hover    hover/pressed
+  --bg              page background
+  --bg-elev         elevated surface (card hover, panels)
+  --surface         card / panel background
+  --text            primary text
+  --text-muted      secondary text
+  --border          neutral hairlines
+  --mp              marketplace 3P chip color
+
+Legacy aliases (kept for components written before themes existed)
+  --primary-color → --accent
+  --primary-dark  → --accent-hover
+  --bg-primary    → --bg
+  --bg-secondary  → --bg-elev
+  --bg-card       → --surface
+  --text-primary  → --text
+  --text-secondary→ --text-muted
+  --border-color  → --border
+  --accent-color  → --accent
+  --accent-soft   → light tint of accent
+
+Semantic (theme-independent)
+  --success-color  --error-color  --sale-color
+
+Layout primitives (theme-independent)
+  --shadow-sm/md/lg/xl
+  --radius-sm/md/lg/xl
+  --spacing-xs/sm/md/lg/xl
+  --transition-fast/base/slow
 ```
 
-Fonts are loaded via Google Fonts `@import` at line 4.
+To change a theme's colors, edit only the `:root` block (Slate) or the `[data-theme="warm"]`/`[data-theme="modern"]` blocks (lines ~76–110).
 
-### Shadows (Not Glow)
+### Typography
 
-Use `--shadow-sm/md/lg/xl` for elevation. Never add glow effects (`box-shadow` with colored rgba values at high opacity).
+```
+--font-heading: 'Inter Tight', 'Inter', sans-serif    (headings, buttons, labels)
+--font-body:    'Inter', sans-serif                    (body text)
+--font-mono:    'JetBrains Mono', 'DM Mono', monospace (badges, SKU codes, debug)
+--font-serif:   'Source Serif 4', Georgia, serif       (PDP "About this item" lead)
+```
 
-### Border Radius
+Loaded via Google Fonts `@import` at line 4.
 
-Use `--radius-sm (6px)`, `--radius-md (10px)`, `--radius-lg (14px)`, `--radius-xl (18px)`. The design favors rounded corners.
+### Shadows (not glow)
 
-### Spacing
+Use `--shadow-sm/md/lg/xl` for elevation. Never add colored-rgba glow shadows in product UI. Only `.dbg-*` classes may use higher-opacity shadows because they are dev tooling.
 
-Use `--spacing-xs (4px)`, `--spacing-sm (8px)`, `--spacing-md (16px)`, `--spacing-lg (24px)`, `--spacing-xl (32px)`.
+## Section map (key components)
 
-### Transitions
+| Component family | Key classes | Notes |
+|------------------|-------------|-------|
+| Header           | `.header`, `.logo`, `.header-search`, `.cart-count` | unchanged structure, recolored via tokens |
+| Hero / homepage  | `.hero-banner`, `.hero-cta`, `.features-section`    | uses `--accent` |
+| Product card     | `.product-card`, `.product-grid`, `.product-badges` | shared by category, search, sponsored band cards |
+| **PDP grid**     | `.pdp-grid`, `.pdp-thumbs`, `.pdp-main`, `.pdp-info-mid`, `.pdp-buybox-col`, `.pdp-meta-grid`, `.pdp-stock-dot{.low,.out}`, `.pdp-desc-block`, `.pdp-desc-facts` | 4-col @ ≥1280px → 2-col @ 800–1280px → 1-col below |
+| Marketplace chip | `.mp-chip`, `.mp-chip-sm`, `.mp-chip-pdp` | rendered when `partyTypes === '3P'` |
+| **Display creatives** | `.sm-banner`, `.sm-billboard` (1980/420), `.sm-leaderboard` (970/250), `.sm-tag`, `.sm-fullimg`, `.sm-fmt-banner`, `.sm-fmt-display` (split content/art), `.sm-fmt-native` (overlay) | Mobile collapses all to 16/9 |
+| **Shoppable / Sponso band** | `.sm-shoppable`, `.sm-shop-head/title/tag/body/scroller`, `.sm-shop-prod`, `.sm-shop-prev/next`, `.sponso-band`, `.sponso-shop-now` | Used both for `SPONSORED_BRAND_IMAGE` display creatives and for the unified Sponsored Products band |
+| **Debug overlay** | `.dbg-wrap` (dashed outline), `.dbg-badge` (corner pill), `#dbg-sidebar` (fixed right, dark), `.dbg-toolbar`, `.dbg-section`, `.dbg-unit` | Only dark surface in the entire app. `body.dbg-overlays-hidden` hides outlines/badges but keeps the sidebar |
 
-Use `--transition-fast (0.15s)`, `--transition-base (0.3s)`, `--transition-slow (0.5s)`.
+## Layout: PDP grid breakpoints
 
-## File Structure (Section Map)
+```
+≥1280px → 80px | 1fr | 320px | 360px        (thumbs · hero · meta · sticky buybox)
+800–1280px → 1fr | 360px                    (drop thumbs; meta becomes full-width row)
+<800px   → 1fr                              (single column, buybox not sticky)
+```
 
-The file is organized into clearly labeled sections with `/* === */` comment headers:
+The full-width "About this item" block (`.pdp-desc-block`) lives in row 2 with `grid-column: 1 / -1`.
 
-| Line | Section | Purpose |
-|------|---------|---------|
-| 1 | Google Fonts Import | `@import` for web fonts |
-| 9 | CSS Variables & Theme | All `:root` design tokens |
-| 67 | Reset & Base Styles | Box-sizing, body, `a`, `button`, `img` resets |
-| 104 | Layout Utilities | `.container` max-width wrapper |
-| 113 | Header | `.header`, `.logo`, `.main-nav`, `.header-actions`, `.cart-count` |
-| 191 | Header Grid Layout | `.header-content` grid, `.header-left` |
-| 208 | Header Search Bar | `.header-search`, `.search-input`, `.search-btn` |
-| 270 | Categories Dropdown | `.categories-dropdown`, `.subcategory-panel` |
-| 390 | Hero Banner | `.hero-banner`, `.hero-title`, `.hero-subtitle`, `.hero-cta` |
-| 472 | Category Cards | `.category-section-title` |
-| 483 | Checkout Page | `.checkout-grid`, `.checkout-section` |
-| 511 | Category Card | `.category-card`, `.category-card-icon` |
-| 528 | Main Content | `.main-content` min-height |
-| 536 | Footer | `.footer` |
-| 549 | Buttons | `.btn`, `.btn-primary`, `.btn-secondary`, `.btn-full` |
-| 606 | Product Card | `.product-card`, `.product-grid`, image wrapper, overlay, badges |
-| 795 | Sponsored Products | `.sponsored-section`, `.sponsored-grid`, `.sponsored-placeholder` |
-| 841 | Category List | `.category-list`, `.category-card` (grid layout) |
-| 880 | Product Detail Page | `.product-detail-grid`, image, title, description, stock status, price, metadata, quantity controls |
-| 1070 | Page Title & Breadcrumb | `.page-header`, `.breadcrumb`, `.page-title` |
-| 1105 | Forms | `.form-group`, `.form-input`, `.form-select`, `.form-textarea` |
-| 1142 | Loading & Messages | `.loading`, `.message`, `.message-success/error/info` |
-| 1178 | Responsive Design | Media queries at 1024px, 768px, 480px breakpoints |
-| 1351 | Animations | `@keyframes fadeIn`, `productCardFadeIn`, `badgeFadeIn` |
-| 1391 | Features Section | `.features-section`, `.features-grid`, `.features-item` color variants |
+## Debug sidebar — dev-only dark UI
 
-## Key Patterns
+The debug sidebar (`#dbg-sidebar`) is the **only** dark surface in the app. It is gated by `Settings.debugMode` and managed by `js/debug.js`. When enabled:
+- `<body>` gets `dbg-mode` (adds `padding-right: 320px` on desktop)
+- Each registered ad zone gets `.dbg-wrap` + a corner `.dbg-badge`
+- "Hide overlays" toggles `body.dbg-overlays-hidden` to remove outlines without removing the sidebar
 
-### Card Pattern
+On screens ≤1024px, the sidebar collapses to the bottom 50vh instead of the right edge.
 
-All cards (product, category, checkout) follow this pattern:
+## Patterns
+
+### Card pattern
+
 ```css
 .card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-base);
 }
 .card:hover {
-    box-shadow: var(--shadow-md);  /* or --shadow-lg */
+    box-shadow: var(--shadow-md);
     transform: translateY(-Npx);
 }
 ```
 
-### Button Pattern
+### Focus state pattern
 
-Primary buttons use solid teal, secondary buttons use bordered style:
-```css
-.btn-primary { background-color: var(--primary-color); color: white; }
-.btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-```
-
-### Focus State Pattern
-
-All form inputs use the same focus ring:
 ```css
 element:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
 ```
 
-### Gradient Text: REMOVED
+### Marketplace chip pattern
 
-The old theme used `-webkit-background-clip: text` with `-webkit-text-fill-color: transparent` for gradient text effects. These have been completely removed. Do NOT reintroduce them. All text uses solid `color` values.
+When labelling a 3P product:
 
-### Product Card Image Overlay
-
-Product cards have a hover overlay with dark gradient for readability on images. This is the only place dark rgba values are appropriate:
-```css
-background: linear-gradient(to top, rgba(31, 41, 55, 0.9), transparent);
+```html
+<span class="mp-chip">Marketplace</span>
 ```
 
-## Responsive Breakpoints
-
-- **1024px**: Product detail and checkout grids collapse to single column
-- **768px**: Header goes single column, hero text centers, product grid shrinks, features grid goes single column, product detail typography reduces
-- **480px**: Hero banner minimal, product grid 2-column, category list single column
-
-## Animations (Keep vs Removed)
-
-**Kept animations:**
-- `fadeIn` - General entrance animation
-- `slideInFromLeft` - Hero content entrance
-- `productCardFadeIn` - Staggered product card entrance (delays via nth-child)
-- `badgeFadeIn` - Staggered badge entrance
-
-**Removed (do not reintroduce):**
-- `gradientShift` - Animated gradient backgrounds
-- `glowPulse` - Pulsing glow box-shadows
-- `borderSlide` - Animated gradient borders
-
-## Common Tasks
-
-### Adding a New Component
-
-1. Add styles in a new section with a `/* === Section Name === */` header
-2. Use existing CSS variables for all colors, spacing, radii, shadows
-3. Follow the card or button pattern if applicable
-4. Add responsive rules inside the existing `@media` blocks
-5. Place the new section before the Responsive Design section (before line ~1178)
-
-### Modifying Colors
-
-Only modify the `:root` variables (lines 9-65). All components reference these variables, so changes propagate automatically.
-
-### Adding a Badge Type
-
-Follow the existing pattern in the Product Badges section (~line 777):
-```css
-.product-badge-newtype {
-    background: linear-gradient(135deg, #LIGHTER 0%, #DARKER 100%);
-    color: white;  /* or dark text for light badges */
-    box-shadow: 0 2px 8px rgba(R, G, B, 0.2);
-}
-```
+Use `.mp-chip-pdp` on the PDP "Sold by" row; `.mp-chip-sm` for compact contexts.
 
 ## Do NOT
 
-- Add glow effects or animated gradients
+- Add glow effects, animated gradients, or gradient text in product UI (sidebar excepted)
 - Use hardcoded colors instead of CSS variables
-- Add vendor prefixes (Chrome-only target)
-- Use `!important` except in responsive overrides where already used
-- Add gradient text effects (`-webkit-text-fill-color: transparent`)
-- Introduce dark backgrounds or high-contrast neon colors
-- Modify the font imports or font-family variables
+- Introduce dark backgrounds outside `.dbg-*` classes
+- Re-add the legacy `.sponsored-section` / `.sponsored-grid` / `.sponsored-placeholder` (replaced by `.sm-shoppable.sponso-band`)
+- Modify the font imports or font-family variables without updating this file
