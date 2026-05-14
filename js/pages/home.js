@@ -1,24 +1,43 @@
 // ===================================
-// Homepage - Display root categories
+// Homepage — Marketplace layout
 // ===================================
+//
+// Layout (mirrors the Marketplace design bundle):
+//   1. Sponsored Media — BANNER  (display ad zone, image only)
+//   2. Sponsored Media — SPONSORED_BRAND_IMAGE  (display ad zone, shoppable)
+//   3. Shop by department  (root-category tiles)
+//   4. Sponsored Media — NATIVE_BANNER  (display ad zone, image + CTA overlay)
+//   5. Recommended for you  (12 product cards)
+//   6. Sponsored Products band  (carousel with "Shop now" card)
+//
+// One Tracking.requestAds() call returns both productAds[] and display[].
+// Display creatives are dispatched to the 3 named slots by creativeFormat.
 
-import { getEl, escapeHtml } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager, Settings } from '../catalog.js';
 import { Tracking } from '../tracking.js';
+import { Debug } from '../debug.js';
+
+// Display formats placed on the homepage, in render order. Each entry pairs
+// a slot id with a predicate that matches every creativeFormat string Mirakl
+// Ads may emit for that family (e.g. BANNER_IMAGE is the prod alias of BANNER).
+// Mirakl Ads returns ALL display creatives in one array; we pick the first
+// match per family. Slots whose format isn't returned stay empty (no fallback).
+const HOME_DISPLAY_SLOTS = [
+    { slotId: 'home-display-banner',    match: (c) => c.creativeFormat === 'BANNER_IMAGE' || c.creativeFormat === 'BANNER' },
+    { slotId: 'home-display-sponsored', match: (c) => c.creativeFormat === 'SPONSORED_BRAND_IMAGE' || c.creativeFormat === 'SHOPPABLE' },
+    { slotId: 'home-display-native',    match: (c) => c.creativeFormat === 'NATIVE_BANNER' || c.creativeFormat === 'NATIVE_IMAGE' }
+];
 
 class HomePage {
     /**
      * Render homepage
      */
     static render() {
-        // Track page view
         const pageType = Tracking.PAGE_TYPES.HOMEPAGE;
-        Tracking.trackPageView(Tracking.getPageId(pageType), pageType);
-
-        // Request media display ads for homepage
-        const sponsoredAdsPromise = Tracking.requestSponsoredProducts(
-            Tracking.getPageId(pageType), pageType, {}
-        );
+        const pageId = Tracking.getPageId(pageType);
+        Debug.setPage({ type: 'home', id: pageId, path: location.hash });
+        Tracking.trackPageView(pageId, pageType);
 
         const app = getEl('app');
         const rootCategories = CatalogManager.getRootCategories();
@@ -43,135 +62,143 @@ class HomePage {
             return;
         }
 
-        // Render homepage with hero banner and category cards with product images
-        // Structure:
-        // 1. Hero Banner - Large gradient banner with CTA button
-        // 2. Features Section - 4 feature blocks highlighting key benefits
-        // 3. Category Grid - Grid of clickable category cards with product images as icons
+        const products = CatalogManager.getProducts();
+        const recommended = products.slice(0, 12);
+        const tiles = rootCategories.slice(0, 7);
+
         app.innerHTML = `
-            <div class="container fade-in">
-                <!-- Hero Banner: Large visual banner with background image and overlay -->
-                <div class="hero-banner">
-                    <div class="hero-content">
-                        <h1 class="hero-title">Welcome to ${escapeHtml(Settings.getSetting('siteName'))}</h1>
-                        <p class="hero-subtitle">Discover amazing products across all categories</p>
-                        <a href="#/search" class="hero-cta">
-                            Shop Now
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                        </a>
+            <div class="page page-pad fade-in">
+                <div class="container">
+
+                    <div class="ad-zone-slot" id="home-display-banner"></div>
+                    <div class="ad-zone-slot" id="home-display-sponsored"></div>
+
+                    <h2 class="section-title">Shop by department</h2>
+                    <div class="cat-tiles">
+                        ${tiles.map(c => HomePage.#renderCatTile(c)).join('')}
                     </div>
-                </div>
 
-                <!-- Features Section: 4 feature blocks highlighting key benefits -->
-                <section class="features-section">
-                    <div class="features-grid">
-                        <div class="features-item teal">
-                            <div class="feature-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="1" y="3" width="15" height="13"></rect>
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                                </svg>
-                            </div>
-                            <div class="feature-text">
-                                <h3>Free Shipping</h3>
-                                <p>On orders over $50</p>
-                            </div>
-                        </div>
+                    <div class="ad-zone-slot" id="home-display-native"></div>
 
-                        <div class="features-item green">
-                            <div class="feature-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-                                </svg>
-                            </div>
-                            <div class="feature-text">
-                                <h3>24/7 Support</h3>
-                                <p>Always here to help</p>
-                            </div>
-                        </div>
-
-                        <div class="features-item orange">
-                            <div class="feature-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                    <path d="M9 12l2 2 4-4"></path>
-                                </svg>
-                            </div>
-                            <div class="feature-text">
-                                <h3>Secure Payment</h3>
-                                <p>100% protected</p>
-                            </div>
-                        </div>
-
-                        <div class="features-item cyan">
-                            <div class="feature-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                                </svg>
-                            </div>
-                            <div class="feature-text">
-                                <h3>Daily Offers</h3>
-                                <p>Up to 70% off</p>
-                            </div>
-                        </div>
+                    <h2 class="section-title">Recommended for you</h2>
+                    <div class="prod-grid cols-6">
+                        ${recommended.map(p => HomePage.#renderProductCard(p)).join('')}
                     </div>
-                </section>
 
-                <!-- Categories Section: Grid of clickable category cards -->
-                <h2 class="category-section-title">Shop by Category</h2>
-                <div class="category-list">
-                    ${rootCategories.map(category => {
-                        // Get product image for this category (falls back to placeholder)
-                        const imageUrl = CatalogManager.getCategoryIconImage(category);
-                        return HomePage.renderCategoryCard(category, imageUrl);
-                    }).join('')}
-                </div>
+                    <div style="height: 28px;"></div>
 
-                <!-- Media Display Section: Only media display ads (no sponsored products) -->
-                <div id="media-sponsored-container">
-                    ${Tracking.renderEmptyMediaSection()}
+                    <div class="ad-zone-slot" id="home-sponsored-band"></div>
                 </div>
             </div>
         `;
 
-        // Populate media display container when ads load (sponsored products section not rendered on homepage)
-        if (sponsoredAdsPromise) {
-            sponsoredAdsPromise.then(adsData => {
-                const mediaContainer = document.getElementById('media-sponsored-container');
-                if (mediaContainer && adsData) {
-                    mediaContainer.innerHTML = Tracking.renderMediaDisplayAds(adsData);
-                    Tracking.attachMediaTracking(mediaContainer);
-                }
-            }).catch(error => {
-                console.error('Failed to load media display ads:', error);
-            });
-        }
+        HomePage.#wireProductCards();
+        HomePage.#fetchAndRenderAds(pageId, pageType);
     }
 
-    /**
-     * Render a single category card with product image
-     * @param {Object} category - Category object from CatalogManager
-     * @param {string} imageUrl - Product image URL or placeholder URL
-     * @returns {string} HTML string for the category card
-     */
-    static renderCategoryCard(category, imageUrl) {
+    static #renderCatTile(category) {
+        const imageUrl = CatalogManager.getCategoryIconImage(category);
+        const name = category.content?.name || category.id;
+        const productCount = HomePage.#countProductsInTree(category.id);
         return `
-            <a href="#/category/${category.id}" class="category-card">
-                <img
-                    src="${escapeHtml(imageUrl)}"
-                    alt="${escapeHtml(category.content.name)}"
-                    class="category-card-icon"
-                />
-                <div class="category-name">${escapeHtml(category.content.name)}</div>
+            <a class="cat-tile" href="#/category/${escapeHtml(category.id)}">
+                <div class="cat-tile-icon">
+                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}" loading="lazy" />
+                </div>
+                <div class="cat-tile-name">${escapeHtml(name)}</div>
+                <div class="cat-tile-count">${productCount} items</div>
             </a>
         `;
     }
+
+    static #renderProductCard(product) {
+        const id = product.id;
+        const name = product.content?.name || id;
+        const brand = CatalogManager.getProductBrand(product);
+        const price = CatalogManager.getProductPrice(product);
+        const image = product.content?.imageUrl
+            || `https://placehold.co/300x300?text=${encodeURIComponent(id)}`;
+        const promoPct = (price.hasPromo && price.regular)
+            ? Math.round((1 - price.promo / price.regular) * 100)
+            : 0;
+        const finalPrice = price.hasPromo ? price.promo : price.regular;
+        return `
+            <a class="prod-card" href="#/product/${escapeHtml(id)}">
+                ${promoPct > 0 ? `<span class="promo-chip">-${promoPct}%</span>` : ''}
+                <div class="prod-thumb">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
+                </div>
+                <div class="prod-body">
+                    ${brand ? `<div class="prod-brand">${escapeHtml(brand)}</div>` : ''}
+                    <div class="prod-name">${escapeHtml(name)}</div>
+                    <div class="prod-price-row">
+                        ${finalPrice != null ? `<span class="prod-price">${escapeHtml(formatPrice(finalPrice))}</span>` : ''}
+                        ${price.hasPromo && price.regular
+                            ? `<span class="prod-price-strike">${escapeHtml(formatPrice(price.regular))}</span>`
+                            : ''}
+                    </div>
+                    <div class="prod-ship">FREE Delivery</div>
+                </div>
+            </a>
+        `;
+    }
+
+    /**
+     * Count products living in this category or any descendant.
+     * Category IDs are hierarchical (e.g. "1", "1-1", "1-1-1"), so a product
+     * whose categories array contains any id equal to rootId or starting with
+     * `${rootId}-` belongs in this subtree.
+     */
+    static #countProductsInTree(rootId) {
+        const prefix = `${rootId}-`;
+        const products = CatalogManager.getProducts();
+        let n = 0;
+        for (const p of products) {
+            const cats = p.content?.categories || [];
+            if (cats.some(c => c === rootId || c.startsWith(prefix))) n++;
+        }
+        return n;
+    }
+
+    /**
+     * Empty hook — product cards are anchor links so default navigation works.
+     * Reserved for future per-card interactions (e.g. add-to-cart shortcut).
+     */
+    static #wireProductCards() {}
+
+    /**
+     * Fetch ads once, dispatch display creatives to the 3 named slots by
+     * creativeFormat, then render the sponsored-products band.
+     */
+    static async #fetchAndRenderAds(pageId, pageType) {
+        let adsData;
+        try {
+            adsData = await Tracking.requestAds(pageId, pageType, {});
+        } catch (err) {
+            console.warn('[HOME] requestAds failed', err);
+            return;
+        }
+        if (!adsData) return;
+
+        const display = adsData.display || [];
+
+        for (const { slotId, match } of HOME_DISPLAY_SLOTS) {
+            const el = getEl(slotId);
+            if (!el) continue;
+            const creative = display.find(c => c && match(c));
+            if (creative) {
+                Tracking.renderDisplayAds([creative], el, pageId);
+            } else {
+                el.innerHTML = '';
+            }
+        }
+
+        const bandEl = getEl('home-sponsored-band');
+        if (bandEl) {
+            Tracking.renderSponsoredBand(adsData, bandEl, pageId);
+        }
+    }
 }
+
 export { HomePage };
