@@ -7,6 +7,7 @@ import { getEl, escapeHtml, createElement } from './utils.js';
 import { CatalogManager, Settings } from './catalog.js';
 import { Cart } from './cart.js';
 import { Router } from './router.js';
+import { Debug } from './debug.js';
 import { HomePage } from './pages/home.js';
 import { CategoryPage } from './pages/category.js';
 import { ProductPage } from './pages/product.js';
@@ -15,6 +16,10 @@ import { CartPage } from './pages/cart.js';
 import { CheckoutPage } from './pages/checkout.js';
 import { OrderConfirmationPage } from './pages/orderconfirmation.js';
 import { AdminPage } from './pages/admin.js';
+
+// Expose Debug globally so Settings.save can apply side effects without a
+// circular import, and so Admin inline handlers (onchange="...") can call it.
+window.Debug = Debug;
 
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -28,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize router
     Router.init();
+
+    // Initialize debug overlay (no-op unless Settings.debugMode is true)
+    Debug.init();
 
     // Update cart count in header
     updateCartCount();
@@ -44,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function loadSiteSettings() {
     const settings = Settings.get();
+
+    // Apply theme to <html> so all token-driven components render correctly on first paint.
+    document.documentElement.dataset.theme = settings.theme || 'slate';
 
     // Update site name in header
     const siteNameEl = getEl('site-name');
@@ -245,3 +256,7 @@ window.SearchPage = SearchPage;
 window.AdminPage = AdminPage;
 window.CartPage = CartPage;
 window.CheckoutPage = CheckoutPage;
+
+// Expose data managers for console / MCP-driven testing.
+window.CatalogManager = CatalogManager;
+window.Settings = Settings;

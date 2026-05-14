@@ -221,6 +221,40 @@ class CatalogManager {
     }
 
     /**
+     * Resolve a product when the caller may not know the exact catalog id.
+     * Mirakl Ads returns product IDs with an advertiser-context segment
+     * (e.g. "4123018516544-0-master") while the catalog may store the same
+     * product under a different middle segment ("4123018516544-1000-master").
+     * Strategy: exact match first, then fall back to "any product whose id
+     * starts with the same SKU prefix" (the leading numeric segment before
+     * the first dash).
+     * @param {string} idLike
+     * @returns {Object|null}
+     */
+    static resolveProduct(idLike) {
+        if (!idLike) return null;
+        const exact = this.getProductById(idLike);
+        if (exact) return exact;
+
+        const dashIdx = String(idLike).indexOf('-');
+        if (dashIdx <= 0) return null;
+        const sku = String(idLike).slice(0, dashIdx);
+        const wantsMaster = String(idLike).endsWith('-master');
+        const prefix = `${sku}-`;
+        const products = this.getProducts();
+
+        // Prefer a product matching the requested -master/non-master form.
+        const exactVariant = products.find(p =>
+            p.id.startsWith(prefix) &&
+            p.id.endsWith('-master') === wantsMaster
+        );
+        if (exactVariant) return exactVariant;
+
+        // Otherwise return the first SKU-matching product as a graceful fallback.
+        return products.find(p => p.id.startsWith(prefix)) || null;
+    }
+
+    /**
      * Get category by ID
      * @param {string} categoryId - Category ID
      * @returns {Object|null} Category object or null
@@ -473,7 +507,6 @@ class Settings {
         trackingUrl: '',
         adsServerUrl: '',
         adsServerToken: '',
-        useAdsProxy: true, // Use CORS proxy for authenticated Ads API calls
         t2sCustomerId: '',
         t2sPageIds: {
             homepage: 1000,
@@ -485,9 +518,9 @@ class Settings {
             payment: 3200
         },
         orderPrefix: 'ORDER_',
-        categoriesUrl: '', // URL to categories JSON file
-        productsUrl: '', // URL to first products JSON file
-        productsUrl2: '' // URL to second products JSON file (optional)
+        theme: 'slate',
+        debugMode: false,
+        adsApiMockMode: false
     };
 
     /**
@@ -515,6 +548,15 @@ class Settings {
             const current = Settings.get();
             const updated = { ...current, ...settings };
             localStorage.setItem(Settings.#STORAGE_KEY, JSON.stringify(updated));
+
+            // Apply side effects so the UI reacts immediately without a reload.
+            if ('theme' in settings) {
+                document.documentElement.dataset.theme = updated.theme || 'slate';
+            }
+            if ('debugMode' in settings && window.Debug) {
+                window.Debug.applyEnabled(updated.debugMode);
+            }
+
             return true;
         } catch (e) {
             console.error('Error saving settings:', e);
