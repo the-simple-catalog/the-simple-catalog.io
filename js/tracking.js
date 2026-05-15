@@ -559,10 +559,10 @@ class Tracking {
 
         const mode = options.mode === 'grid' ? 'grid' : 'scroller';
         const layoutClass = mode === 'grid' ? 'sm-shoppable sponso-band is-grid' : 'sm-shoppable sponso-band';
-        const arrows = mode === 'grid' ? '' : `
-                            <button class="sm-shop-prev" type="button" aria-label="Previous" hidden>‹</button>`;
-        const arrowsNext = mode === 'grid' ? '' : `
-                            <button class="sm-shop-next" type="button" aria-label="Next" hidden>›</button>`;
+        const [arrowPrev, arrowNext] = mode === 'grid' ? ['', ''] : [
+            `\n                            <button class="sm-shop-prev" type="button" aria-label="Previous" hidden>‹</button>`,
+            `\n                            <button class="sm-shop-next" type="button" aria-label="Next" hidden>›</button>`
+        ];
 
         // Each ad unit in productAds becomes its own band — usually there's just one.
         const bandsHtml = productAds.map((adUnit, idx) => {
@@ -586,7 +586,7 @@ class Tracking {
                             <div class="sm-shop-title">Sponsored Products</div>
                             <div class="sm-shop-tag">Sponsored</div>
                         </div>
-                        <div class="sm-shop-body">${arrows}
+                        <div class="sm-shop-body">${arrowPrev}
                             <div class="sm-shop-scroller">
                                 <a class="sponso-shop-now" href="#/search">
                                     <h3>Shop now.</h3>
@@ -600,7 +600,7 @@ class Tracking {
                                     </span>
                                 </a>
                                 ${cardsHtml}
-                            </div>${arrowsNext}
+                            </div>${arrowNext}
                         </div>
                     </div>
                 </div>

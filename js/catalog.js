@@ -233,7 +233,8 @@ class CatalogManager {
      */
     static resolveProduct(idLike) {
         if (!idLike) return null;
-        const exact = this.getProductById(idLike);
+        const products = this.getProducts();
+        const exact = products.find(p => p.id === idLike) || null;
         if (exact) return exact;
 
         const dashIdx = String(idLike).indexOf('-');
@@ -241,7 +242,6 @@ class CatalogManager {
         const sku = String(idLike).slice(0, dashIdx);
         const wantsMaster = String(idLike).endsWith('-master');
         const prefix = `${sku}-`;
-        const products = this.getProducts();
 
         // Prefer a product matching the requested -master/non-master form.
         const exactVariant = products.find(p =>
@@ -324,9 +324,10 @@ class CatalogManager {
     static getCategoryPath(categoryId) {
         const path = [];
         let currentId = categoryId;
+        const categories = this.getCategories();
 
         while (currentId && currentId !== 'root') {
-            const category = this.getCategoryById(currentId);
+            const category = categories.find(c => c.id === currentId) || null;
             if (!category) break;
 
             path.unshift(category);
@@ -365,16 +366,6 @@ class CatalogManager {
             console.error('Error clearing catalog:', e);
             return false;
         }
-    }
-
-    /**
-     * Clear the category icon cache
-     * Useful for debugging and testing
-     * @returns {boolean} Success status
-     */
-    static clearCategoryIconCache() {
-        CatalogManager.#categoryIconCache = {};
-        return true;
     }
 
     /**
