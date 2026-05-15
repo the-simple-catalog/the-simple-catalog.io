@@ -317,7 +317,7 @@ class AdminPage {
                                             id="setting-cors-proxy-url"
                                             class="form-input"
                                             value="${escapeHtml(settings.corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
-                                            placeholder="${Settings.DEFAULT_SETTINGS.corsProxyUrl}"
+                                            placeholder="${escapeHtml(Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
                                         />
                                     </div>
                                     <div class="form-group" style="margin-bottom: 0;">
@@ -327,7 +327,7 @@ class AdminPage {
                                             id="setting-cors-proxy-health-url"
                                             class="form-input"
                                             value="${escapeHtml(settings.corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
-                                            placeholder="${Settings.DEFAULT_SETTINGS.corsProxyHealthUrl}"
+                                            placeholder="${escapeHtml(Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
                                         />
                                     </div>
                                 </div>
