@@ -308,6 +308,29 @@ class AdminPage {
                                 <small style="color: var(--text-secondary); font-size: 12px; margin-left: 24px;">
                                     When enabled, authenticated calls route through a proxy to bypass CORS restrictions
                                 </small>
+                                <div id="proxy-advanced-config" style="display: ${settings.useAdsProxy !== false ? 'block' : 'none'}; margin-top: 10px; margin-left: 24px; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary);">
+                                    <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Advanced Proxy Configuration</div>
+                                    <div class="form-group" style="margin-bottom: 10px;">
+                                        <label class="form-label" style="font-size: 13px;">Proxy URL</label>
+                                        <input
+                                            type="text"
+                                            id="setting-cors-proxy-url"
+                                            class="form-input"
+                                            value="${escapeHtml(settings.corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
+                                            placeholder="${Settings.DEFAULT_SETTINGS.corsProxyUrl}"
+                                        />
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label class="form-label" style="font-size: 13px;">Health Endpoint URL</label>
+                                        <input
+                                            type="text"
+                                            id="setting-cors-proxy-health-url"
+                                            class="form-input"
+                                            value="${escapeHtml(settings.corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
+                                            placeholder="${Settings.DEFAULT_SETTINGS.corsProxyHealthUrl}"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -464,6 +487,15 @@ class AdminPage {
 
     // Ping CORS proxy health endpoint to wake it up preemptively
     AdminPage.pingProxyHealth();
+
+    // Toggle advanced proxy config visibility with the checkbox
+    const proxyCheckbox = getEl('setting-use-ads-proxy');
+    const proxyAdvanced = getEl('proxy-advanced-config');
+    if (proxyCheckbox && proxyAdvanced) {
+        proxyCheckbox.addEventListener('change', () => {
+            proxyAdvanced.style.display = proxyCheckbox.checked ? 'block' : 'none';
+        });
+    }
 
     // Show success notification if settings were imported from URL
     if (urlImported && urlImported.count > 0) {
@@ -1102,7 +1134,7 @@ class AdminPage {
     import('../tracking.js')
       .then((module) => {
         const Tracking = module.Tracking;
-        const healthUrl = Tracking.CORS_PROXY_HEALTH_ENDPOINT;
+        const healthUrl = Settings.get().corsProxyHealthUrl;
         const timeout = Tracking.CORS_PROXY_TIMEOUT;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -1199,6 +1231,8 @@ class AdminPage {
     const pageIdsText = getEl("setting-page-ids").value.trim();
     const orderPrefix = getEl("setting-order-prefix").value.trim();
     const useAdsProxy = getEl("setting-use-ads-proxy").checked;
+    const corsProxyUrl = getEl("setting-cors-proxy-url")?.value.trim() || '';
+    const corsProxyHealthUrl = getEl("setting-cors-proxy-health-url")?.value.trim() || '';
 
     // Validate page IDs JSON
     let pageIds;
@@ -1229,6 +1263,8 @@ class AdminPage {
       t2sPageIds: pageIds,
       orderPrefix,
       useAdsProxy,
+      corsProxyUrl: corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl,
+      corsProxyHealthUrl: corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl,
     });
 
     if (success) {
