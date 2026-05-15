@@ -1781,6 +1781,41 @@ const adminStyles = `
         border: 1px solid var(--border);
     }
 
+    /* Two-zone layout inside T2S Configuration */
+    .zone-connection {
+        border: 1px solid #90cdf4;
+        background: #ebf8ff;
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+
+    .zone-connection .zone-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #2b6cb0;
+        margin-bottom: 12px;
+    }
+
+    .zone-manual {
+        border: 1px solid var(--border);
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+
+    .zone-manual .zone-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+    }
+
     /* Collapsible card (e.g. File import — kept secondary) */
     details.admin-section--collapsible {
         padding: 14px 20px;
