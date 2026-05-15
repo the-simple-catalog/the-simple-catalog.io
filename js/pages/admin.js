@@ -49,76 +49,84 @@ class AdminPage {
                     <div class="admin-section">
                         <h2 style="margin-bottom: 16px; font-size: 20px;">🔧 Ads &amp; T2S - Customer Configuration</h2>
 
-                        <div id="env-selector-container"></div>
-
                         <form id="t2s-settings-form" onsubmit="AdminPage.saveT2SSettings(event)">
-                            <div class="form-group">
-                                <label class="form-label">T2S Customer ID</label>
-                                <input
-                                    type="text"
-                                    id="setting-customer-id"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.t2sCustomerId || DEFAULT_T2S_CUSTOMER_ID)}"
-                                    placeholder="${DEFAULT_T2S_CUSTOMER_ID}"
-                                />
+
+                            <!-- Blue zone: 3 fields filled by Quick Preset -->
+                            <div class="zone-connection">
+                                <div class="zone-title">🌍 Connection — filled by Quick Preset</div>
+                                <div id="env-selector-container"></div>
+                                <div class="form-group">
+                                    <label class="form-label">T2S Customer ID</label>
+                                    <input
+                                        type="text"
+                                        id="setting-customer-id"
+                                        class="form-input"
+                                        value="${escapeHtml(settings.t2sCustomerId || DEFAULT_T2S_CUSTOMER_ID)}"
+                                        placeholder="${DEFAULT_T2S_CUSTOMER_ID}"
+                                    />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">T2S Tracking URL</label>
+                                    <input
+                                        type="text"
+                                        id="setting-tracking-url"
+                                        class="form-input"
+                                        value="${escapeHtml(settings.trackingUrl || DEFAULT_TRACKING_URL)}"
+                                        placeholder="${DEFAULT_TRACKING_URL}"
+                                    />
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">Ads Server URL</label>
+                                    <input
+                                        type="text"
+                                        id="setting-ads-url"
+                                        class="form-input"
+                                        value="${escapeHtml(settings.adsServerUrl || DEFAULT_ADS_SERVER_URL)}"
+                                        placeholder="${DEFAULT_ADS_SERVER_URL}"
+                                    />
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">T2S Tracking URL</label>
-                                <input
-                                    type="text"
-                                    id="setting-tracking-url"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.trackingUrl || DEFAULT_TRACKING_URL)}"
-                                    placeholder="${DEFAULT_TRACKING_URL}"
-                                />
-                            </div>
+                            <!-- Grey zone: fields not set by preset -->
+                            <div class="zone-manual">
+                                <div class="zone-title">⚙️ Manual settings — not set by preset</div>
+                                <div class="form-group">
+                                    <label class="form-label">Ads Server Token (Optional - JWT only)</label>
+                                    <input
+                                        type="text"
+                                        id="setting-ads-token"
+                                        class="form-input"
+                                        value="${escapeHtml(settings.adsServerToken || "")}"
+                                        placeholder="Leave empty to use public endpoint"
+                                    />
+                                </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Ads Server URL</label>
-                                <input
-                                    type="text"
-                                    id="setting-ads-url"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.adsServerUrl || DEFAULT_ADS_SERVER_URL)}"
-                                    placeholder="${DEFAULT_ADS_SERVER_URL}"
-                                />
-                            </div>
+                                <div class="form-group">
+                                    <label class="form-label">Page IDs Configuration (JSON)</label>
+                                    <textarea
+                                        id="setting-page-ids"
+                                        class="form-input"
+                                        rows="6"
+                                        placeholder='${escapeHtml(JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}'
+                                        style="font-family: monospace; font-size: 13px;"
+                                    >${escapeHtml(JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}</textarea>
+                                    <small style="color: var(--text-secondary); font-size: 12px;">
+                                        JSON object with page type to page ID mappings
+                                    </small>
+                                </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Ads Server Token (Optional - JWT only)</label>
-                                <input
-                                    type="text"
-                                    id="setting-ads-token"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.adsServerToken || "")}"
-                                    placeholder="Leave empty to use public endpoint"
-                                />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Page IDs Configuration (JSON)</label>
-                                <textarea
-                                    id="setting-page-ids"
-                                    class="form-input"
-                                    rows="6"
-                                    placeholder='${escapeHtml(JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}'
-                                    style="font-family: monospace; font-size: 13px;"
-                                >${escapeHtml(JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}</textarea>
-                                <small style="color: var(--text-secondary); font-size: 12px;">
-                                    JSON object with page type to page ID mappings
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Order Prefix</label>
-                                <input
-                                    type="text"
-                                    id="setting-order-prefix"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.orderPrefix || "")}"
-                                    placeholder="${DEFAULT_ORDER_PREFIX}"
-                                />
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">Order Prefix</label>
+                                    <input
+                                        type="text"
+                                        id="setting-order-prefix"
+                                        class="form-input"
+                                        value="${escapeHtml(settings.orderPrefix || "")}"
+                                        placeholder="${DEFAULT_ORDER_PREFIX}"
+                                    />
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary">
