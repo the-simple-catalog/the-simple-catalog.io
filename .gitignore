@@ -1,6 +1,7 @@
 # Specification and test files
 spec/
 docs/superpowers
+.superpowers/
 
 # Dependencies
 node_modules/

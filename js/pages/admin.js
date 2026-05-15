@@ -5,6 +5,7 @@
 import { getEl, escapeHtml } from "../utils.js";
 import { CatalogManager, Settings } from "../catalog.js";
 import { Debug } from "../debug.js";
+import { EnvironmentSelector } from "../environmentSelector.js";
 
 // ===================================
 // Default Configuration Placeholders
@@ -260,6 +261,8 @@ class AdminPage {
                     <div class="admin-section">
                         <h2 style="margin-bottom: 16px; font-size: 20px;">🔧 T2S Tracking Configuration</h2>
 
+                        <div id="env-selector-container"></div>
+
                         <form id="t2s-settings-form" onsubmit="AdminPage.saveT2SSettings(event)">
                             <div class="form-group">
                                 <label class="form-label">T2S Tracking URL</label>
@@ -487,6 +490,9 @@ class AdminPage {
 
     // Ping CORS proxy health endpoint to wake it up preemptively
     AdminPage.pingProxyHealth();
+
+    // Load environment presets and render the Quick Preset selector in T2S section
+    EnvironmentSelector.load().then(envs => EnvironmentSelector.render('env-selector-container', envs));
 
     // Toggle advanced proxy config visibility with the checkbox
     const proxyCheckbox = getEl('setting-use-ads-proxy');
