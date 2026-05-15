@@ -521,7 +521,9 @@ class Settings {
         theme: 'slate',
         debugMode: false,
         adsApiMockMode: false,
-        useAdsProxy: true
+        useAdsProxy: true,
+        corsProxyUrl: 'https://proxycors-8kgt.onrender.com/proxy',
+        corsProxyHealthUrl: 'https://proxycors-8kgt.onrender.com/health'
     };
 
     /**
