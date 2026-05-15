@@ -96,9 +96,7 @@ class Tracking {
         PAYMENT: 'payment'
     };
 
-    // CORS Proxy configuration for authenticated Ads API calls
-    static CORS_PROXY_URL = 'https://proxycors-8kgt.onrender.com/proxy';
-    static CORS_PROXY_HEALTH_ENDPOINT = 'https://proxycors-8kgt.onrender.com/health';
+    // CORS Proxy configuration — URLs are user-configurable via Settings; timeout is internal only
     static CORS_PROXY_TIMEOUT = 5000;
 
     /**
@@ -132,7 +130,7 @@ class Tracking {
      */
     static buildProxiedUrl(targetUrl) {
         const encodedUrl = encodeURIComponent(targetUrl);
-        return `${this.CORS_PROXY_URL}?url=${encodedUrl}`;
+        return `${Settings.get().corsProxyUrl}?url=${encodedUrl}`;
     }
 
     /**
