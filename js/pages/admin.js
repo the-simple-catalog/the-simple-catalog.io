@@ -45,7 +45,91 @@ class AdminPage {
                 <h1 class="section-title" style="font-size: 24px; margin-bottom: 16px;">Admin &amp; Settings</h1>
 
                 <div style="display: grid; gap: 24px; max-width: 800px;">
-                    <!-- Import from URL (primary flow) -->
+                    <!-- 1. Ads & T2S Customer Configuration (first) -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">🔧 Ads &amp; T2S - Customer Configuration</h2>
+
+                        <div id="env-selector-container"></div>
+
+                        <form id="t2s-settings-form" onsubmit="AdminPage.saveT2SSettings(event)">
+                            <div class="form-group">
+                                <label class="form-label">T2S Customer ID</label>
+                                <input
+                                    type="text"
+                                    id="setting-customer-id"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.t2sCustomerId || DEFAULT_T2S_CUSTOMER_ID)}"
+                                    placeholder="${DEFAULT_T2S_CUSTOMER_ID}"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">T2S Tracking URL</label>
+                                <input
+                                    type="text"
+                                    id="setting-tracking-url"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.trackingUrl || DEFAULT_TRACKING_URL)}"
+                                    placeholder="${DEFAULT_TRACKING_URL}"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ads Server URL</label>
+                                <input
+                                    type="text"
+                                    id="setting-ads-url"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.adsServerUrl || DEFAULT_ADS_SERVER_URL)}"
+                                    placeholder="${DEFAULT_ADS_SERVER_URL}"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ads Server Token (Optional - JWT only)</label>
+                                <input
+                                    type="text"
+                                    id="setting-ads-token"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.adsServerToken || "")}"
+                                    placeholder="Leave empty to use public endpoint"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Page IDs Configuration (JSON)</label>
+                                <textarea
+                                    id="setting-page-ids"
+                                    class="form-input"
+                                    rows="6"
+                                    placeholder='${escapeHtml(JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}'
+                                    style="font-family: monospace; font-size: 13px;"
+                                >${escapeHtml(JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}</textarea>
+                                <small style="color: var(--text-secondary); font-size: 12px;">
+                                    JSON object with page type to page ID mappings
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Order Prefix</label>
+                                <input
+                                    type="text"
+                                    id="setting-order-prefix"
+                                    class="form-input"
+                                    value="${escapeHtml(settings.orderPrefix || "")}"
+                                    placeholder="${DEFAULT_ORDER_PREFIX}"
+                                />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Save T2S Settings
+                            </button>
+                        </form>
+
+                        <div id="t2s-settings-message"></div>
+                    </div>
+
+                    <!-- 2. Import from URL (primary flow) -->
                     <div class="admin-section">
                         <h2 style="margin-bottom: 16px; font-size: 20px;">🌐 Import catalog from URL</h2>
 
@@ -257,130 +341,7 @@ class AdminPage {
                         </div>
                     </div>
 
-                    <!-- T2S Configuration -->
-                    <div class="admin-section">
-                        <h2 style="margin-bottom: 16px; font-size: 20px;">🔧 T2S Tracking Configuration</h2>
-
-                        <div id="env-selector-container"></div>
-
-                        <form id="t2s-settings-form" onsubmit="AdminPage.saveT2SSettings(event)">
-                            <div class="form-group">
-                                <label class="form-label">T2S Tracking URL</label>
-                                <input
-                                    type="text"
-                                    id="setting-tracking-url"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.trackingUrl || DEFAULT_TRACKING_URL)}"
-                                    placeholder="${DEFAULT_TRACKING_URL}"
-                                />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Ads Server URL</label>
-                                <input
-                                    type="text"
-                                    id="setting-ads-url"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.adsServerUrl || DEFAULT_ADS_SERVER_URL)}"
-                                    placeholder="${DEFAULT_ADS_SERVER_URL}"
-                                />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Ads Server Token (Optional - JWT only)</label>
-                                <input
-                                    type="text"
-                                    id="setting-ads-token"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.adsServerToken || "")}"
-                                    placeholder="Leave empty to use public endpoint"
-                                />
-
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
-                                    <input
-                                        type="checkbox"
-                                        id="setting-use-ads-proxy"
-                                        ${settings.useAdsProxy !== false ? "checked" : ""}
-                                        style="width: auto; margin: 0;"
-                                    />
-                                    <span>Use CORS Proxy for Authenticated Ads API Calls</span>
-                                </label>
-                                <small style="color: var(--text-secondary); font-size: 12px; margin-left: 24px;">
-                                    When enabled, authenticated calls route through a proxy to bypass CORS restrictions
-                                </small>
-                                <div id="proxy-advanced-config" style="display: ${settings.useAdsProxy !== false ? 'block' : 'none'}; margin-top: 10px; margin-left: 24px; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary);">
-                                    <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Advanced Proxy Configuration</div>
-                                    <div class="form-group" style="margin-bottom: 10px;">
-                                        <label class="form-label" style="font-size: 13px;">Proxy URL</label>
-                                        <input
-                                            type="text"
-                                            id="setting-cors-proxy-url"
-                                            class="form-input"
-                                            value="${escapeHtml(settings.corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
-                                            placeholder="${escapeHtml(Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
-                                        />
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 0;">
-                                        <label class="form-label" style="font-size: 13px;">Health Endpoint URL</label>
-                                        <input
-                                            type="text"
-                                            id="setting-cors-proxy-health-url"
-                                            class="form-input"
-                                            value="${escapeHtml(settings.corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
-                                            placeholder="${escapeHtml(Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">T2S Customer ID</label>
-                                <input
-                                    type="text"
-                                    id="setting-customer-id"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.t2sCustomerId || DEFAULT_T2S_CUSTOMER_ID)}"
-                                    placeholder="${DEFAULT_T2S_CUSTOMER_ID}"
-                                />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Page IDs Configuration (JSON)</label>
-                                <textarea
-                                    id="setting-page-ids"
-                                    class="form-input"
-                                    rows="6"
-                                    placeholder='${escapeHtml(JSON.stringify(Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}'
-                                    style="font-family: monospace; font-size: 13px;"
-                                >${escapeHtml(JSON.stringify(settings.t2sPageIds || Settings.DEFAULT_SETTINGS.t2sPageIds, null, 2))}</textarea>
-                                <small style="color: var(--text-secondary); font-size: 12px;">
-                                    JSON object with page type to page ID mappings
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Order Prefix</label>
-                                <input
-                                    type="text"
-                                    id="setting-order-prefix"
-                                    class="form-input"
-                                    value="${escapeHtml(settings.orderPrefix || "")}"
-                                    placeholder="${DEFAULT_ORDER_PREFIX}"
-                                />
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                Save T2S Settings
-                            </button>
-                        </form>
-
-                        <div id="t2s-settings-message"></div>
-                    </div>
-
-                    <!-- tID Management -->
+                    <!-- 8. tID Management -->
                     <div class="admin-section">
                         <h2 style="margin-bottom: 16px; font-size: 20px;">🔑 User Tracking ID (tID) Management</h2>
 
@@ -427,7 +388,58 @@ class AdminPage {
                         <div id="tid-message"></div>
                     </div>
 
-                    <!-- Configuration Export -->
+                    <!-- 9. Advanced (CORS proxy) -->
+                    <div class="admin-section">
+                        <h2 style="margin-bottom: 16px; font-size: 20px;">🔒 Advanced</h2>
+
+                        <form id="advanced-settings-form" onsubmit="AdminPage.saveAdvancedSettings(event)">
+                            <div class="form-group">
+                                <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+                                    <input
+                                        type="checkbox"
+                                        id="setting-use-ads-proxy"
+                                        ${settings.useAdsProxy !== false ? "checked" : ""}
+                                        style="width: auto; margin: 0;"
+                                    />
+                                    <span>Use CORS Proxy for Authenticated Ads API Calls</span>
+                                </label>
+                                <small style="color: var(--text-secondary); font-size: 12px; margin-left: 24px;">
+                                    When enabled, authenticated calls route through a proxy to bypass CORS restrictions
+                                </small>
+                                <div id="proxy-advanced-config" style="display: ${settings.useAdsProxy !== false ? 'block' : 'none'}; margin-top: 10px; margin-left: 24px; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary);">
+                                    <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Proxy Configuration</div>
+                                    <div class="form-group" style="margin-bottom: 10px;">
+                                        <label class="form-label" style="font-size: 13px;">Proxy URL</label>
+                                        <input
+                                            type="text"
+                                            id="setting-cors-proxy-url"
+                                            class="form-input"
+                                            value="${escapeHtml(settings.corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
+                                            placeholder="${escapeHtml(Settings.DEFAULT_SETTINGS.corsProxyUrl)}"
+                                        />
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label class="form-label" style="font-size: 13px;">Health Endpoint URL</label>
+                                        <input
+                                            type="text"
+                                            id="setting-cors-proxy-health-url"
+                                            class="form-input"
+                                            value="${escapeHtml(settings.corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
+                                            placeholder="${escapeHtml(Settings.DEFAULT_SETTINGS.corsProxyHealthUrl)}"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Save Advanced Settings
+                            </button>
+                        </form>
+
+                        <div id="advanced-settings-message"></div>
+                    </div>
+
+                    <!-- 10. Configuration Export (last) -->
                     <div class="admin-section">
                         <h2 style="margin-bottom: 16px; font-size: 20px;">📤 Configuration Export</h2>
 
@@ -1236,9 +1248,6 @@ class AdminPage {
     const customerId = getEl("setting-customer-id").value.trim();
     const pageIdsText = getEl("setting-page-ids").value.trim();
     const orderPrefix = getEl("setting-order-prefix").value.trim();
-    const useAdsProxy = getEl("setting-use-ads-proxy").checked;
-    const corsProxyUrl = getEl("setting-cors-proxy-url")?.value.trim() || '';
-    const corsProxyHealthUrl = getEl("setting-cors-proxy-health-url")?.value.trim() || '';
 
     // Validate page IDs JSON
     let pageIds;
@@ -1268,9 +1277,6 @@ class AdminPage {
       t2sCustomerId: customerId,
       t2sPageIds: pageIds,
       orderPrefix,
-      useAdsProxy,
-      corsProxyUrl: corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl,
-      corsProxyHealthUrl: corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl,
     });
 
     if (success) {
@@ -1283,6 +1289,37 @@ class AdminPage {
       AdminPage.showTemporaryMessage(
         "t2s-settings-message",
         "Error saving T2S settings",
+        "error",
+      );
+    }
+  }
+
+  /**
+   * Save advanced settings (CORS proxy configuration)
+   */
+  static saveAdvancedSettings(event) {
+    event.preventDefault();
+
+    const useAdsProxy = getEl("setting-use-ads-proxy").checked;
+    const corsProxyUrl = getEl("setting-cors-proxy-url")?.value.trim() || '';
+    const corsProxyHealthUrl = getEl("setting-cors-proxy-health-url")?.value.trim() || '';
+
+    const success = Settings.save({
+      useAdsProxy,
+      corsProxyUrl: corsProxyUrl || Settings.DEFAULT_SETTINGS.corsProxyUrl,
+      corsProxyHealthUrl: corsProxyHealthUrl || Settings.DEFAULT_SETTINGS.corsProxyHealthUrl,
+    });
+
+    if (success) {
+      AdminPage.showTemporaryMessage(
+        "advanced-settings-message",
+        "Advanced settings saved successfully!",
+        "success",
+      );
+    } else {
+      AdminPage.showTemporaryMessage(
+        "advanced-settings-message",
+        "Error saving advanced settings",
         "error",
       );
     }
