@@ -179,10 +179,10 @@ class EnvironmentSelector {
                     placeholder="Enter customer ID"
                     autocomplete="off"
                 />`;
-            document.getElementById('env-sel-custom-customer')
-                .addEventListener('input', () => {
-                    applyBtn.disabled = document.getElementById('env-sel-custom-customer').value.trim() === '';
-                });
+            const customInput = document.getElementById('env-sel-custom-customer');
+            customInput.addEventListener('input', () => {
+                applyBtn.disabled = customInput.value.trim() === '';
+            });
             applyBtn.disabled = true;
             return;
         }

@@ -75,7 +75,7 @@ class HomePage {
 
                     <h2 class="section-title">Shop by department</h2>
                     <div class="cat-tiles">
-                        ${tiles.map(c => HomePage.#renderCatTile(c)).join('')}
+                        ${tiles.map(c => HomePage.#renderCatTile(c, products)).join('')}
                     </div>
 
                     <div class="ad-zone-slot" id="home-display-native"></div>
@@ -96,10 +96,10 @@ class HomePage {
         HomePage.#fetchAndRenderAds(pageId, pageType);
     }
 
-    static #renderCatTile(category) {
+    static #renderCatTile(category, products) {
         const imageUrl = CatalogManager.getCategoryIconImage(category);
         const name = category.content?.name || category.id;
-        const productCount = HomePage.#countProductsInTree(category.id);
+        const productCount = HomePage.#countProductsInTree(category.id, products);
         return `
             <a class="cat-tile" href="#/category/${escapeHtml(category.id)}">
                 <div class="cat-tile-icon">
@@ -150,9 +150,8 @@ class HomePage {
      * whose categories array contains any id equal to rootId or starting with
      * `${rootId}-` belongs in this subtree.
      */
-    static #countProductsInTree(rootId) {
+    static #countProductsInTree(rootId, products) {
         const prefix = `${rootId}-`;
-        const products = CatalogManager.getProducts();
         let n = 0;
         for (const p of products) {
             const cats = p.content?.categories || [];
