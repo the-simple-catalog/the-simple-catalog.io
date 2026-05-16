@@ -1586,6 +1586,31 @@ class AdminPage {
       importCount++;
     }
 
+    // siteName → siteName
+    const siteName = urlParams.get("siteName");
+    if (siteName && siteName.trim()) {
+      importedSettings.siteName = siteName.trim();
+      importCount++;
+    }
+
+    // theme → theme (must be one of the valid values)
+    const theme = urlParams.get("theme");
+    if (theme && ["slate", "warm", "modern"].includes(theme)) {
+      importedSettings.theme = theme;
+      importCount++;
+    } else if (theme) {
+      console.warn("⚠️ [ADMIN] Skipping invalid theme parameter:", theme);
+    }
+
+    // useAdsProxy → useAdsProxy (boolean)
+    const useAdsProxy = urlParams.get("useAdsProxy");
+    if (useAdsProxy === "true" || useAdsProxy === "false") {
+      importedSettings.useAdsProxy = useAdsProxy === "true";
+      importCount++;
+    } else if (useAdsProxy !== null) {
+      console.warn("⚠️ [ADMIN] Skipping invalid useAdsProxy parameter:", useAdsProxy);
+    }
+
     // categoriesUrl / productsUrl / productsUrl2 → persisted so the form
     // re-renders with the URLs pre-filled. Auto-fetch is triggered after render.
     const categoriesUrl = urlParams.get("categoriesUrl");
@@ -1669,6 +1694,15 @@ class AdminPage {
     }
     if (settings.orderPrefix && settings.orderPrefix !== DEFAULT_ORDER_PREFIX) {
       params.append("orderPrefix", settings.orderPrefix);
+    }
+    if (settings.siteName && settings.siteName !== Settings.DEFAULT_SETTINGS.siteName) {
+      params.append("siteName", settings.siteName);
+    }
+    if (settings.theme && settings.theme !== Settings.DEFAULT_SETTINGS.theme) {
+      params.append("theme", settings.theme);
+    }
+    if (settings.useAdsProxy !== Settings.DEFAULT_SETTINGS.useAdsProxy) {
+      params.append("useAdsProxy", String(settings.useAdsProxy));
     }
     // Catalog URLs: read live from the inputs so the exported URL reflects
     // whatever the user currently sees in the form (including the defaults
