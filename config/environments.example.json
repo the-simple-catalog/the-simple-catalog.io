@@ -1,0 +1,19 @@
+[
+  {
+    "name": "Production",
+    "trackingUrl": "https://tracking.example.com",
+    "adsServerUrl": "https://ads.example.com",
+    "customers": [
+      { "name": "Acme Corp", "customerId": "acme-corp" },
+      { "name": "Beta Retailer", "customerId": "beta-rtlr" }
+    ]
+  },
+  {
+    "name": "Staging",
+    "trackingUrl": "https://tracking-stg.example.com",
+    "adsServerUrl": "https://ads-stg.example.com",
+    "customers": [
+      { "name": "Acme Staging", "customerId": "acme-stg" }
+    ]
+  }
+]

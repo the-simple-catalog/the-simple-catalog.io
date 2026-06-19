@@ -1,17 +1,22 @@
 // ===================================
-// Checkout Page - Payment and shipping info
+// Checkout Page — Marketplace layout
 // ===================================
+//
+// 2-col: shipping + payment forms (left) · sticky order summary (right).
 
-import { getEl, formatPrice, navigateTo } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, navigateTo } from '../utils.js';
 import { Settings } from '../catalog.js';
 import { Cart } from '../cart.js';
+import { Tracking } from '../tracking.js';
+import { Debug } from '../debug.js';
 
 class CheckoutPage {
-    /**
-     * Render checkout page
-     */
     static render() {
-        // No tracking on checkout page (as per spec)
+        Debug.setPage({
+            type: 'checkout',
+            id: Tracking.getPageId(Tracking.PAGE_TYPES.PAYMENT),
+            path: location.hash
+        });
 
         const app = getEl('app');
         const items = Cart.getItemsWithDetails();
@@ -19,142 +24,119 @@ class CheckoutPage {
 
         if (items.length === 0) {
             app.innerHTML = `
-                <div class="container fade-in">
-                    <div class="page-header">
-                        <div class="breadcrumb">
+                <div class="page page-pad fade-in">
+                    <div class="container">
+                        <div class="crumbs">
                             <a href="#/">Home</a>
-                            <span class="breadcrumb-separator">/</span>
+                            <span class="sep">/</span>
                             <span>Checkout</span>
                         </div>
-                        <h1 class="page-title">Checkout</h1>
+                        <h1 class="section-title">Checkout</h1>
+                        <div class="empty">
+                            <h3>Your cart is empty</h3>
+                            <p>Add something to your cart before checking out.</p>
+                        </div>
+                        <a href="#/" class="btn btn-primary" style="margin-top: 16px;">Continue Shopping</a>
                     </div>
-
-                    <div class="message message-info">
-                        Your cart is empty
-                    </div>
-
-                    <a href="#/" class="btn btn-primary" style="margin-top: 16px;">
-                        Continue Shopping
-                    </a>
                 </div>
             `;
             return;
         }
 
         app.innerHTML = `
-            <div class="container fade-in">
-                <div class="page-header">
-                    <div class="breadcrumb">
+            <div class="page page-pad fade-in">
+                <div class="container">
+                    <div class="crumbs">
                         <a href="#/">Home</a>
-                        <span class="breadcrumb-separator">/</span>
+                        <span class="sep">/</span>
+                        <a href="#/cart">Cart</a>
+                        <span class="sep">/</span>
                         <span>Checkout</span>
                     </div>
-                    <h1 class="page-title">Checkout</h1>
-                </div>
+                    <h1 class="section-title">Checkout</h1>
 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
-                    <!-- Left: Forms -->
-                    <div>
-                        <!-- Shipping Address -->
-                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius-lg); margin-bottom: 24px;">
-                            <h2 style="font-size: 20px; margin-bottom: 16px;">Shipping Address</h2>
-                            <form id="shipping-form">
-                                <div class="form-group">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-input" id="ship-name" value="John Doe" required />
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Address</label>
-                                    <input type="text" class="form-input" id="ship-address" value="123 Main Street" required />
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="checkout-grid">
+                        <div>
+                            <section class="checkout-step">
+                                <h2>Shipping Address</h2>
+                                <form id="shipping-form">
                                     <div class="form-group">
-                                        <label class="form-label">City</label>
-                                        <input type="text" class="form-input" id="ship-city" value="Paris" required />
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-input" id="ship-name" value="John Doe" required />
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Postal Code</label>
-                                        <input type="text" class="form-input" id="ship-postal" value="75001" required />
+                                        <label class="form-label">Address</label>
+                                        <input type="text" class="form-input" id="ship-address" value="123 Main Street" required />
                                     </div>
-                                </div>
-                            </form>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">City</label>
+                                            <input type="text" class="form-input" id="ship-city" value="Paris" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Postal Code</label>
+                                            <input type="text" class="form-input" id="ship-postal" value="75001" required />
+                                        </div>
+                                    </div>
+                                </form>
+                            </section>
+
+                            <section class="checkout-step">
+                                <h2>Payment Information</h2>
+                                <form id="payment-form">
+                                    <div class="form-group">
+                                        <label class="form-label">Card Number</label>
+                                        <input type="text" class="form-input" id="card-number" value="4111111111111111" placeholder="1234 5678 9012 3456" required />
+                                        <small style="font-size: 12px; color: var(--text-3);">Test card: 4111-1111-1111-1111</small>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Expiry Date</label>
+                                            <input type="text" class="form-input" id="card-expiry" value="12/28" placeholder="MM/YY" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">CVV</label>
+                                            <input type="text" class="form-input" id="card-cvv" value="123" placeholder="123" required />
+                                        </div>
+                                    </div>
+                                </form>
+                            </section>
                         </div>
 
-                        <!-- Payment -->
-                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius-lg);">
-                            <h2 style="font-size: 20px; margin-bottom: 16px;">Payment Information</h2>
-                            <form id="payment-form">
-                                <div class="form-group">
-                                    <label class="form-label">Card Number</label>
-                                    <input type="text" class="form-input" id="card-number" value="4111111111111111" placeholder="1234 5678 9012 3456" required />
-                                    <small style="font-size: 12px; color: var(--text-secondary);">Test card: 4111-1111-1111-1111</small>
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <div class="form-group">
-                                        <label class="form-label">Expiry Date</label>
-                                        <input type="text" class="form-input" id="card-expiry" value="12/28" placeholder="MM/YY" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">CVV</label>
-                                        <input type="text" class="form-input" id="card-cvv" value="123" placeholder="123" required />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Right: Order Summary -->
-                    <div>
-                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius-lg); position: sticky; top: 100px;">
-                            <h2 style="font-size: 20px; margin-bottom: 16px;">Order Summary</h2>
-
-                            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span>Subtotal (${items.length} items)</span>
-                                    <strong>${formatPrice(totals.subtotal)}</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-secondary); font-size: 14px;">
-                                    <span>Shipping</span>
-                                    <span>FREE</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 14px;">
-                                    <span>Tax</span>
-                                    <span>${formatPrice(totals.tax)}</span>
-                                </div>
+                        <aside class="summary">
+                            <h3>Order Summary</h3>
+                            <div class="summary-row">
+                                <span>Subtotal (${items.length} items)</span>
+                                <strong>${escapeHtml(formatPrice(totals.subtotal))}</strong>
                             </div>
-
-                            <a href="#/cart" style="font-size: 14px; color: var(--primary-color); text-decoration: none; display: block; margin-bottom: 16px;">
-                                ← Edit Cart
-                            </a>
-
-                            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 24px;">
+                            <div class="summary-row">
+                                <span>Shipping</span>
+                                <span>FREE</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax</span>
+                                <span>${escapeHtml(formatPrice(totals.tax))}</span>
+                            </div>
+                            <div class="summary-row total">
                                 <span>Total</span>
-                                <span>${formatPrice(totals.total)}</span>
+                                <span>${escapeHtml(formatPrice(totals.total))}</span>
                             </div>
-
-                            <button
-                                onclick="CheckoutPage.placeOrder()"
-                                class="btn btn-primary btn-full"
-                                style="padding: 14px;"
-                            >
-                                Place Order
-                            </button>
-
-                            <div id="checkout-message" style="margin-top: 16px;"></div>
-                        </div>
+                            <div class="summary-actions">
+                                <button type="button" class="btn btn-primary btn-full" onclick="CheckoutPage.placeOrder()">
+                                    Place Order
+                                </button>
+                                <a href="#/cart" class="btn btn-outline btn-full">Edit Cart</a>
+                            </div>
+                            <div id="checkout-message" style="margin-top: 12px;"></div>
+                        </aside>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    /**
-     * Place order (mocked - always succeeds)
-     */
     static placeOrder() {
         const messageDiv = getEl('checkout-message');
-
-        // Validate forms
         const shippingForm = getEl('shipping-form');
         const paymentForm = getEl('payment-form');
 
@@ -162,44 +144,36 @@ class CheckoutPage {
             shippingForm.reportValidity();
             return;
         }
-
         if (!paymentForm.checkValidity()) {
             paymentForm.reportValidity();
             return;
         }
 
-        // Show loading
         messageDiv.innerHTML = '<div class="loading">Processing order...</div>';
 
-        // Simulate API call
+        // Mock 1.5s payment latency, then 1.5s success-banner pause for UX feel.
         setTimeout(() => {
-            // Mock successful payment
             const orderId = Settings.get().orderPrefix + Date.now();
-
             messageDiv.innerHTML = `
                 <div class="message message-success">
                     <strong>Order Placed Successfully!</strong>
-                    <p style="margin-top: 8px; font-size: 14px;">Order ID: ${orderId}</p>
+                    <p style="margin-top: 8px; font-size: 14px;">Order ID: ${escapeHtml(orderId)}</p>
                 </div>
             `;
-
-            // Redirect to order confirmation
             setTimeout(() => {
-                // Store order for confirmation page
+                // Hand off the order to OrderConfirmationPage via sessionStorage —
+                // survives the navigation but is naturally scoped to this tab/session.
                 sessionStorage.setItem('lastOrder', JSON.stringify({
                     orderId,
                     items: Cart.getItemsWithDetails(),
                     total: Cart.getTotal().total,
                     timestamp: new Date().toISOString()
                 }));
-
-                // Clear cart
                 Cart.clear();
-
-                // Navigate to order confirmation
                 navigateTo('/order-confirmation');
             }, 1500);
         }, 1500);
     }
 }
+
 export { CheckoutPage };

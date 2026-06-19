@@ -1,20 +1,21 @@
 // ===================================
-// Cart Page - Shopping cart summary
+// Cart Page — Marketplace layout
 // ===================================
+//
+// Layout: 2-column (cart-list + sticky summary), classic dense marketplace.
 
-import { getEl, escapeHtml, formatPrice } from '../utils.js';
+import { getEl, escapeHtml, formatPrice, getSeller, PLACEHOLDER_SVG } from '../utils.js';
 import { CatalogManager } from '../catalog.js';
 import { Cart } from '../cart.js';
 import { Tracking } from '../tracking.js';
+import { Debug } from '../debug.js';
 
 class CartPage {
-    /**
-     * Render cart page
-     */
     static render() {
-        // Track page view
         const pageType = Tracking.PAGE_TYPES.CART;
-        Tracking.trackPageView(Tracking.getPageId(pageType), pageType);
+        const pageId = Tracking.getPageId(pageType);
+        Debug.setPage({ type: 'cart', id: pageId, path: location.hash });
+        Tracking.trackPageView(pageId, pageType);
 
         const app = getEl('app');
         const items = Cart.getItemsWithDetails();
@@ -22,157 +23,152 @@ class CartPage {
 
         if (items.length === 0) {
             app.innerHTML = `
-                <div class="container fade-in">
-                    <div class="page-header">
-                        <div class="breadcrumb">
+                <div class="page page-pad fade-in">
+                    <div class="container">
+                        <div class="crumbs">
                             <a href="#/">Home</a>
-                            <span class="breadcrumb-separator">/</span>
+                            <span class="sep">/</span>
                             <span>Cart</span>
                         </div>
-                        <h1 class="page-title">Shopping Cart</h1>
+                        <h1 class="section-title">Shopping Cart</h1>
+                        <div class="empty">
+                            <h3>Your cart is empty</h3>
+                            <p>Browse departments to find something you'll love.</p>
+                        </div>
+                        <a href="#/" class="btn btn-primary" style="margin-top: 16px;">Continue Shopping</a>
                     </div>
-
-                    <div class="message message-info">
-                        Your cart is empty
-                    </div>
-
-                    <a href="#/" class="btn btn-primary" style="margin-top: 16px;">
-                        Continue Shopping
-                    </a>
                 </div>
             `;
             return;
         }
 
         app.innerHTML = `
-            <div class="container fade-in">
-                <div class="page-header">
-                    <div class="breadcrumb">
+            <div class="page page-pad fade-in">
+                <div class="container">
+                    <div class="crumbs">
                         <a href="#/">Home</a>
-                        <span class="breadcrumb-separator">/</span>
+                        <span class="sep">/</span>
                         <span>Cart</span>
                     </div>
-                    <h1 class="page-title">Shopping Cart</h1>
-                </div>
+                    <h1 class="section-title">Shopping Cart (${items.length} ${items.length === 1 ? 'item' : 'items'})</h1>
 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
-                    <!-- Left: Cart Items -->
-                    <div>
-                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius-lg);">
-                            <h2 style="font-size: 20px; margin-bottom: 16px;">Cart Items (${items.length})</h2>
-                            ${items.map(item => CartPage.renderCartItem(item)).join('')}
+                    <div class="cart-grid">
+                        <div class="cart-list">
+                            ${items.map(item => CartPage.#renderCartItem(item)).join('')}
                         </div>
-                    </div>
 
-                    <!-- Right: Cart Summary -->
-                    <div>
-                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius-lg); position: sticky; top: 100px;">
-                            <h2 style="font-size: 20px; margin-bottom: 16px;">Cart Summary</h2>
-
-                            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span>Subtotal (${items.length} items)</span>
-                                    <strong>${formatPrice(totals.subtotal)}</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-secondary); font-size: 14px;">
-                                    <span>Shipping</span>
-                                    <span>FREE</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 14px;">
-                                    <span>Tax</span>
-                                    <span>${formatPrice(totals.tax)}</span>
-                                </div>
+                        <aside class="summary">
+                            <h3>Order Summary</h3>
+                            <div class="summary-row">
+                                <span>Subtotal (${items.length} items)</span>
+                                <strong>${escapeHtml(formatPrice(totals.subtotal))}</strong>
                             </div>
-
-                            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 24px;">
+                            <div class="summary-row">
+                                <span>Shipping</span>
+                                <span>FREE</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax</span>
+                                <span>${escapeHtml(formatPrice(totals.tax))}</span>
+                            </div>
+                            <div class="summary-row total">
                                 <span>Total</span>
-                                <span>${formatPrice(totals.total)}</span>
+                                <span>${escapeHtml(formatPrice(totals.total))}</span>
                             </div>
-
-                            <a
-                                href="#/checkout"
-                                class="btn btn-primary btn-full"
-                                style="padding: 14px; text-align: center; text-decoration: none; display: block;"
-                            >
-                                Proceed to Checkout
-                            </a>
-
-                            <a
-                                href="#/"
-                                class="btn btn-secondary btn-full"
-                                style="padding: 14px; text-align: center; text-decoration: none; display: block; margin-top: 12px;"
-                            >
-                                Continue Shopping
-                            </a>
-                        </div>
+                            <div class="summary-actions">
+                                <a href="#/checkout" class="btn btn-primary btn-full">Proceed to Checkout</a>
+                                <a href="#/" class="btn btn-outline btn-full">Continue Shopping</a>
+                            </div>
+                        </aside>
                     </div>
                 </div>
             </div>
         `;
+
+        CartPage.#wireActions();
     }
 
     /**
-     * Render a single cart item
+     * Single delegated click handler on the cart list. Reads productId from
+     * data-cart-id (set at render time, properly escaped) instead of inlining
+     * it into an onclick="…" attribute — closes the XSS vector that existed
+     * when the catalog id contained quote characters.
      */
-    static renderCartItem(item) {
+    static #wireActions() {
+        const list = document.querySelector('.cart-list');
+        if (!list) return;
+        list.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-cart-action]');
+            if (!btn) return;
+            const action = btn.dataset.cartAction;
+            const id = btn.dataset.cartId;
+            if (!id) return;
+            if (action === 'remove') {
+                CartPage.removeItem(id);
+                return;
+            }
+            const current = Cart.getItems().find(i => i.productId === id);
+            if (!current) return;
+            const next = current.quantity + (action === 'inc' ? 1 : -1);
+            CartPage.updateQuantity(id, next);
+        });
+    }
+
+    static #renderCartItem(item) {
         const product = item.product;
+        const id = product.id;
+        const name = product.content?.name || id;
         const brand = CatalogManager.getProductBrand(product);
-
+        const seller = getSeller(product);
+        const image = product.content?.imageUrl
+            || `https://placehold.co/200x200?text=${encodeURIComponent(id)}`;
         return `
-            <div style="display: grid; grid-template-columns: 80px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color);">
-                <img
-                    src="${escapeHtml(product.content.imageUrl || '')}"
-                    alt="${escapeHtml(product.content.name)}"
-                    style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;"
-                    onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23f0f0f0%22 width=%2280%22 height=%2280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2210%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'"
-                />
+            <div class="cart-row">
+                <a class="cart-thumb" href="#/product/${escapeHtml(id)}">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy"
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_SVG}'" />
+                </a>
                 <div>
-                    ${brand ? `<div style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(brand)}</div>` : ''}
-                    <div style="font-weight: 500;">${escapeHtml(product.content.name)}</div>
-                    <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
-                        ${formatPrice(item.price)} each
+                    <a class="cart-name" href="#/product/${escapeHtml(id)}">${escapeHtml(name)}</a>
+                    <div class="cart-meta">
+                        ${brand ? `${escapeHtml(brand)} · ` : ''}
+                        ${escapeHtml(formatPrice(item.price))} each
+                    </div>
+                    ${seller === '3P' ? `
+                        <div class="mp-chip mp-chip-sm">
+                            <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 9l1-5h16l1 5"></path>
+                                <path d="M5 9v11h14V9"></path>
+                                <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
+                            </svg>
+                            Marketplace
+                        </div>
+                    ` : ''}
+                    <div class="cart-actions">
+                        <div class="cart-qty-stepper">
+                            <button type="button" data-cart-action="dec" data-cart-id="${escapeHtml(id)}">−</button>
+                            <span class="qty">${item.quantity}</span>
+                            <button type="button" data-cart-action="inc" data-cart-id="${escapeHtml(id)}">+</button>
+                        </div>
+                        <button type="button" data-cart-action="remove" data-cart-id="${escapeHtml(id)}">Remove</button>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <button
-                        onclick="CartPage.updateQuantity('${product.id}', ${item.quantity - 1})"
-                        class="btn btn-secondary"
-                        style="padding: 4px 12px;"
-                    >-</button>
-                    <span style="min-width: 30px; text-align: center;">${item.quantity}</span>
-                    <button
-                        onclick="CartPage.updateQuantity('${product.id}', ${item.quantity + 1})"
-                        class="btn btn-secondary"
-                        style="padding: 4px 12px;"
-                    >+</button>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: 600; margin-bottom: 8px;">
-                        ${formatPrice(item.subtotal)}
-                    </div>
-                    <button
-                        onclick="CartPage.removeItem('${product.id}')"
-                        style="color: var(--error-color); font-size: 12px; text-decoration: underline; background: none; border: none; cursor: pointer;"
-                    >Remove</button>
-                </div>
+                <div class="cart-row-price">${escapeHtml(formatPrice(item.subtotal))}</div>
             </div>
         `;
     }
 
-    /**
-     * Update item quantity
-     */
+    // Full re-render on every cart mutation — fine at this scale (max ~20 lines)
+    // and keeps the totals/summary card in sync without per-cell DOM patching.
     static updateQuantity(productId, newQuantity) {
         Cart.updateQuantity(productId, newQuantity);
-        CartPage.render(); // Re-render page
+        CartPage.render();
     }
 
-    /**
-     * Remove item from cart
-     */
     static removeItem(productId) {
         Cart.removeItem(productId);
-        CartPage.render(); // Re-render page
+        CartPage.render();
     }
 }
+
 export { CartPage };
